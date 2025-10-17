@@ -672,7 +672,7 @@ const RightSideBarSports = ({
               </div>
             )}
           {/* Place Bet Section - Desktop Sidebar */}
-          {popupDisplay && !isMobileDevice && (
+          {popupDisplay && !isMobileDevice && !isAdminRoute() && (
             <div className="sidebar-box place-bet-container">
               <div className="sidebar-title">
                 <h4>Place Bet</h4>
