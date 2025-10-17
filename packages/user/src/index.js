@@ -23,9 +23,9 @@ import CasinoMain from "@dxc247/shared/components/casino/CasinoMain";
 // Lazy load pages
 const Login = lazy(() => import("./pages/Login"));
 const Home = lazy(() => import("./pages/Home"));
-const Tennis = lazy(() => import("./pages/sports/Tennis"));
-const Cricket = lazy(() => import("./pages/sports/Cricket"));
-const Soccer = lazy(() => import("./pages/sports/Soccer"));
+const Tennis = lazy(() => import("@dxc247/shared/components/sports/Tennis"));
+const Cricket = lazy(() => import("@dxc247/shared/components/sports/Cricket"));
+const Soccer = lazy(() => import("@dxc247/shared/components/sports/Soccer"));
 const AccountStatement = lazy(() => import("./pages/AccountStatement"));
 const BetHistories = lazy(() => import("./pages/BetHistories"));
 const ProfitLossReport = lazy(() => import("./pages/ProfitLossReport"));
