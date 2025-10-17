@@ -80,7 +80,7 @@ root.render(
         <SportsProvider>
           <Router>
             <AuthProvider>
-              <CasinoProvider>
+              <CasinoProvider isAdmin={true}>
                 <StakeProvider>
                 <Suspense fallback={null}>
             <Routes>

@@ -7,10 +7,10 @@ import {
   getExBySingleTeamNameCasino,
   getExByTeamNameForCasino,
 } from "../../utils/Constants";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useSelector } from "react-redux";
 // AdminAuthProvider functionality is now integrated into AuthProvider
 
-export const CasinoProvider = (props) => {
+export const CasinoProvider = ({ isAdmin = false, ...props }) => {
   
   const [userBetData, setUserBetData] = useState(() => {
     const saved = localStorage.getItem("casino_userBetData");
@@ -104,10 +104,10 @@ export const CasinoProvider = (props) => {
   };
 
   // --- SOCKET CONNECTION ONLY AFTER LOGIN ---
-  const authContext = useContext(AuthContext);
-  // AdminAuthProvider functionality is now integrated into AuthProvider
-  const { isLoggedIn, isAuthenticated } = authContext || {};
-  const loginStatus = isLoggedIn || isAuthenticated;
+  const isAdminRoute = isAdmin;
+  const userLoginStatus = useSelector((state) => state.user?.token || false);
+  const adminLoginStatus = useSelector((state) => state.admin?.token || false);
+  const loginStatus = isAdminRoute ? adminLoginStatus : userLoginStatus;
 
   const [casinoSocket, setCasinoSocket] = useState(null);
   const [casinoSocketScoreboard, setCasinoSocketScoreboard] = useState(null);
