@@ -1,0 +1,32 @@
+{
+  "name": "dxc247-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start:user": "npm run dev --workspace=@dxc247/user",
+    "start:admin": "npm run dev --workspace=@dxc247/admin",
+    "build:all": "npm run build --workspaces --if-present",
+    "build:user": "npm run build --workspace=@dxc247/user",
+    "build:admin": "npm run build --workspace=@dxc247/admin",
+    "dev": "npm run start:user & npm run start:admin"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "react-data-table-component": "^7.7.0"
+  }
+}

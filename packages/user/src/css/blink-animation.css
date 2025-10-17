@@ -1,0 +1,26 @@
+/* Blinking red and yellow animation */
+@keyframes blinkRedYellow {
+    0%, 50% {
+        color: #dc3545; /* Red */
+    }
+    51%, 100% {
+        color: #ffc107; /* Yellow */
+    }
+}
+
+.blink-red-yellow {
+    animation: blinkRedYellow 1.5s infinite;
+    font-weight: bold;
+}
+
+.blink-red-yellow:hover {
+    animation-play-state: paused;
+}
+
+/* Ensure the FontAwesome icon displays properly */
+.blink-red-yellow .svg-inline--fa {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    color: #000000 !important; /* Black color for the circle icon */
+}

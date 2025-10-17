@@ -1,0 +1,3 @@
+.fcc__unit_time--minute, .fcc__digit_block--hour, .fcc__digit_block--day{
+    display:none !important;
+}

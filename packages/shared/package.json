@@ -1,0 +1,49 @@
+{
+  "name": "@dxc247/shared",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./casino-games/*": "./casino-games/*",
+    "./components/*": "./components/*",
+    "./utils/*": "./utils/*",
+    "./store": "./store/index.js",
+    "./store/*": "./store/*",
+    "./hooks/*": "./hooks/*",
+    "./contexts/*": "./contexts/*"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^6.26.2"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@leenguyen/react-flip-clock-countdown": "^1.6.0",
+    "@popperjs/core": "^2.11.8",
+    "@reduxjs/toolkit": "^2.9.0",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
+    "buffer": "^6.0.3",
+    "cors": "^2.8.5",
+    "crypto-browserify": "^3.12.0",
+    "datatables.net-bs4": "^2.1.7",
+    "dompurify": "^3.1.7",
+    "express": "^4.21.0",
+    "jquery": "^3.7.1",
+    "react-bootstrap": "^2.10.5",
+    "react-data-table-component": "^7.7.0",
+    "react-device-detect": "^2.2.3",
+    "react-slick": "^0.30.2",
+    "react-toastify": "^11.0.5",
+    "redux-persist": "^6.0.0",
+    "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.8.0",
+    "web-vitals": "^2.1.4"
+  }
+}
+

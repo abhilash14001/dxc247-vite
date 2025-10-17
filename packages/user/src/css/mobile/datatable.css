@@ -1,0 +1,31 @@
+table.dataTable thead .sorting {
+    background-image: none;
+}
+.row.row5 {
+    margin-left: 0px;
+    margin-right: 5px;
+}
+.dataTables_wrapper .dataTables_filter {
+    margin-top: 0px;
+}
+#account_statement_list_wrapper  .col-md-4{width: 35%;float: left;}
+#account_statement_list_wrapper  .col-md-8{width: 65%;float: left;}
+#account_statement_list_wrapper  .col-md-5{width: 64%;float: left;}
+#account_statement_list_wrapper  .col-md-7{width: 35%;float: left;}
+.dataTables_info{font-size: 10px;margin-bottom: 20px;}
+.dataTables_wrapper .dataTables_paginate .paginate_button{padding: 0px 2px !important;}
+.Checklogin{display:none !important;}
+
+.loginCheckkar,
+.Checklogin{display:none !important;}
+label{
+    color: #333;
+}
+/*.ml-1{*/
+/*    margin-left: 5px;*/
+/*}*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    input[type="date"].form-control, input[type="time"].form-control, input[type="datetime-local"].form-control, input[type="month"].form-control {
+        line-height: 23px !important;
+    }
+}

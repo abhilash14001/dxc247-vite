@@ -1,0 +1,22 @@
+.casino-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.casino-list-item {
+    width: calc(14.28% - 10px);
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.casino-list-item {
+    width: calc(11% - 10px);
+}
+
+.casino-list-item .casino-list-item-banner {
+    padding-top: 100%;
+    background-size: cover;
+    background-position: center center;
+}

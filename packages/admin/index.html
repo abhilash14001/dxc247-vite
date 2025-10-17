@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>DXC247 Admin</title>
+    
+    <!-- Admin CSS Files - External URLs from admin.dxc247.com -->
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/bootstrap-datepicker.standalone.min.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/new/css/bootstrap-colorpicker.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/theme.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/all.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/style.css?v=0.0.1">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/css/backend.css">
+    <link rel="stylesheet" href="http://admin.dxc247.com/all/css/flipclock.css">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+      
+    
+    <script type="module" src="/src/index.js"></script>
+    <script>
+      console.log("🔍 Admin HTML loaded");
+      window.addEventListener('error', (e) => {
+        console.error('Global Error:', e.error);
+        document.getElementById('root').innerHTML = 
+          '<div style="padding:40px;color:red;"><h1>Error:</h1><pre>' + 
+          e.error + '</pre></div>';
+      });
+    </script>
+  </body>
+</html>
+

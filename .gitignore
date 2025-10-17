@@ -1,0 +1,111 @@
+# Dependencies
+node_modules
+packages/*/node_modules
+packages/admin/node_modules
+packages/user/node_modules
+packages/shared/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+/dist
+packages/*/build
+packages/*/dist
+packages/admin/build
+packages/admin/dist
+packages/user/build
+packages/user/dist
+packages/shared/build
+packages/shared/dist
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+packages/*/logs/
+packages/admin/logs/
+packages/user/logs/
+packages/shared/logs/
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+packages/*/tmp/
+packages/admin/tmp/
+packages/user/tmp/
+packages/shared/tmp/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE and Editor files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project specific
+# Keep shell scripts as they are useful for development
+# start-apps.sh
+# stop-apps.sh  
+# check-apps.sh
+
+# Documentation files (temporary project docs - these are now deleted)
+# MONOREPO_COMPLETE.md
+# COMPLETE_SUCCESS.md
+# SUCCESS_ZERO_ERRORS.md
+# ERROR_ANALYSIS.md
+# FINAL_STATUS.md
+# APPS_WORKING.md
+# MONOREPO_STATUS.md
+# IMPLEMENTATION_COMPLETE.md
+# IMPORT_PATHS_TO_FIX.md
+# ALL_IMPORTS_FIXED.md
+
+# Keep main README files
+# README.md
+# packages/*/README.md
+
+# Package-specific ignores
+packages/*/.env
+packages/*/.env.local
+packages/*/.env.development.local
+packages/*/.env.test.local
+packages/*/.env.production.local
+
+# Vite specific
+packages/*/.vite
+packages/admin/.vite
+packages/user/.vite
+packages/shared/.vite
+
+# Cache directories
+packages/*/.cache
+packages/admin/.cache
+packages/user/.cache
+packages/shared/.cache
+
+# Lock files (keep package-lock.json but ignore others)
+yarn.lock
+packages/*/yarn.lock

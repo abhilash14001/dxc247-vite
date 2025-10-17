@@ -1,0 +1,202 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+.fantasy-rules {
+    font-family: "Noto Sans";
+}
+
+.fantasy-rules h4,
+.fantasy-rules p,
+.fantasy-rules img {
+    margin: 5px 0;
+}
+
+.fantasy-rules .mb-2 {
+    margin-bottom: 20px;
+}
+
+.fantasy-rules img {
+    max-width: 100%;
+    width: auto;
+}
+
+.fantasy-rules .first-slide {
+    background: url("https://eu-static.ssgcontent.com/cache/b12/GameLauncher/Content/Help/Images/SpinX/help-first-pg-objects-mob.png");
+    width: auto;
+    height: auto;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+
+.fantasy-rules div.info-game {
+    width: auto !important;
+    margin: 80px auto 0 !important;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding-top: 20px;
+}
+
+.fantasy-rules div.info-row {
+    width: 33%;
+    height: 210px;
+    margin-bottom: 50px;
+}
+
+.fantasy-rules div.info-row:nth-child(4n),
+.fantasy-rules div.info-row:nth-child(5n),
+.fantasy-rules div.info-row:nth-child(6n) {
+    margin-bottom: 0;
+    height: 130px;
+}
+
+.fantasy-rules .info-number {
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    width: 105px;
+    margin: 0 auto;
+    font-size: 20px;
+    text-transform: uppercase;
+    line-height: 1.7;
+}
+
+.fantasy-rules .info-number-left p {
+    font-size: 18px !important;
+    font-family: intro !important;
+    color: #536cfb !important;
+    margin-left: -26px;
+}
+
+.fantasy-rules .info-number-left::after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: calc(100% - 17px);
+    width: 1px;
+    background: #536cfb !important;
+    left: 39px;
+    top: 9px;
+}
+
+.fantasy-rules .info-number-right {
+    text-align: left;
+    width: 40px !important;
+}
+
+.fantasy-rules .info-number-right p {
+    font-size: 18px !important;
+}
+
+@media only screen and (min-width: 320px) and (max-width: 1279px) {
+    .fantasy-rules {
+        font-size: 12px;
+    }
+}
+
+@media only screen and (min-width: 1280px) and (max-width: 1599px) {
+    .fantasy-rules {
+        font-size: 13px;
+    }
+}
+
+
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+.fantasy-rules {
+    font-family: "Noto Sans";
+}
+
+.fantasy-rules h4,
+.fantasy-rules p,
+.fantasy-rules img {
+    margin: 5px 0;
+}
+
+.fantasy-rules .mb-2 {
+    margin-bottom: 20px;
+}
+
+.fantasy-rules img {
+    max-width: 100%;
+    width: auto;
+}
+
+.fantasy-rules .first-slide {
+    background: url("https://eu-static.ssgcontent.com/cache/b12/GameLauncher/Content/Help/Images/SpinX/help-first-pg-objects-mob.png");
+    width: auto;
+    height: auto;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+
+.fantasy-rules div.info-game {
+    width: auto !important;
+    margin: 80px auto 0 !important;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding-top: 20px;
+}
+
+.fantasy-rules div.info-row {
+    width: 33%;
+    height: 210px;
+    margin-bottom: 50px;
+}
+
+.fantasy-rules div.info-row:nth-child(4n),
+.fantasy-rules div.info-row:nth-child(5n),
+.fantasy-rules div.info-row:nth-child(6n) {
+    margin-bottom: 0;
+    height: 130px;
+}
+
+.fantasy-rules .info-number {
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    width: 105px;
+    margin: 0 auto;
+    font-size: 20px;
+    text-transform: uppercase;
+    line-height: 1.7;
+}
+
+.fantasy-rules .info-number-left p {
+    font-size: 18px !important;
+    font-family: intro !important;
+    color: #536cfb !important;
+    margin-left: -26px;
+}
+
+.fantasy-rules .info-number-left::after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: calc(100% - 17px);
+    width: 1px;
+    background: #536cfb !important;
+    left: 39px;
+    top: 9px;
+}
+
+.fantasy-rules .info-number-right {
+    text-align: left;
+    width: 40px !important;
+}
+
+.fantasy-rules .info-number-right p {
+    font-size: 18px !important;
+}
+
+@media only screen and (min-width: 320px) and (max-width: 1279px) {
+    .fantasy-rules {
+        font-size: 12px;
+    }
+}
+
+@media only screen and (min-width: 1280px) and (max-width: 1599px) {
+    .fantasy-rules {
+        font-size: 13px;
+    }
+}
