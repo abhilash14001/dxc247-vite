@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminRouteGuard from "./components/AdminRouteGuard";
 import AdminLayout from "./layouts/AdminLayout";
+import CricketLayout from "./layouts/CricketLayout";
 
 // Lazy load pages
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
@@ -100,7 +101,9 @@ root.render(
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
-                      <Cricket />
+                      <CricketLayout>
+                        <Cricket />
+                      </CricketLayout>
                     </AdminLayout>
                   </AdminRouteGuard>
                 }
