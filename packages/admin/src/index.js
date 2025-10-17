@@ -103,7 +103,7 @@ root.render(
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
                       <CricketLayout>
-                        <Cricket />
+                        <Cricket isAdmin={true} />
                       </CricketLayout>
                     </AdminLayout>
                   </AdminRouteGuard>
@@ -116,7 +116,7 @@ root.render(
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
-                      <Tennis />
+                      <Tennis isAdmin={true} />
                     </AdminLayout>
                   </AdminRouteGuard>
                 }
@@ -128,7 +128,7 @@ root.render(
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
-                      <Soccer />
+                      <Soccer isAdmin={true} />
                     </AdminLayout>
                   </AdminRouteGuard>
                 }

@@ -13,7 +13,7 @@ const CommonLayout = lazy(() => import("../layouts/CommonLayout"));
 const MatchOdds = lazy(() => import("./MatchOdds"));
 const Bookmaker = lazy(() => import("./Bookmaker"));
 
-const Tennis = () => {
+const Tennis = ({ isAdmin = false }) => {
     const nav = useNavigate();
 
     const defaultTeamName = useRef('')
@@ -262,6 +262,7 @@ const Tennis = () => {
         <Suspense fallback={<Loader />}>
             <CommonLayout 
                 showSportsRightSidebar={true}
+                isAdminRoute={isAdmin}
                 sportsProps={{
                     gameId: gameId,
                     getBetListData: localGetBetListData,

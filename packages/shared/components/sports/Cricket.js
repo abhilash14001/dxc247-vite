@@ -31,7 +31,7 @@ const Khado = lazy(() => import("./cricket/Khado"));
 const BallByBall = lazy(() => import("./cricket/BallByBall"));
 const CricketScoreboard = lazy(() => import("../CricketScoreboard"));
 
-const Cricket = () => {
+const Cricket = ({ isAdmin = false }) => {
   const [gameId, setGameId] = useState("");
 
   const nav = useNavigate();
@@ -477,6 +477,7 @@ const Cricket = () => {
   return (
     <Suspense fallback={<Loader />}>
       <CommonLayout showSportsRightSidebar={true}
+      isAdminRoute={isAdmin}
       
         sportsProps={{
           gameId: gameId,

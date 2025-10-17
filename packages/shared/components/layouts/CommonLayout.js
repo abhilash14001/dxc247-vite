@@ -8,6 +8,7 @@ import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 
 const CommonLayout = ({
   children,
+  isAdminRoute = false,
   props,
   showSportsRightSidebar = false,
   sportsProps = {},
@@ -15,7 +16,7 @@ const CommonLayout = ({
   const location = useLocation();
   
   // Check if current route is admin route
-  const isAdminRoute = location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
+  
 
   // CSS loading function with useCallback
   const loadAdminCSS = useCallback(() => {
