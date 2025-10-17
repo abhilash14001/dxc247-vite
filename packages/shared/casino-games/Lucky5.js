@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState, Fragment } from "react"
 
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
-import axiosFetch, {
+import  {
   cardMap,
   changeCardIndex,
   getExByColor,

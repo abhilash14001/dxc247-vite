@@ -17,7 +17,15 @@ const CricketLayout = ({ children }) => {
     // Cleanup function to remove the CSS when component unmounts
     return () => {
       if (linkRef.current) {
-        document.head.removeChild(linkRef.current);
+        // Check if the element still exists in the DOM
+        const existingLink = document.getElementById('cricket-layout-css');
+        if (existingLink && existingLink.parentNode) {
+          try {
+            existingLink.parentNode.removeChild(existingLink);
+          } catch (error) {
+            console.warn('CSS link removal failed:', error);
+          }
+        }
         linkRef.current = null;
       }
     };
