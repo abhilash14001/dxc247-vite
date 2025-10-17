@@ -80,8 +80,9 @@ import Joker1 from "../../casino-games/Joker1";
 import Roulette12 from "../../casino-games/Roulette12";
 import Lottcard from "../../casino-games/Lottcard";
 import Sicbo from "../../casino-games/Sicbo";
+import { AdminProvider } from "../../contexts/AdminContext";
 
-const CasinoMain = () => {
+const CasinoMain = ({ isAdmin = false }) => {
   const { match_id } = useParams(); // Get gamename from the URL
 
   // Function to render different layouts based on the game name
@@ -262,7 +263,11 @@ const CasinoMain = () => {
     }
   };
 
-  return <div className="wrapper">{renderLayout(match_id)}</div>;
+  return (
+    <AdminProvider isAdmin={isAdmin}>
+      <div className="wrapper">{renderLayout(match_id)}</div>
+    </AdminProvider>
+  );
 };
 
 export default CasinoMain;

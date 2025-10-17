@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AdminRouteGuard from "./components/AdminRouteGuard";
 import AdminLayout from "./layouts/AdminLayout";
 import CricketLayout from "./layouts/CricketLayout";
+import CasinoMain from "@dxc247/shared/components/casino/CasinoMain";
 
 // Lazy load pages
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
@@ -65,7 +66,7 @@ const ClientProfitLoss = lazy(() => import("./pages/ClientProfitLoss"));
 const SportsProfitLoss = lazy(() => import("./pages/SportsProfitLoss"));
 const ProfitLossReports = lazy(() => import("./pages/ProfitLossReports"));
 const MatchPL = lazy(() => import("./pages/MatchPL"));
-const CasinoMain = lazy(() => import("@dxc247/shared/components/casino/CasinoMain"));
+
 const Cricket = lazy(() => import("@dxc247/shared/components/sports/Cricket"));
 const Tennis = lazy(() => import("@dxc247/shared/components/sports/Tennis"));
 const Soccer = lazy(() => import("@dxc247/shared/components/sports/Soccer"));
@@ -87,11 +88,11 @@ root.render(
               <Route
                 path="/admin/casino/:match_id"
                 element={
-                  
+                  <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
-                      <CasinoMain />
+                      <CasinoMain isAdmin={true} />
                     </AdminLayout>
-                  
+                  </AdminRouteGuard>
                 }
               />
               

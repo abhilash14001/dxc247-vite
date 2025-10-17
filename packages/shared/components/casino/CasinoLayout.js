@@ -16,10 +16,10 @@ import CricketScoreboard from "../CricketScoreboard";
 import MobileMatchedBetTable from "../MobileMatchedBetTable";
 
 import { SportsContext } from "../../contexts/SportsContext";
+import { useAdmin } from "../../contexts/AdminContext";
 
 const CasinoLayout = ({
   teamname,
-  isAdmin = false, // New prop to determine if this is admin context
   hideLoading,
   isBack,
   handleStakeChange,
@@ -51,9 +51,9 @@ const CasinoLayout = ({
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const { isAdmin } = useAdmin();
   
-  // Use isAdmin prop instead of checking pathname
-  // Keep legacy check for backward compatibility until all casino games are updated
+  // Use isAdmin from context instead of checking pathname
   const isAdminRoute = isAdmin || location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
   const {
     casino_socket,
