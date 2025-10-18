@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
-import CommonLayout from "../layouts/CommonLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 import $ from 'jquery';
 import 'datatables.net-bs4';
 import '../css/mobile/datatable.css';

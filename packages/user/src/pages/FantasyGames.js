@@ -1,4 +1,4 @@
-import CommonLayout from "../layouts/CommonLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 import {useState} from "react";
 import "../css/spinx.css"
 

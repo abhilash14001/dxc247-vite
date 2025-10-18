@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 
-import CommonLayout from "../layouts/CommonLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 
 import { getCurrentToken } from '@dxc247/shared/utils/Constants';
 import $ from 'jquery';

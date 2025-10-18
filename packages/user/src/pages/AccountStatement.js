@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
-import Header from "../layouts/Header";
+import Header from "@dxc247/shared/components/layouts/Header";
 import $ from 'jquery';
 import 'datatables.net-bs4';
 import '../css/mobile/datatable.css';
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
-import CommonLayout from "../layouts/CommonLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 import axios from 'axios';
 import axiosFetch, { getCurrentToken } from '@dxc247/shared/utils/Constants';
 import {Modal, ModalDialog} from "react-bootstrap";

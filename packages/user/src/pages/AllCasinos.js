@@ -1,9 +1,9 @@
-import Header from "../layouts/Header";
+import Header from "@dxc247/shared/components/layouts/Header";
 import {Link, useParams} from "react-router-dom";
 import axiosFetch from "@dxc247/shared/utils/Constants";
 import React, {useEffect, useRef, useState} from "react";
-import SidebarLayout from "../layouts/SidebarLayout";
-import CommonLayout from "../layouts/CommonLayout";
+import SidebarLayout from "@dxc247/shared/components/layouts/SidebarLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 
 function AllCasinos() {
 

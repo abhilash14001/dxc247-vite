@@ -10,9 +10,9 @@ import { BackAndLayForSports } from "@dxc247/shared/utils/sportsUtils";
 import Loader from "@dxc247/shared/components/Loader";
 
 // Lazy load components for better performance
-const Header = lazy(() => import("../layouts/Header"));
-const SidebarLayout = lazy(() => import("../layouts/SidebarLayout"));
-const Footer = lazy(() => import("../layouts/Footer"));
+const Header = lazy(() => import("@dxc247/shared/components/layouts/Header"));
+const SidebarLayout = lazy(() => import("@dxc247/shared/components/layouts/SidebarLayout"));
+const Footer = lazy(() => import("@dxc247/shared/components/layouts/Footer"));
 const SportsDataTable = lazy(() => import("@dxc247/shared/components/SportsDataTable"));
 const NavTabs = lazy(() => import("@dxc247/shared/components/NavTabs"));
 

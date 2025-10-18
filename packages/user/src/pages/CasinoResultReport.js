@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {gameNames, getCurrentToken} from "@dxc247/shared/utils/Constants";
-import CommonLayout from "../layouts/CommonLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 import $ from 'jquery'
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
 const CasinoResultReport = () => {

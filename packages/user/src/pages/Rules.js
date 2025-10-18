@@ -1,4 +1,4 @@
-import Header from "../layouts/Header";
+import Header from "@dxc247/shared/components/layouts/Header";
 import {useEffect, useState} from "react";
 
 const Rules = () => {

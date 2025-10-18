@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useRef} from 'react';
 import $ from 'jquery';
-import Header from "../layouts/Header";
+import Header from "@dxc247/shared/components/layouts/Header";
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
 import {gameNames, getCurrentToken} from "@dxc247/shared/utils/Constants";
-import CommonLayout from "../layouts/CommonLayout";
+import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 
 
 const ProfileLossReport = () => {
