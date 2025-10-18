@@ -57,6 +57,7 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
                 let response = await axiosFetch('common_detail_data', 'get');
                 
                 // Store in Redux
+                console.log('data is ', response.data);
                 dispatch(setCommonData(response.data));
                 dispatch(setBannerDetails(response.data.banner_data));
 

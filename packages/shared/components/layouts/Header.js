@@ -472,7 +472,7 @@ function Header() {
           </div>
           <div className="news d-none d-xl-block">
             <div className="scrolling-text">
-            <marquee >💥 Luck's on fire—go scratch higher!🎉Wickets fall, jackpots call – Asia Cup magic beats them all! 🌟🏏</marquee>
+            <marquee>{liveModeData?.site_front_user_announcement || "💥 Luck's on fire—go scratch higher!🎉Wickets fall, jackpots call – Asia Cup magic beats them all! 🌟🏏"}</marquee>
             
             </div>
           </div>
