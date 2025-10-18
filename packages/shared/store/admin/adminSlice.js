@@ -39,7 +39,7 @@ const initialState = {
   
   // Match data for fancy history
   selectedMatchData: null,
-  
+  isAdmin: false,
 };
 
 const adminSlice = createSlice({
@@ -185,6 +185,9 @@ const adminSlice = createSlice({
     clearSelectedMatchData: (state) => {
       state.selectedMatchData = null;
     },
+    setIsAdmin: (state, action) => {
+      state.isAdmin = action.payload;
+    },
     resetAdminState: () => initialState,
   },
 });
@@ -206,6 +209,7 @@ export const {
   setTransactionPasswordChanged,
   setSelectedMatchData,
   clearSelectedMatchData,
+  setIsAdmin,
   resetAdminState,
   loginSuccess,
   logout

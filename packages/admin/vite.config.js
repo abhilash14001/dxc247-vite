@@ -16,7 +16,7 @@ export default defineConfig({
     port: 3002,
     strictPort: false,
     open: false,
-    allowedHosts: ['dxc247.com'],
+    allowedHosts: ['admin1.dxc247.com'],
     hmr: {
       overlay: true,
     },

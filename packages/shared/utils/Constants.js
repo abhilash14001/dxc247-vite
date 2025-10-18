@@ -5,12 +5,14 @@ import { setIsSubmitDisabled } from "../store/slices/casinoSlice";
 import { store } from "../store";
 import { toast } from "react-toastify";
 import { useToastConfirm } from "../components/ui/ToastConfirm";
+import { useSelector } from "react-redux";
 let globalTimer = null;
 
 axios.defaults.withCredentials = true;
-export const ADMIN_BASE_PATH = "/admin";
+export const ADMIN_BASE_PATH = "";
 export const isAdminRoute = () => {
-  return window.location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
+  
+  return store.getState().admin?.isAdmin;
 };
 
 function getTeamMarketOdds(currentMarketData, teamNames, betType) {

@@ -1,6 +1,7 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { ReduxProvider } from "@dxc247/shared/store/Provider";
 import { SportsProvider } from "@dxc247/shared/components/providers/SportsProvider";
 import { AuthProvider } from "@dxc247/shared/components/providers/AuthProvider";
@@ -13,6 +14,8 @@ import AdminRouteGuard from "./components/AdminRouteGuard";
 import AdminLayout from "./layouts/AdminLayout";
 import CricketLayout from "./layouts/CricketLayout";
 import CasinoMain from "@dxc247/shared/components/casino/CasinoMain";
+
+import { setIsAdmin } from "@dxc247/shared/store/admin/adminSlice";
 
 // Lazy load pages
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
@@ -71,6 +74,19 @@ const Cricket = lazy(() => import("@dxc247/shared/components/sports/Cricket"));
 const Tennis = lazy(() => import("@dxc247/shared/components/sports/Tennis"));
 const Soccer = lazy(() => import("@dxc247/shared/components/sports/Soccer"));
 
+// Admin State Manager Component
+const AdminStateManager = ({ children }) => {
+  const dispatch = useDispatch();
+  
+
+  useEffect(() => {
+    
+    dispatch(setIsAdmin(true));
+  }, []);
+
+  return children;
+};
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
@@ -79,14 +95,15 @@ root.render(
       <CommonProvider>
         <SportsProvider>
           <Router>
-            <AuthProvider>
-              <CasinoProvider isAdmin={true}>
-                <StakeProvider>
-                <Suspense fallback={null}>
+            <AdminStateManager>
+              <AuthProvider>
+                <CasinoProvider isAdmin={true}>
+                  <StakeProvider>
+                  <Suspense fallback={null}>
             <Routes>
               {/* Casino Route - Admin Route Condition */}
               <Route
-                path="/admin/casino/:match_id"
+                path="/casino/:match_id"
                 element={
                   <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
@@ -98,7 +115,7 @@ root.render(
               
               {/* Cricket Route - Admin Route Condition */}
               <Route
-                path="/admin/cricket/:match_id"
+                path="/cricket/:match_id"
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
@@ -112,7 +129,7 @@ root.render(
               
               {/* Tennis Route - Admin Route Condition */}
               <Route
-                path="/admin/tennis/:match_id"
+                path="/tennis/:match_id"
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
@@ -124,7 +141,7 @@ root.render(
               
               {/* Soccer Route - Admin Route Condition */}
               <Route
-                path="/admin/soccer/:match_id"
+                path="/soccer/:match_id"
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
@@ -136,12 +153,13 @@ root.render(
               
               {/* Login Routes */}
               <Route path="/login" element={<AdminLogin />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
+              
               <Route path="/unauthorized" element={<AdminUnauthorized />} />
               
               {/* Dashboard Routes */}
+         
               <Route 
-                path="/admin" 
+                path="/" 
                 element={
                   <AdminRouteGuard requiredPermission="market-analysis">
                     <AdminLayout>
@@ -151,17 +169,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/" 
-                element={
-                  <AdminRouteGuard requiredPermission="market-analysis">
-                    <AdminLayout>
-                      <AdminDashboard />
-                    </AdminLayout>
-                  </AdminRouteGuard>
-                } 
-              />
-              <Route 
-                path="/admin/dashboard" 
+                path="/dashboard" 
                 element={
                   <AdminRouteGuard requiredPermission="market-analysis">
                     <AdminLayout>
@@ -173,7 +181,7 @@ root.render(
 
               {/* User Management Routes */}
               <Route 
-                path="/admin/users" 
+                path="/users" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -183,7 +191,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/users/:id" 
+                path="/users/:id" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -193,7 +201,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/client/create" 
+                path="/client/create" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -203,7 +211,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/client/edit/:userId" 
+                path="/client/edit/:userId" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -213,7 +221,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/client/deleted" 
+                path="/client/deleted" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -225,7 +233,7 @@ root.render(
 
               {/* Reports Routes */}
               <Route 
-                path="/admin/reports/*" 
+                path="/reports/*" 
                 element={
                   <AdminRouteGuard requiredPermission="reports">
                     <AdminLayout>
@@ -235,7 +243,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/current-bet" 
+                path="/reports/current-bet" 
                 element={
                   <AdminRouteGuard requiredPermission="current-bet">
                     <AdminLayout>
@@ -245,7 +253,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/bet-history" 
+                path="/reports/bet-history" 
                 element={
                   <AdminRouteGuard requiredPermission="bet-history">
                     <AdminLayout>
@@ -255,7 +263,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/deleted-bet-history" 
+                path="/reports/deleted-bet-history" 
                 element={
                   <AdminRouteGuard requiredPermission="deleted-bet-history">
                     <AdminLayout>
@@ -265,7 +273,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/line-market-bet-history" 
+                path="/reports/line-market-bet-history" 
                 element={
                   <AdminRouteGuard requiredPermission="line-market-bet-history">
                     <AdminLayout>
@@ -275,7 +283,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/casino-result" 
+                path="/reports/casino-result" 
                 element={
                   <AdminRouteGuard requiredPermission="casino-result">
                     <AdminLayout>
@@ -285,7 +293,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/client-profit-loss" 
+                path="/reports/client-profit-loss" 
                 element={
                   <AdminRouteGuard requiredPermission="client-p-l">
                     <AdminLayout>
@@ -295,7 +303,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/sport-profit-loss" 
+                path="/reports/sport-profit-loss" 
                 element={
                   <AdminRouteGuard requiredPermission="sport-p-l">
                     <AdminLayout>
@@ -305,7 +313,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/profit-loss" 
+                path="/reports/profit-loss" 
                 element={
                   <AdminRouteGuard requiredPermission="profit-loss">
                     <AdminLayout>
@@ -315,7 +323,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/reports/match-pl" 
+                path="/reports/match-pl" 
                 element={
                   <AdminRouteGuard requiredPermission="match-pl">
                     <AdminLayout>
@@ -327,7 +335,7 @@ root.render(
 
               {/* Settings Routes */}
               <Route 
-                path="/admin/settings/*" 
+                path="/settings/*" 
                 element={
                   <AdminRouteGuard requiredPermission="settings">
                     <AdminLayout>
@@ -337,7 +345,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/sports-market" 
+                path="/settings/sports-market" 
                 element={
                   <AdminRouteGuard requiredPermission="sports-market">
                     <AdminLayout>
@@ -347,7 +355,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/casino-market" 
+                path="/settings/casino-market" 
                 element={
                   <AdminRouteGuard requiredPermission="setting-casino-market">
                     <AdminLayout>
@@ -357,7 +365,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/match-history" 
+                path="/settings/match-history" 
                 element={
                   <AdminRouteGuard requiredPermission="match-history">
                     <AdminLayout>
@@ -367,7 +375,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/manage-fancy" 
+                path="/settings/manage-fancy" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-fancy">
                     <AdminLayout>
@@ -377,7 +385,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/manage-fancy-single/:matchId" 
+                path="/settings/manage-fancy-single/:matchId" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-fancy">
                     <AdminLayout>
@@ -387,7 +395,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/fancy-history" 
+                path="/settings/fancy-history" 
                 element={
                   <AdminRouteGuard requiredPermission="fancy-history">
                     <AdminLayout>
@@ -397,7 +405,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/manage-fancy-history-single/:matchId" 
+                path="/settings/manage-fancy-history-single/:matchId" 
                 element={
                   <AdminRouteGuard requiredPermission="fancy-history">
                     <AdminLayout>
@@ -407,7 +415,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/site-configuration" 
+                path="/settings/site-configuration" 
                 element={
                   <AdminRouteGuard requiredPermission="site-configuration">
                     <AdminLayout>
@@ -417,7 +425,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/multi-login" 
+                path="/settings/multi-login" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-privilege">
                     <AdminLayout>
@@ -427,7 +435,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/multi-login/create" 
+                path="/settings/multi-login/create" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-privilege">
                     <AdminLayout>
@@ -437,7 +445,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/multi-login/:id/edit" 
+                path="/settings/multi-login/:id/edit" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-privilege">
                     <AdminLayout>
@@ -447,7 +455,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/manage-prefix" 
+                path="/settings/manage-prefix" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-prefix">
                     <AdminLayout>
@@ -457,7 +465,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/manage-prefix/:id/edit" 
+                path="/settings/manage-prefix/:id/edit" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-prefix">
                     <AdminLayout>
@@ -467,7 +475,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/manage-prefix/create" 
+                path="/settings/manage-prefix/create" 
                 element={
                   <AdminRouteGuard requiredPermission="manage-prefix">
                     <AdminLayout>
@@ -479,7 +487,7 @@ root.render(
               
               {/* Sports List Route */}
               <Route 
-                path="/admin/sports/list/:sportType" 
+                path="/sports/list/:sportType" 
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
@@ -491,7 +499,7 @@ root.render(
               
               {/* User Detail Route */}
               <Route 
-                path="/admin/users/:id" 
+                path="/users/:id" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -503,7 +511,7 @@ root.render(
               
               {/* Bet Detail Route */}
               <Route 
-                path="/admin/bets/:id" 
+                path="/bets/:id" 
                 element={
                   <AdminRouteGuard requiredPermission="bets">
                     <AdminLayout>
@@ -515,7 +523,7 @@ root.render(
               
               {/* Casino Edit Route */}
               <Route 
-                path="/admin/casinos/edit/:id" 
+                path="/casinos/edit/:id" 
                 element={
                   <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
@@ -527,7 +535,7 @@ root.render(
               
               {/* User Edit Route */}
               <Route 
-                path="/admin/client/edit/:userId" 
+                path="/client/edit/:userId" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -539,7 +547,7 @@ root.render(
               
               {/* User Create Route */}
               <Route 
-                path="/admin/client/create" 
+                path="/client/create" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -551,7 +559,7 @@ root.render(
               
               {/* User Deleted Route */}
               <Route 
-                path="/admin/client/deleted" 
+                path="/client/deleted" 
                 element={
                   <AdminRouteGuard requiredPermission="client-list">
                     <AdminLayout>
@@ -561,7 +569,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/block-market" 
+                path="/settings/block-market" 
                 element={
                   <AdminRouteGuard requiredPermission="block-market">
                     <AdminLayout>
@@ -571,7 +579,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/client-track" 
+                path="/settings/client-track" 
                 element={
                   <AdminRouteGuard requiredPermission="client-tack">
                     <AdminLayout>
@@ -581,7 +589,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/banner-manager" 
+                path="/settings/banner-manager" 
                 element={
                   <AdminRouteGuard requiredPermission="banner-manager">
                     <AdminLayout>
@@ -591,7 +599,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/banner-manager/create" 
+                path="/settings/banner-manager/create" 
                 element={
                   <AdminRouteGuard requiredPermission="banner-manager">
                     <AdminLayout>
@@ -601,7 +609,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/banner-manager/:id/edit" 
+                path="/settings/banner-manager/:id/edit" 
                 element={
                   <AdminRouteGuard requiredPermission="banner-manager">
                     <AdminLayout>
@@ -611,7 +619,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/block-ip" 
+                path="/settings/block-ip" 
                 element={
                   <AdminRouteGuard requiredPermission="block-ip">
                     <AdminLayout>
@@ -621,7 +629,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/block-ip/create" 
+                path="/settings/block-ip/create" 
                 element={
                   <AdminRouteGuard requiredPermission="block-ip">
                     <AdminLayout>
@@ -631,7 +639,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/settings/block-ip/:id/edit" 
+                path="/settings/block-ip/:id/edit" 
                 element={
                   <AdminRouteGuard requiredPermission="block-ip">
                     <AdminLayout>
@@ -643,7 +651,7 @@ root.render(
 
               {/* Sports Routes */}
               <Route 
-                path="/admin/sports" 
+                path="/sports" 
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
@@ -653,7 +661,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/sports/list/:sport" 
+                path="/sports/list/:sport" 
                 element={
                   <AdminRouteGuard requiredPermission="sports">
                     <AdminLayout>
@@ -665,7 +673,7 @@ root.render(
 
               {/* Casino Routes */}
               <Route 
-                path="/admin/casinos" 
+                path="/casinos" 
                 element={
                   <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
@@ -675,7 +683,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/casino/create" 
+                path="/casino/create" 
                 element={
                   <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
@@ -685,7 +693,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/casinos/create" 
+                path="/casinos/create" 
                 element={
                   <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
@@ -695,7 +703,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/casino/edit/:casinoId" 
+                path="/casino/edit/:casinoId" 
                 element={
                   <AdminRouteGuard requiredPermission="casino">
                     <AdminLayout>
@@ -707,7 +715,7 @@ root.render(
 
               {/* Transactions Routes */}
               <Route 
-                path="/admin/transactions" 
+                path="/transactions" 
                 element={
                   <AdminRouteGuard requiredPermission="transactions">
                     <AdminLayout>
@@ -719,7 +727,7 @@ root.render(
 
               {/* Profile Routes */}
               <Route 
-                path="/admin/profile" 
+                path="/profile" 
                 element={
                   <AdminRouteGuard requiredPermission="profile">
                     <AdminLayout>
@@ -729,7 +737,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/change-password" 
+                path="/change-password" 
                 element={
                   <AdminRouteGuard requiredPermission="change-password">
                     <AdminLayout>
@@ -739,7 +747,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/transaction-password" 
+                path="/transaction-password" 
                 element={
                   <AdminRouteGuard requiredPermission="transaction-password">
                     <AdminLayout>
@@ -749,7 +757,7 @@ root.render(
                 } 
               />
               <Route 
-                path="/admin/transaction-password-success" 
+                path="/transaction-password-success" 
                 element={
                   <AdminRouteGuard requiredPermission="transaction-password">
                     <AdminLayout>
@@ -761,7 +769,7 @@ root.render(
 
               {/* Configuration Routes */}
               <Route 
-                path="/admin/configuration" 
+                path="/configuration" 
                 element={
                   <AdminRouteGuard requiredPermission="configuration">
                     <AdminLayout>
@@ -773,7 +781,7 @@ root.render(
 
               {/* Notifications Routes */}
               <Route 
-                path="/admin/notifications" 
+                path="/notifications" 
                 element={
                   <AdminRouteGuard requiredPermission="notifications">
                     <AdminLayout>
@@ -785,7 +793,7 @@ root.render(
 
               {/* Logs Routes */}
               <Route 
-                path="/admin/logs" 
+                path="/logs" 
                 element={
                   <AdminRouteGuard requiredPermission="logs">
                     <AdminLayout>
@@ -797,7 +805,7 @@ root.render(
 
               {/* Fallback Route */}
               <Route 
-                path="/admin/*" 
+                path="/*" 
                 element={
                   <AdminRouteGuard requiredPermission="market-analysis">
                     <AdminLayout>
@@ -808,11 +816,12 @@ root.render(
               />
               <Route path="/*" element={<AdminLogin />} />
             </Routes>
-                </Suspense>
-              </StakeProvider>
-            </CasinoProvider>
-          </AuthProvider>
-        </Router>
+                  </Suspense>
+                  </StakeProvider>
+                </CasinoProvider>
+              </AuthProvider>
+            </AdminStateManager>
+          </Router>
         <ToastContainer
           position="top-right"
           autoClose={5000}
