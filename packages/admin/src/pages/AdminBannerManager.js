@@ -223,7 +223,7 @@ const AdminBannerManager = () => {
                 </label>
               </div>
               <Link
-                to={`${ADMIN_BASE_PATH}/settings/banner-manager/create`}
+                to={`/settings/banner-manager/create`}
                 className="btn btn-sm btn-primary"
               >
                 <FontAwesomeIcon icon={faPlus} className="me-1" />
@@ -304,7 +304,7 @@ const AdminBannerManager = () => {
                         <td>
                           <div className="btn-group">
                             <Link
-                              to={`${ADMIN_BASE_PATH}/settings/banner-manager/${banner.id}/edit`}
+                              to={`/settings/banner-manager/${banner.id}/edit`}
                               className="btn btn-sm btn-outline-primary"
                               title="Edit"
                             >

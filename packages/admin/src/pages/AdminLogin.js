@@ -274,7 +274,7 @@ function AdminLogin() {
                         <button
                           type="button"
                           onClick={handleSubmit}
-                          className="btn btn-primary btn-block"
+                          className="btn login-button-default btn-primary btn-block"
                           disabled={loading}
                         >
                           {loading ? (

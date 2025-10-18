@@ -47,7 +47,11 @@ const ConfirmModal = ({
         onClick={handleClose}
       >
         <div 
-          className="modal-dialog" 
+          className="modal-dialog modal-dialog-centered modal-sm" 
+          style={{
+            margin : "0 auto"
+            
+          }}
           role="document"
           onClick={(e) => e.stopPropagation()}
         >

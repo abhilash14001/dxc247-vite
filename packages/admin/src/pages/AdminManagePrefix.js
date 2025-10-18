@@ -105,7 +105,7 @@ const AdminManagePrefix = () => {
             <h2 className="d-inline-block">
               PreFix Domain Listing
               <span className="detailinfo pull-right">
-                <Link to={`${ADMIN_BASE_PATH}/settings/manage-prefix/create`} className="btn btn-xs btn-primary pull-right">
+                <Link to={`/settings/manage-prefix/create`} className="btn btn-xs btn-primary pull-right">
                   <FontAwesomeIcon icon={faPlus} className="me-1" />
                   Add New
                 </Link>
@@ -250,7 +250,7 @@ const AdminManagePrefix = () => {
                           </td>
                           <td>
                             <Link 
-                              to={`${ADMIN_BASE_PATH}/settings/manage-prefix/${prefix.id}/edit`}
+                              to={`/settings/manage-prefix/${prefix.id}/edit`}
                               className="btn btn-info btn-sm me-1"
                             >
                               <FontAwesomeIcon icon={faEdit} />

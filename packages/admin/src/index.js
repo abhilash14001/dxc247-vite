@@ -742,9 +742,9 @@ root.render(
                 path="/change-password" 
                 element={
                   <AdminRouteGuard requiredPermission="change-password">
-                    <AdminLayout>
+                    
                       <AdminChangePassword />
-                    </AdminLayout>
+                    
                   </AdminRouteGuard>
                 } 
               />
@@ -752,9 +752,9 @@ root.render(
                 path="/transaction-password" 
                 element={
                   <AdminRouteGuard requiredPermission="transaction-password">
-                    <AdminLayout>
+                    
                       <AdminTransactionPassword />
-                    </AdminLayout>
+                    
                   </AdminRouteGuard>
                 } 
               />

@@ -156,7 +156,7 @@ const AdminBlockIp = () => {
               <div className="card-body">
                 <div className="pull-right">
                   <Link
-                    to={`${ADMIN_BASE_PATH}/settings/block-ip/create`}
+                    to={`/settings/block-ip/create`}
                     className="btn-primary btn btn-sm"
                   >
                     <FontAwesomeIcon icon={faPlus} className="text-white" />
@@ -247,7 +247,7 @@ const AdminBlockIp = () => {
                               </td>
                               <td>
                                 <Link
-                                  to={`${ADMIN_BASE_PATH}/settings/block-ip/${blockedIp.id}/edit`}
+                                  to={`/settings/block-ip/${blockedIp.id}/edit`}
                                   className="btn btn-primary btn-sm"
                                   title="Edit"
                                 >

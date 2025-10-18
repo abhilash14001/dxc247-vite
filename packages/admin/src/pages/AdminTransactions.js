@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminApiMethods } from './adminApi';
 import DataTable from 'react-data-table-component';
-import AdminLayout from './AdminLayout';
+import AdminLayout from '../layouts/AdminLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faSearch, 

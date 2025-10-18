@@ -116,6 +116,7 @@
     width: 350px;
     max-width: 90%;
     margin: 15% auto;
+    margin-bottom:250px;
 }
 
 .log-logo {
@@ -267,3 +268,22 @@ ul { margin-bottom: 0; padding: 0; }
 li { list-style: none; }
 p { margin-bottom: 0; }
 
+
+.login-button-default {
+    background-color: var(--theme1-bg);
+    color: var(--primary-color);
+    border: 0;
+    padding: 8px 10px;
+    border-radius: 4px;
+    
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+}
+
+
+.login-button-default:hover {
+    background-color: var(--theme1-bg);
+    color: var(--primary-color);
+    
+}

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { adminApi } from './adminApi';
 import Notify from '@dxc247/shared/utils/Notify';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 
 const AdminCreateAccount = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // Personal Details
     name: '',
@@ -174,6 +176,9 @@ const AdminCreateAccount = () => {
           credit_reference: '',
           master_password: ''
         }));
+        
+        // Navigate to users page on success
+        navigate('/users');
       } else {
         // Handle validation errors
         if (response && response.errors) {
@@ -192,7 +197,56 @@ const AdminCreateAccount = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      Notify('An error occurred while creating the account', null, null, 'danger');
+      
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with error status
+        const status = error.response.status;
+        const errorData = error.response.data;
+        
+        if (status === 400) {
+          // Bad Request - validation errors
+          if (errorData && errorData.errors) {
+            setErrors(errorData.errors);
+            Notify('Please fix the validation errors below', null, null, 'danger');
+          } else if (errorData && errorData.message) {
+            setErrors({});
+            Notify(errorData.message, null, null, 'danger');
+          } else {
+            Notify('Invalid data provided. Please check your input.', null, null, 'danger');
+          }
+        } else if (status === 422) {
+          // Unprocessable Entity - validation errors
+          if (errorData && errorData.errors) {
+            setErrors(errorData.errors);
+            Notify('Please fix the validation errors below', null, null, 'danger');
+          } else if (errorData && errorData.message) {
+            setErrors({});
+            Notify(errorData.message, null, null, 'danger');
+          } else {
+            Notify('Validation failed. Please check your input.', null, null, 'danger');
+          }
+        } else if (status === 500) {
+          // Internal Server Error
+          Notify('Server error occurred. Please try again later.', null, null, 'danger');
+        } else if (status === 401) {
+          // Unauthorized
+          Notify('You are not authorized to perform this action.', null, null, 'danger');
+        } else if (status === 403) {
+          // Forbidden
+          Notify('Access denied. You do not have permission to create accounts.', null, null, 'danger');
+        } else {
+          // Other server errors
+          const errorMessage = errorData?.message || `Server error (${status}). Please try again.`;
+          Notify(errorMessage, null, null, 'danger');
+        }
+      } else if (error.request) {
+        // Network error
+        Notify('Network error. Please check your connection and try again.', null, null, 'danger');
+      } else {
+        // Other errors
+        Notify('An unexpected error occurred. Please try again.', null, null, 'danger');
+      }
     } finally {
       setLoading(false);
     }

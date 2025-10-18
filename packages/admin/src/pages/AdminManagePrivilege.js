@@ -128,7 +128,7 @@ const AdminManagePrivilege = () => {
                 Privileges Users Listing
                 <span className="detailinfo pull-right">
                   <Link
-                    to={`${ADMIN_BASE_PATH}/settings/multi-login/create`}
+                    to={`/settings/multi-login/create`}
                     className="btn btn-xs btn-primary"
                   >
                     Add New
@@ -193,7 +193,7 @@ const AdminManagePrivilege = () => {
                           <td>{privilege.username}</td>
                           <td>
                             <Link
-                              to={`${ADMIN_BASE_PATH}/settings/multi-login/${privilege.id}/edit`}
+                              to={`/settings/multi-login/${privilege.id}/edit`}
                               className="btn btn-info btn-xs"
                             >
                               <i className="fa fa-edit"></i>

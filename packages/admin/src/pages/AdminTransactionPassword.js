@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTransactionPasswordChanged } from '@dxc247/shared/store/admin/adminSlice';
 import { adminApi } from './adminApi';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
-import './AdminLoginStyles.css';
 
 const AdminTransactionPassword = () => {
   const navigate = useNavigate();
@@ -13,9 +12,16 @@ const AdminTransactionPassword = () => {
   const [loading, setLoading] = useState(false);
   const [pageReady, setPageReady] = useState(false);
   const [transactionPassword, setTransactionPassword] = useState('');
+  const [cssLoaded, setCssLoaded] = useState(false);
 
-  // Load CSS files like AdminLogin
+  // Load CSS files and remove all.css for this page only
   useEffect(() => {
+    // Remove all.css file for this page only
+    const allCssLink = document.querySelector('link[href*="all.css"]');
+    if (allCssLink) {
+      allCssLink.remove();
+    }
+
     const baseUrl = import.meta.env.VITE_MAIN_URL;
 
     const cssFiles = [
@@ -47,11 +53,13 @@ const AdminTransactionPassword = () => {
       try {
         await Promise.all(cssFiles.map(loadCSS));
         setPageReady(true);
+        setCssLoaded(true);
       } catch (error) {
         console.error("Failed to load CSS:", error);
         // Show page anyway after timeout
         setTimeout(() => {
           setPageReady(true);
+          setCssLoaded(true);
         }, 1000);
       }
     };
@@ -62,6 +70,10 @@ const AdminTransactionPassword = () => {
     return () => {
       const loginStyles = document.querySelectorAll("link.login-style");
       loginStyles.forEach((link) => link.remove());
+      // Restore all.css when leaving this page
+      if (allCssLink) {
+        document.head.appendChild(allCssLink);
+      }
     };
   }, []);
 
@@ -91,7 +103,7 @@ const AdminTransactionPassword = () => {
   };
 
   // Show loading until CSS is ready
-  if (!pageReady) {
+  if (!cssLoaded) {
     return (
       <div id="load">
         <div id="load-inner">
@@ -176,23 +188,10 @@ const AdminTransactionPassword = () => {
           
           <button 
             type="button" 
+            className="btn login-button-default btn-primary"
             onClick={handleBack}
             disabled={loading}
-            style={{
-              backgroundColor: loading ? '#6c757d' : '#007bff',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              fontSize: '1.1rem',
-              borderRadius: '4px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginTop: '3rem',
-              minWidth: '200px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px'
-            }}
+      
           >
             {loading ? (
               <>
@@ -201,7 +200,7 @@ const AdminTransactionPassword = () => {
               </>
             ) : (
               <>
-                <i className="fas fa-arrow-left"></i>
+                <i className="text-align-center fas fa-home login-button-default mr-2"></i>
                 Back to Admin Dashboard
               </>
             )}

@@ -17,7 +17,7 @@ const AdminUnauthorized = () => {
                 You don't have permission to access this page. Please contact your administrator if you believe this is an error.
               </p>
               <Link 
-                to={`${ADMIN_BASE_PATH}/`} 
+                to={`/`} 
                 className="btn btn-primary"
               >
                 <i className="fa fa-home"></i> Go to Dashboard

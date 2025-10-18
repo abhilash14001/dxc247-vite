@@ -482,14 +482,14 @@ function AdminUsers() {
                       Back
                     </button>
                   ) : (
-                    <Link to={`${ADMIN_BASE_PATH}/client/create`}
+                    <Link to={`/client/create`}
                       
                       className="btn btn-diamond mr-2"
                     >
                       Add Account
                     </Link>
                   )}
-                  <Link to={`${ADMIN_BASE_PATH}/client/deleted`}
+                  <Link to={`/client/deleted`}
                     
                       className="btn btn-diamond"
                     >
@@ -654,7 +654,7 @@ function AdminUsers() {
                                   <span>S</span>
                                 </a>
                                 <Link 
-                                  to={`${ADMIN_BASE_PATH}/client/edit/${user.id}`}
+                                  to={`/client/edit/${user.id}`}
                                   title="Edit User"
                                   className="text-decoration-none"
                                 >
@@ -817,7 +817,7 @@ function AdminUsers() {
                                   <span>S</span>
                                 </a>
                                 <Link 
-                                  to={`${ADMIN_BASE_PATH}/client/edit/${user.id}`}
+                                  to={`/client/edit/${user.id}`}
                                   title="Edit User"
                                   className="text-decoration-none"
                                 >

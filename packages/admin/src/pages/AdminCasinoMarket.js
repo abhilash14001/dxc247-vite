@@ -498,7 +498,7 @@ function AdminCasinoMarket() {
                   </span>
                 )}
                 <Link 
-                  to={`${ADMIN_BASE_PATH}/casinos/create`} 
+                  to={`/casinos/create`} 
                   className="btn btn-primary cursor-pointer mb-2"
                 >
                   <FontAwesomeIcon icon={faPlus} /> Add New Casino
@@ -621,7 +621,7 @@ function AdminCasinoMarket() {
                                     </a>
                                     
                                     <Link 
-                                      to={`${ADMIN_BASE_PATH}/casinos/edit/${casino.id}`} 
+                                      to={`/casinos/edit/${casino.id}`} 
                                       className="btn btn-warning btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faEdit} /> Edit
@@ -746,7 +746,7 @@ function AdminCasinoMarket() {
                                       <FontAwesomeIcon icon={faCog} /> Bet Limit
                                     </a>
                                     <Link 
-                                      to={`${ADMIN_BASE_PATH}/casinos/edit/${casino.id}`} 
+                                      to={`/casinos/edit/${casino.id}`} 
                                       className="btn btn-warning btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faEdit} /> Edit

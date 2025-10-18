@@ -4,6 +4,7 @@ import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Pagination from "@dxc247/shared/components/common/Pagination";
+import { Link } from "react-router-dom";
 
 const LineMarketBetHistory = () => {
   const [loading, setLoading] = useState(false);
@@ -284,9 +285,9 @@ const LineMarketBetHistory = () => {
                         <td>{bet.username}</td>
                         <td>{bet.game_name}</td>
                         <td>
-                          <a href={`${ADMIN_BASE_PATH}/sports/${bet.game_name?.toLowerCase()}/${bet.match_id}`} target="_blank" rel="noopener noreferrer">
+                          <Link to={`/sports/${bet.game_name?.toLowerCase()}/${bet.match_id}`}>
                             {bet.sport_name}
-                          </a>
+                          </Link>
                         </td>
                         <td>{bet.bet_type}</td>
                         <td>{bet.bet_side}</td>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi } from './adminApi';
-import AdminLayout from './AdminLayout';
+
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

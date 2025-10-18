@@ -232,7 +232,7 @@ const AdminFancyHistory = () => {
                           <td>{fancy.winner_team || '-'}</td>
                           <td>
                             <Link
-                              to={`${ADMIN_BASE_PATH}/settings/manage-fancy-history-single/${fancy.match_id}`}
+                              to={`/settings/manage-fancy-history-single/${fancy.match_id}`}
                               className="btn btn-success"
                               onClick={() => handleNavigateToSingle(fancy)}
                             >

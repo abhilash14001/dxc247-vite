@@ -7,7 +7,6 @@ import Notify from '@dxc247/shared/utils/Notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKey, faSpinner, faLock } from '@fortawesome/free-solid-svg-icons';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
-import './AdminLoginStyles.css';
 
 const AdminChangePassword = () => {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ const AdminChangePassword = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [pageReady, setPageReady] = useState(false);
+  const [cssLoaded, setCssLoaded] = useState(false);
   const userRef = useRef(user);
 
   // Update userRef when user changes
@@ -28,56 +27,50 @@ const AdminChangePassword = () => {
     userRef.current = user;
   }, [user]);
 
-  // Load CSS files like AdminLogin
+  // Load AdminLogin.css dynamically
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_MAIN_URL;
-
-    const cssFiles = [
-      `${baseUrl}/build/assets/login-4jY9LvNs.css`,
-      "https://dzm0kbaskt4pv.cloudfront.net/v2/static/front/css/style.css",
-    ];
-
-    // Load each CSS file
-    const loadCSS = (href) => {
-      return new Promise((resolve, reject) => {
-        const existingLink = document.querySelector(`link[href="${href}"]`);
-        if (existingLink) {
-          resolve();
-          return;
-        }
-
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = href;
-        link.className = "login-style";
-        link.onload = () => resolve();
-        link.onerror = () => reject();
-        document.head.appendChild(link);
-      });
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/src/pages/AdminLogin.css';
+    link.media = 'all';
+    link.crossOrigin = 'anonymous';
+    
+    // Track when CSS is loaded
+    link.onload = () => {
+      setCssLoaded(true);
     };
+    
+    link.onerror = () => {
+      console.warn('Failed to load AdminLogin.css, showing form anyway');
+      setCssLoaded(true);
+    };
+    
+    // Preload for faster loading
+    const preloadLink = document.createElement('link');
+    preloadLink.rel = 'preload';
+    preloadLink.href = '/src/pages/AdminLogin.css';
+    preloadLink.as = 'style';
+    preloadLink.onload = () => {
+      document.head.appendChild(link);
+    };
+    
+    preloadLink.onerror = () => {
+      // If preload fails, try direct loading
+      document.head.appendChild(link);
+    };
+    
+    document.head.appendChild(preloadLink);
 
-    // Load CSS and show page when ready
-    const initializePage = async () => {
-      try {
-        await Promise.all(cssFiles.map(loadCSS));
-        setPageReady(true);
-      } catch (error) {
-        console.error("Failed to load CSS:", error);
-        // Show page anyway after timeout
-        setTimeout(() => {
-          setPageReady(true);
-        }, 1000);
+    return () => {
+      if (document.head.contains(link)) {
+        document.head.removeChild(link);
+      }
+      if (document.head.contains(preloadLink)) {
+        document.head.removeChild(preloadLink);
       }
     };
-
-    initializePage();
-
-    // Cleanup function
-    return () => {
-      const loginStyles = document.querySelectorAll("link.login-style");
-      loginStyles.forEach((link) => link.remove());
-    };
   }, []);
+
 
   // Check if password change is needed
   useEffect(() => {
@@ -187,16 +180,47 @@ const AdminChangePassword = () => {
     }
   };
 
-  // Show loading until CSS is ready
-  if (!pageReady) {
-    return (
-      <div id="load">
-        <div id="load-inner">
-          <img src={`${import.meta.env.VITE_MAIN_URL}/uploads/sites_configuration/C3K6931720187871logo%20(1).png`} alt="Loading..." />
-          <i className="fas fa-spinner fa-spin"></i>
-        </div>
-      </div>
-    );
+  // Loading component
+  const LoadingScreen = () => (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: '#f8f9fa',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999
+    }}>
+      <div style={{
+        width: '50px',
+        height: '50px',
+        border: '4px solid #e3e3e3',
+        borderTop: '4px solid #007bff',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+        marginBottom: '20px'
+      }}></div>
+      <div style={{
+        fontSize: '16px',
+        color: '#666',
+        fontWeight: '500'
+      }}>Loading...</div>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+
+  // Show loading screen until CSS is loaded
+  if (!cssLoaded) {
+    return <LoadingScreen />;
   }
 
   return (
@@ -283,7 +307,7 @@ const AdminChangePassword = () => {
                     <div className="form-group text-center mb-3">
                       <button
                         type="submit"
-                        className="btn btn-primary btn-block"
+                        className="btn btn-primary btn-block login-button-default"
                         disabled={loading}
                       >
                         {loading ? (

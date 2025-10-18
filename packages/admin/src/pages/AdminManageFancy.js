@@ -215,7 +215,7 @@ const AdminManageFancy = () => {
                           <td>{getStatusBadge(fancy.status)}</td>
                           <td>
                             <Link
-                              to={`${ADMIN_BASE_PATH}/settings/manage-fancy-single/${fancy.match_id}`}
+                              to={`/settings/manage-fancy-single/${fancy.match_id}`}
                               className="btn btn-success"
                               data-sport-id={fancy.id}
                             >

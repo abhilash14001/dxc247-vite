@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminApiMethods } from './adminApi';
 import DataTable from 'react-data-table-component';
-import AdminLayout from './AdminLayout';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faSearch, 
@@ -367,7 +367,7 @@ function AdminLogs() {
   }
 
   return (
-    <AdminLayout>
+    
       <div className="admin-logs">
       <div className="page-header">
         <div className="header-left">
@@ -575,7 +575,7 @@ function AdminLogs() {
         </div>
       )}
       </div>
-    </AdminLayout>
+    
   );
 }
 
