@@ -301,13 +301,13 @@ const Tennis = ({ isAdmin = false }) => {
                                   data={ar_sectionData} setSportList={setSportList}>
 
                         <>
-                            <MatchOdds placingBets={placingBets} currentOddValue={currentOddValue}
+                            <MatchOdds isAdmin={isAdmin} placingBets={placingBets} currentOddValue={currentOddValue}
                                        setMaxValue={setMaxValue} setMinValue={setMinValue} teamNameCurrentBets={teamNameCurrentBets}
                                        allTeamName={allTeamName} oddsTeamData={oddsTeamData} setDefaultTeamName={defaultTeamName}
                                        setBetOddValue={setBetOddValue} setbackOrLay={setbackOrLay} teamNames={teamNames}
                                        setPopupDisplay={setPopupDisplay} ar_sectionData={ar_sectionData} sportList={sportList}
                                        oddsChange={oddsChange}/>
-                            <Bookmaker placingBets={placingBets} currentOddValue={currentOddValue} setMaxValue={setMaxValue}
+                            <Bookmaker isAdmin={isAdmin} placingBets={placingBets} currentOddValue={currentOddValue} setMaxValue={setMaxValue}
                                        setMinValue={setMinValue} teamNameCurrentBets={teamNameCurrentBets}
                                        allTeamName={allTeamName} setDefaultTeamName={defaultTeamName}
                                        bookmakerTeamData={bookmakerTeamData} setBetOddValue={setBetOddValue}

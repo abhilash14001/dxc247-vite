@@ -12,6 +12,7 @@ import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 
 const TiedMatch = ({
+    isAdmin,
     gameData,
     model,
     tiedMatchData,
@@ -123,6 +124,7 @@ const TiedMatch = ({
             <div key={mainKey} className="game-market market-2 width30">
                 <div className="market-title">
                     <span>{mainValue['mname']}</span>
+                    {!isAdmin && (
                     <button
                         className="btn btn-success btn-sm"
                         onClick={handleCashout}
@@ -131,6 +133,7 @@ const TiedMatch = ({
                     >
                         Cashout
                     </button>
+                    )}
                 </div>
                 <div className="market-header">
                     <div className="market-nation-detail">

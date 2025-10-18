@@ -14,6 +14,7 @@ import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 
 function Bookmaker2({
+    isAdmin,
     ar_sectionData,
     allTeamName = {},
     sportList,
@@ -235,14 +236,16 @@ function Bookmaker2({
                 <div className="game-market market-2 width30">
                     <div className="market-title">
                         <span>{bookmaker2Data?.mname || 'Bookmaker 2'}</span>
-                        <button 
-                            className="btn btn-success btn-sm" 
-                            onClick={handleCashout}
-                            disabled={!hasActiveBets}
-                            title={!hasActiveBets ? "No active bets to cashout" : "Click to cashout active bets"}
-                        > 
-                            Cashout 
-                        </button>
+                        {!isAdmin && (
+                            <button 
+                                className="btn btn-success btn-sm" 
+                                onClick={handleCashout}
+                                disabled={!hasActiveBets}
+                                title={hasActiveBets ? "No active bets to cashout" : "Click to cashout active bets"}
+                            > 
+                                Cashout 
+                            </button>
+                        )}
                     </div>
                     <div className="market-header">
                         <div className="market-nation-detail">

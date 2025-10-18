@@ -10,6 +10,7 @@ import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 
 function CPLCupBookmaker({
+  isAdmin,
   ar_sectionData,
   allTeamName = {},
   sportList,

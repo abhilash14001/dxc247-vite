@@ -13,6 +13,7 @@ import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 
 function MatchOdds({
+                       isAdmin,
                        ar_sectionData,
                        sportList,
                        allTeamName = {},
@@ -121,6 +122,7 @@ setBetOddValue(0);
                 return {...prevState, 'ODDS': mainValue?.['match_odds']?.['min'] ?? 100}
             })
         }
+        
         //eslint-disable-next-line
     }, [maxValue]);
     
@@ -169,14 +171,15 @@ setBetOddValue(0);
         <div className="game-market market-4">
             <div className="market-title">
                 <span>MATCH_ODDS</span>
-                
-                <button 
-                    className="float-right mb-0 btn btn-success" 
-                    onClick={handleCashout}
-                    disabled={!hasActiveBets}
-                > 
-                    Cashout   
-                </button>
+                {!isAdmin && (
+                    <button 
+                        className="float-right mb-0 btn btn-success" 
+                        onClick={handleCashout}
+                        disabled={!hasActiveBets}
+                    > 
+                        Cashout   
+                    </button>
+                )}
             </div>
             <div className="market-header">
                 <div className="market-nation-detail">

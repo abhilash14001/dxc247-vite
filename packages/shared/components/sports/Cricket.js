@@ -544,6 +544,7 @@ const Cricket = ({ isAdmin = false }) => {
 
         <>
             <MatchOdds
+            isAdmin={isAdmin}
               oddsChange={oddsChange}
               placingBets={placingBets}
               currentOddValue={currentOddValue}
@@ -581,6 +582,7 @@ const Cricket = ({ isAdmin = false }) => {
 
             {/* Bookmaker and Bookmaker2 - Display in same row if both present, otherwise individually */}
             <Bookmaker
+            isAdmin={isAdmin}
                     placingBets={placingBets}
                     currentOddValue={currentOddValue}
                     setMaxValue={setMaxValue}
@@ -601,6 +603,7 @@ const Cricket = ({ isAdmin = false }) => {
                 
                 
                   <Bookmaker2
+                    isAdmin={isAdmin}
                     placingBets={placingBets}
                     currentOddValue={currentOddValue}
                     setMaxValue={setMaxValue}
@@ -620,6 +623,7 @@ const Cricket = ({ isAdmin = false }) => {
           
 
             <CPLCupBookmaker
+              isAdmin={isAdmin}
               placingBets={placingBets}
               currentOddValue={currentOddValue}
               setMaxValue={setMaxValue}
@@ -638,6 +642,7 @@ const Cricket = ({ isAdmin = false }) => {
             />
 
             <TiedMatch
+              isAdmin={isAdmin}
               teamNameCurrentBets={teamNameCurrentBets}
               placingBets={placingBets}
               setBetOddValue={setBetOddValue}
@@ -653,6 +658,7 @@ const Cricket = ({ isAdmin = false }) => {
             />
 
             <FancySession
+              isAdmin={isAdmin}
               betPlaceStatus={betPlaceStatus}
               setDefaultTeamName={defaultTeamName}
               setPopupDisplay={setPopupDisplay}
@@ -669,6 +675,7 @@ const Cricket = ({ isAdmin = false }) => {
             />
             
             <OverByOver
+              isAdmin={isAdmin}
               betPlaceStatus={betPlaceStatus}
               setDefaultTeamName={defaultTeamName}
               setPopupDisplay={setPopupDisplay}

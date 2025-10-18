@@ -236,10 +236,17 @@ const SidebarLayout = () => {
                 ) : matchesData.latest_events && matchesData.latest_events.length > 0 ? (
                     matchesData.latest_events.map((event, index) => (
                         <div key={index} className="latest-event-item">
-                            <Link className="blink_me" to={`/${sportsMap[event.sportId]}/${event.id}`}>
-                                <i className={`d-icon icon-${event.sportId}`}></i>
-                                <span>{event.name}</span>
-                            </Link>
+                            {sportsMap[event.sportId] ? (
+                                <Link className="blink_me" to={`/${sportsMap[event.sportId]}/${event.id}`}>
+                                    <i className={`d-icon icon-${event.sportId}`}></i>
+                                    <span>{event.name}</span>
+                                </Link>
+                            ) : (
+                                <div className="blink_me">
+                                    <i className={`d-icon icon-${event.sportId}`}></i>
+                                    <span>{event.name}</span>
+                                </div>
+                            )}
                         </div>
                     ))
                 ) : (
