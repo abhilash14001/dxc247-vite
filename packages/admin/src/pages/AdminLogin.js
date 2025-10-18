@@ -30,6 +30,7 @@ function AdminLogin() {
   
 
   useEffect(() => {
+    
     // Simplified initialization - no CSS loading, just fetch live mode data
     const initializePage = async () => {
       dispatch(setAuthLoading(false));
@@ -50,9 +51,11 @@ function AdminLogin() {
   }, []);
 
   useEffect(() => {
+     
     // Redirect if already authenticated
     if (isAuthenticated) {
       navigate('/');
+      
       return;
     }
   }, [isAuthenticated, navigate]);

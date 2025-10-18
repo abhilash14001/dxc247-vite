@@ -8,15 +8,12 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
   const { isAuthenticated, token, loading, user } = useSelector(state => state.admin);
 
   useEffect(() => {
-    // Don't redirect if still loading
-    if (loading) {
-      return;
-    }
-
+  
     // Check if user is not authenticated
     if (!isAuthenticated || !token) {
       // Redirect to login if not authenticated
       navigate('/login', { replace: true });
+      
       return;
     }
 
@@ -40,10 +37,7 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
     }
   }, [isAuthenticated, token, loading, navigate, user]);
 
-  // Don't render children if not authenticated
-  if (!loading && !isAuthenticated) {
-    return null;
-  }
+  
 
   if(!user){
     return children;
