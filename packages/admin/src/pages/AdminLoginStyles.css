@@ -1,69 +1,303 @@
-:root {
-  --theme1-bg: #A26C6C !important;
-  --theme2-bg: #A26C6C !important;
-  --bg-primary: #A26C6C !important;
-}
-.log-logo img {
-  max-width: 250px !important;
-  max-height: 100px;
+/* Login Page Design - Matching User Login Style */
+.login-wrapper {
+    padding-bottom: 50px;
 }
 
-.featured-box-login {
-  width: 100%;
-  padding: 35px 30px 19px;
-  box-sizing: border-box;
-  margin-top: 15px;
-  background: #eee;
-  border-radius: 4px;
-  box-shadow: 0px 0px 4px #fff;
+.login-page {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
-.loginFrm .login-title {
-  color: #000;
-  position: relative;
-  margin-bottom: 30px;
-  font-size: 20px;
+.login-box {
+    width: 350px;
+    max-width: 90%;
+    text-align: center;
+    margin: 0;
+}
+
+.login-box img {
+    max-height: 140px;
+    max-width: 100%;
+}
+
+.login-form {
+    padding: 20px;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 0 5px #fff;
+}
+
+.login-form form {
+    margin-top: 10px;
+}
+
+.login-form .login-title {
+    color: var(--bg-primary);
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.login-form form small {
+    font-size: 10px;
 }
 
 .form-control {
-  display: block;
-  width: 100%;
-  height: calc(1.5em + 0.94rem + 2px);
-  padding: 0.47rem 0.75rem;
-  font-size: .8125rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 1rem + 2px);
+    padding: 0.75rem 1rem;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: var(--bg-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.1);
+}
+
+.form-control::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}
+
+
+
+/* Button styling based on CloudFront CSS .btn-theme */
+.btn-primary {
+    color: var(--primary-color) !important;
+    background-image: linear-gradient(to right, var(--theme1-bg), var(--theme2-bg)) !important;
+    width: 100% !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
+    border: 0 !important;
+    padding: 12px 20px !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    position: relative;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-image: linear-gradient(to right, var(--theme1-bg), var(--theme2-bg)) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px -4px rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.btn-primary:disabled {
+    background-image: linear-gradient(to right, #ccc, #ccc) !important;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
 }
 
 .error, small.text-danger {
-  color: #ff0000;
-  margin-top: 3px;
-  margin-bottom: 10px;
-}
-
-.loginInner1 {
-  margin: 100px auto;
-  max-width: 83%;
-}
-
-.btn-primary {
-  background-color: #0088cc;
-  border-color: #0088cc;
-  color: #fff;
-}
-
-.login .form-group i {
-  font-size: 12px;
-  margin-left: 10px;
+    color: #ff0000;
+    margin-top: 3px;
+    margin-bottom: 10px;
 }
 
 .mail-link {
-  color: #fff !important;
-  text-decoration: none !important;
+    color: #fff !important;
+    text-decoration: none !important;
 }
+
+/* Override the old styles */
+.login {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-fluid {
+    width: 100%;
+    max-width: 400px;
+    padding: 0 15px;
+}
+
+.loginInner1 {
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
+}
+
+.log-logo {
+    margin-bottom: 20px;
+}
+
+.log-logo img {
+    max-width: 200px;
+    max-height: 80px;
+}
+
+.featured-box-login {
+    width: 100%;
+    padding: 40px 30px;
+    box-sizing: border-box;
+    margin-top: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group:last-child {
+    margin-bottom: 0;
+}
+
+.loginFrm .login-title {
+    color: var(--bg-primary);
+    position: relative;
+    margin-bottom: 25px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* Additional styles from CloudFront CSS */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400&display=swap');
+
+:root {
+    --text-primary: #08c;
+    --text-secondary: #2d3e50;
+    --primary-bg: #fff;
+    --secondary-bg: #000;
+    --link-bg: #bbb;
+    --grey-bg: #ccc;
+    --light-bg: #eee;
+    --suspended-color: #730709;
+    --red-color: #ff0000;
+    --yellow-color: #ffff00;
+    --green-color: #00ff00;
+    --white-color: #fff;
+    --site-color: #000;
+    --green-bg: #145b12;
+    --blue-color: #0000ff;
+    --primary-color: #fff;
+    --theme1-bg: #0088cc;
+    --theme2-bg: #2c3e50;
+    --secondary-color: #fff;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Roboto Condensed', sans-serif;
+    color: var(--site-color);
+    font-size: 16px;
+    line-height: 15px;
+    background-color: var(--primary-bg);
+}
+
+#load {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    position: fixed !important;
+    align-items: center;
+    z-index: 9999;
+    position: relative;
+    background-image: linear-gradient(var(--theme1-bg), var(--theme2-bg));
+}
+
+#load-inner {
+    position: relative;
+    text-align: center;
+}
+
+#load-inner img {
+    display: block;
+    height: 65px;
+}
+
+#load-inner i {
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    margin-top: 40px;
+}
+
+.modal-dialog {
+    margin: 1% auto;
+}
+
+.modal-header {
+    padding: 10px;
+    background: var(--theme1-bg);
+    color: var(--primary-color);
+    border-radius: 0;
+    border: 0;
+}
+
+.modal-body {
+    max-height: calc(96vh - 47px);
+    overflow: auto;
+}
+
+.modal-content {
+    border: 0;
+    border-radius: 0;
+}
+
+.modal-header .close {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+.modal-header .close:focus, .modal-header .close:hover {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+.btn-theme {
+    color: var(--primary-color) !important;
+    background-image: linear-gradient(to right, var(--theme1-bg), var(--theme2-bg)) !important;
+    width: 100% !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
+    border: 0 !important;
+    padding: 8px 10px !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    position: relative;
+}
+
+/* Additional utility classes */
+.p-r { position: relative; }
+ul { margin-bottom: 0; padding: 0; }
+li { list-style: none; }
+p { margin-bottom: 0; }
+

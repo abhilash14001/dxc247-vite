@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 let globalTimer = null;
 
 axios.defaults.withCredentials = true;
-export const ADMIN_BASE_PATH = "";
+export const ADMIN_BASE_PATH = "/admin";
 export const isAdminRoute = () => {
   
   return store.getState().admin?.isAdmin;

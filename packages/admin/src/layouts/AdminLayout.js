@@ -178,7 +178,7 @@ const AdminLayout = ({ children }) => {
       <header>
         <div className="admin-header-bottom">
           <div className="container-fluid">
-            <Link to={ADMIN_BASE_PATH} className="logo">
+            <Link to="/" className="logo">
               <img 
                 src={liveModeData?.logo || 'https://admin.dmt77.com/uploads/sites_configuration/C3K6931720187871logo%20(1).png'} 
                 alt={liveModeData?.site_name || 'Admin Panel'}
@@ -197,7 +197,7 @@ const AdminLayout = ({ children }) => {
                 {mainMenuItems.map((item, index) => (
                   hasPermission(adminUser, item.permission) && (
                     <li key={index} className="nav-item">
-                      <Link to={`${ADMIN_BASE_PATH}${item.path}`}>
+                      <Link to={`/${item.path}`}>
                         <b>{item.label}</b>
                       </Link>
                     </li>
@@ -213,7 +213,7 @@ const AdminLayout = ({ children }) => {
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   {hasPermission(adminUser, 'casino') && (
                     <li>
-                      <Link to={`${ADMIN_BASE_PATH}/casinos`} className="dropdown-item">
+                      <Link to={`/casinos`} className="dropdown-item">
                         <span><b>Casino</b></span>
                         <div className="lineanimation"></div>
                       </Link>
@@ -221,7 +221,7 @@ const AdminLayout = ({ children }) => {
                   )}
                   {hasPermission(adminUser, 'virtual') && (
                     <li>
-                      <Link to={`${ADMIN_BASE_PATH}/casino/virtual`} className="dropdown-item">
+                      <Link to={`/casino/virtual`} className="dropdown-item">
                         <span><b>Virtual</b></span>
                         <div className="lineanimation"></div>
                       </Link>
@@ -239,7 +239,7 @@ const AdminLayout = ({ children }) => {
                   {reportsMenuItems.map((item, index) => (
                     hasPermission(adminUser, item.permission) && (
                       <li key={index}>
-                        <Link to={`${ADMIN_BASE_PATH}${item.path}`} className="dropdown-item">
+                        <Link to={`/${item.path}`} className="dropdown-item">
                           <span><b>{item.label}</b></span>
                           <div className="lineanimation"></div>
                         </Link>
@@ -283,7 +283,7 @@ const AdminLayout = ({ children }) => {
                 <span>{adminUser?.username || 'ADMIN'} <i className="fa fa-caret-down"></i></span>
                 <ul style={{display: userDropdownOpen ? 'block' : 'none'}}>
                   <li>
-                    <Link to={`${ADMIN_BASE_PATH}/profile`}><b>Change Password</b></Link>
+                    <Link to={`/profile`}><b>Change Password</b></Link>
                   </li>
                   <li>
                     <button className="btn btn-link p-0 text-decoration-none" onClick={() => dispatch(logout())}><b>Logout</b></button>
@@ -340,7 +340,7 @@ const AdminLayout = ({ children }) => {
                           {Object.entries(sportData.list || {}).map(([matchId, matchData], matchIndex) => (
                             <li key={matchIndex} className="mtree-node mtree-closed1">
                               <Link
-                                to={ADMIN_BASE_PATH + "/" + sportData.canonical_name + "/" + matchData.match_id}
+                                to={`/${sportData.canonical_name}/${matchData.match_id}`}
                                 style={{cursor: 'pointer'}}
                                 onClick={() => activeLink(matchData.match_name)}
                               >

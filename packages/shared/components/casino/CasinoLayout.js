@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Header from "../layouts/Header";
 import { useParams, useLocation } from "react-router-dom";
-import axiosFetch, { exposureCheck, getSize, ADMIN_BASE_PATH } from "../../utils/Constants";
+import axiosFetch, { exposureCheck, getSize } from "../../utils/Constants";
 import CasinoRules from "../casino/CasinoRules";
 import CasinoReconnectModalPopup from "../casino/CasinoReconnectModalPopup";
 import { CasinoContext } from "../../contexts/CasinoContext";
@@ -16,7 +16,7 @@ import CricketScoreboard from "../CricketScoreboard";
 import MobileMatchedBetTable from "../MobileMatchedBetTable";
 
 import { SportsContext } from "../../contexts/SportsContext";
-import { useAdmin } from "../../contexts/AdminContext";
+
 
 const CasinoLayout = ({
   teamname,
@@ -51,19 +51,9 @@ const CasinoLayout = ({
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { isAdmin } = useAdmin();
+  const { isAdmin } = useIsAdmin();
   
-  // Use isAdmin from context instead of checking pathname
-  const isAdminRoute = isAdmin || location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
-  const {
-    casino_socket,
-    triggerSocket,
-    setTriggerSocket,
-    scoreBoardData,
-    setShouldBlinkForRoulette,
-    mybetModel,
-    setMybetModel,
-  } = useContext(CasinoContext);
+
 
   const [socketDisconnectModal, setSocketDisconnectModal] = useState(false);
   const [showCasinoReconnectModal, setShowCasinoReconnectModal] =
@@ -89,14 +79,14 @@ const CasinoLayout = ({
     if (length > 0) {
       axiosFetch("matched-bet-details/" + sportList.id, "get", setMybetModel);
     }
-    if(isAdminRoute && length > 0) {
+    if(isAdmin && length > 0) {
      interval = setInterval(() => {
       axiosFetch("matched-bet-details/" + sportList.id, "get", setMybetModel);
      }, 2000);
     }
 
     return () => {
-      if(isAdminRoute && length > 0 && interval) {
+      if(isAdmin && length > 0 && interval) {
         clearInterval(interval);
       }
     }
@@ -215,10 +205,10 @@ const CasinoLayout = ({
 
   return (
     <>
-      {!isAdminRoute && <Header />}
+      {!isAdmin && <Header />}
 
       <div className="main-container">
-      {!isAdminRoute && <SidebarLayout />}
+      {!isAdmin && <SidebarLayout />}
 
         <div className="center-main-container casino-page">
           <div className="center-container">
@@ -345,7 +335,7 @@ const CasinoLayout = ({
           />
         </div>
       </div>
-      {!isAdminRoute && <Footer />}
+      {!isAdmin && <Footer />}
     </>
   );
 };
