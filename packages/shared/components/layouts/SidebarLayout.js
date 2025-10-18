@@ -16,11 +16,12 @@ const SidebarLayout = () => {
 
     const [allSportShow, setAllSportShow] = useState({ racing: true, others: true, allsports: true })
     const [matchesData] = useCommonData(token, setShowLoader);
-    
+    const sportsMap  ={"4": "cricket", "2": "tennis", "3": "soccer"}
+
     
 
     useEffect(() => {
-        
+        console.log('matchesData is ', matchesData);
         
         // Only run when matchesData is available and has sidebar_data
         if (!matchesData || !matchesData.sidebar_data) {
@@ -235,10 +236,10 @@ const SidebarLayout = () => {
                 ) : matchesData.latest_events && matchesData.latest_events.length > 0 ? (
                     matchesData.latest_events.map((event, index) => (
                         <div key={index} className="latest-event-item">
-                            <a className="blink_me" href={`/game-details/${event.game_id}/${event.match_id}`}>
-                                <i className={`d-icon icon-${event.game_id}`}></i>
-                                <span>{event.match_name}</span>
-                            </a>
+                            <Link className="blink_me" to={`/${sportsMap[event.sportId]}/${event.id}`}>
+                                <i className={`d-icon icon-${event.sportId}`}></i>
+                                <span>{event.name}</span>
+                            </Link>
                         </div>
                     ))
                 ) : (
