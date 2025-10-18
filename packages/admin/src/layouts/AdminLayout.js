@@ -17,6 +17,9 @@ const AdminLayout = ({ children }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const { user: adminUser, token } = useSelector(state => state.admin);
+  
+  // Check if user has role 6 (admin role)
+  const isAdminRole = adminUser?.role === 6;
   const { liveModeData } = useSelector(state => state.commonData);
   const { navLinks, activeLink,setNavLinks } = useContext(SportsContext);
   
@@ -110,6 +113,9 @@ const AdminLayout = ({ children }) => {
 
     }, [matchesData, setNavLinks]); // Add matchesData as dependency
 
+    useEffect(() => {
+      setSidebarOpen(false);
+    }, []);
   // Simple menu configuration
   const mainMenuItems = [
     { path: '/users', label: 'List Of Clients', permission: 'client-list' },
@@ -153,15 +159,6 @@ const AdminLayout = ({ children }) => {
   };
 
 
-  const handleEllipsisClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const isActiveRoute = (path) => {
-    return location.pathname === path;
-  };
 
   // Handle settings menu item clicks with password verification
   const handleSettingsMenuClick = (item) => {
@@ -192,10 +189,10 @@ const AdminLayout = ({ children }) => {
             <nav className="navbar navbar-expand-md btco-hover-menu">
         <div className="collapse navbar-collapse">
           <ul className="list-unstyled navbar-nav">
-            {mainMenuItems.some(item => hasPermission(adminUser, item.permission)) && (
+            {(!isAdminRole || mainMenuItems.some(item => hasPermission(adminUser, item.permission))) && (
               <>
                 {mainMenuItems.map((item, index) => (
-                  hasPermission(adminUser, item.permission) && (
+                  (!isAdminRole || hasPermission(adminUser, item.permission)) && (
                     <li key={index} className="nav-item">
                       <Link to={`${item.path}`}>
                         <b>{item.label}</b>
@@ -205,23 +202,23 @@ const AdminLayout = ({ children }) => {
                 ))}
               </>
             )}
-            {(hasPermission(adminUser, 'casino') || hasPermission(adminUser, 'virtual') || hasPermission(adminUser, 'casino-market')) && (
+            {(!isAdminRole || (hasPermission(adminUser, 'casino') || hasPermission(adminUser, 'virtual') || hasPermission(adminUser, 'casino-market'))) && (
               <li className="nav-item dropdown newlacunch-menu">
                 <a className="" href="#">
                   <span><b>casino-market</b> <i className="fa fa-caret-down"></i></span>
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  {hasPermission(adminUser, 'casino') && (
+                  {(!isAdminRole || hasPermission(adminUser, 'casino')) && (
                     <li>
-                      <Link to={`/casinos`} className="dropdown-item">
+                      <Link to={`/casinos`} className="dropdown-item admin-dropdown-it-is">
                         <span><b>Casino</b></span>
                         <div className="lineanimation"></div>
                       </Link>
                     </li>
                   )}
-                  {hasPermission(adminUser, 'virtual') && (
+                  {(!isAdminRole || hasPermission(adminUser, 'virtual')) && (
                     <li>
-                      <Link to={`/casino/virtual`} className="dropdown-item">
+                      <Link to={`/casino/virtual`} className="dropdown-item admin-dropdown-it-is">
                         <span><b>Virtual</b></span>
                         <div className="lineanimation"></div>
                       </Link>
@@ -230,16 +227,16 @@ const AdminLayout = ({ children }) => {
                 </ul>
               </li>
             )}
-            {reportsMenuItems.some(item => hasPermission(adminUser, item.permission)) && (
+            {(!isAdminRole || reportsMenuItems.some(item => hasPermission(adminUser, item.permission))) && (
               <li className="nav-item dropdown newlacunch-menu">
                 <a className="" href="#">
                   <span><b>Reports</b> <i className="fa fa-caret-down"></i></span>
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   {reportsMenuItems.map((item, index) => (
-                    hasPermission(adminUser, item.permission) && (
+                    (!isAdminRole || hasPermission(adminUser, item.permission)) && (
                       <li key={index}>
-                        <Link to={`${item.path}`} className="dropdown-item">
+                        <Link to={`${item.path}`} className="dropdown-item admin-dropdown-it-is">
                           <span><b>{item.label}</b></span>
                           <div className="lineanimation"></div>
                         </Link>
@@ -249,18 +246,18 @@ const AdminLayout = ({ children }) => {
                 </ul>
               </li>
             )}
-            {settingsMenuItems.some(item => hasPermission(adminUser, item.permission)) && (
+            {(!isAdminRole || settingsMenuItems.some(item => hasPermission(adminUser, item.permission))) && (
               <li className="nav-item dropdown newlacunch-menu">
                 <a className="" href="#">
                   <span><b>Setting</b> <i className="fa fa-caret-down"></i></span>
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   {settingsMenuItems.map((item, index) => (
-                    hasPermission(adminUser, item.permission) && (
+                    ((item.permission === 'block-market' || hasPermission(adminUser, item.permission))) && (
                       <li key={index}>
                         <a 
                           href="#"
-                          className="dropdown-item"
+                          className="dropdown-item admin-dropdown-it-is"
                           onClick={(e) => {
                             e.preventDefault();
                             handleSettingsMenuClick(item);
@@ -286,7 +283,7 @@ const AdminLayout = ({ children }) => {
                     <Link to={`/profile`}><b>Change Password</b></Link>
                   </li>
                   <li>
-                    <button className="btn btn-link p-0 text-decoration-none" onClick={() => dispatch(logout())}><b>Logout</b></button>
+                    <span onClick={() => dispatch(logout())}><b>Logout</b></span>
                   </li>
                 </ul>
               </li>

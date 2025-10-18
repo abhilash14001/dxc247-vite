@@ -25,8 +25,11 @@ const AdminPasswordModal = ({
         onClick={onClose}
       >
         <div
-          className="modal-dialog"
+          className="modal-dialog modal-dialog-centered modal-sm"
           role="document"
+          style={{
+            margin : "0 auto"
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="modal-content">
