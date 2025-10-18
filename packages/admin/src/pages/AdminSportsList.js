@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from './adminApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
-import { 
+import {
   faSort,
   faSortUp,
   faSortDown
@@ -13,6 +12,7 @@ import { useParams } from 'react-router-dom';
 import Notify from '@dxc247/shared/utils/Notify';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 
 function AdminSportsList() {
   const { sportType } = useParams(); // Get sport type from URL parameter
@@ -45,7 +45,7 @@ function AdminSportsList() {
     if (!type) {
       return { name: 'Sports', type: 'sport' };
     }
-    
+
     const sportMap = {
       'cricket': { name: 'Cricket', type: 'sport' },
       'soccer': { name: 'Soccer', type: 'sport' },
@@ -54,10 +54,10 @@ function AdminSportsList() {
       'basketball': { name: 'Basketball', type: 'sport' },
       'football': { name: 'Football', type: 'sport' }
     };
-    
-    return sportMap[type] || { 
-      name: type.charAt(0).toUpperCase() + type.slice(1), 
-      type: 'sport' 
+
+    return sportMap[type] || {
+      name: type.charAt(0).toUpperCase() + type.slice(1),
+      type: 'sport'
     };
   };
 
@@ -78,7 +78,7 @@ function AdminSportsList() {
 
       // Make API call with query parameters
       const response = await adminApi(`${ADMIN_BASE_PATH}/games-list`, 'POST', queryParams);
-      
+
       if (response.success) {
         // Transform API data to match component expectations
         const transformedData = response.data.map(game => ({
@@ -131,7 +131,7 @@ function AdminSportsList() {
         fetchMatches(1, searchTerm, sortField, sortDirection);
       } else {
         // For page changes, use current page
-        fetchMatches(currentPage, searchTerm, sortField, sortDirection);
+      fetchMatches(currentPage, searchTerm, sortField, sortDirection);
       }
     }, searchTerm ? 1000 : 0); // 500ms delay for search, no delay for other changes
 
@@ -232,16 +232,16 @@ function AdminSportsList() {
     const sportTypeLower = sportType?.toLowerCase();
     switch (sportTypeLower) {
       case 'cricket':
-        return `${ADMIN_BASE_PATH}/cricket-result`;
+        return '/cricket-result';
       case 'soccer':
       case 'football':
-        return `${ADMIN_BASE_PATH}/soccer-result`;
+        return '/soccer-result';
       case 'tennis':
-        return `${ADMIN_BASE_PATH}/tennis-result`;
+        return '/tennis-result';
       case 'elections':
-        return `${ADMIN_BASE_PATH}/election-result`;
+        return '/election-result';
       default:
-        return `${ADMIN_BASE_PATH}/cricket-result`; // Default fallback
+        return '/cricket-result'; // Default fallback
     }
   };
 
@@ -249,14 +249,14 @@ function AdminSportsList() {
     const sportTypeLower = sportType?.toLowerCase();
     switch (sportTypeLower) {
       case 'cricket':
-        return `${ADMIN_BASE_PATH}/cricket-toss-result`;
+        return '/cricket-toss-result';
       case 'soccer':
       case 'football':
-        return `${ADMIN_BASE_PATH}/soccer-toss-result`;
+        return '/soccer-toss-result';
       case 'tennis':
-        return `${ADMIN_BASE_PATH}/tennis-toss-result`;
+        return '/tennis-toss-result';
       default:
-        return `${ADMIN_BASE_PATH}/cricket-toss-result`; // Default fallback
+        return '/cricket-toss-result'; // Default fallback
     }
   };
 
@@ -264,14 +264,14 @@ function AdminSportsList() {
     const sportTypeLower = sportType?.toLowerCase();
     switch (sportTypeLower) {
       case 'cricket':
-        return `${ADMIN_BASE_PATH}/cricket-toss-rollback`;
+        return '/cricket-toss-rollback';
       case 'soccer':
       case 'football':
-        return `${ADMIN_BASE_PATH}/soccer-toss-rollback`;
+        return '/soccer-toss-rollback';
       case 'tennis':
-        return `${ADMIN_BASE_PATH}/tennis-toss-rollback`;
+        return '/tennis-toss-rollback';
       default:
-        return `${ADMIN_BASE_PATH}/cricket-toss-rollback`; // Default fallback
+        return '/cricket-toss-rollback'; // Default fallback
     }
   };
 
@@ -347,7 +347,7 @@ function AdminSportsList() {
 
       // Call API to set the winner based on sport type
       const apiEndpoint = getResultApiEndpoint(sportType);
-      const response = await adminApi(apiEndpoint, 'POST', {
+      const response = await adminApi(`${ADMIN_BASE_PATH}${apiEndpoint}`, 'POST', {
         sport_id: selectedMatch.id,
         result: selectedWinner
       });
@@ -405,7 +405,7 @@ function AdminSportsList() {
 
       // Call API to set the toss winner
       const apiEndpoint = getTossApiEndpoint(sportType);
-      const response = await adminApi(apiEndpoint, 'POST', {
+      const response = await adminApi(`${ADMIN_BASE_PATH}${apiEndpoint}`, 'POST', {
         sport_id: selectedMatch.id,
         result: selectedWinner
       });
@@ -456,7 +456,7 @@ function AdminSportsList() {
 
       // Call API to rollback toss result
       const apiEndpoint = getTossRollbackApiEndpoint(sportType);
-      const response = await adminApi(apiEndpoint, 'POST', {
+      const response = await adminApi(`${ADMIN_BASE_PATH}${apiEndpoint}`, 'POST', {
         sport_id: matchId
       });
 
@@ -640,7 +640,7 @@ function AdminSportsList() {
         {/* Manage Fancy Button for Elections */}
         {isElection && (
           <a 
-            href={`${ADMIN_BASE_PATH}/sports/electionFancyControl/${btoa(match.id.toString())}`}
+            href={`/sports/electionFancyControl/${btoa(match.id.toString())}`}
             className="btn btn-success btn-sm me-1"
             style={{ opacity: isUpdating ? 0.6 : 1, pointerEvents: isUpdating ? 'none' : 'auto' }}
           >
@@ -648,28 +648,6 @@ function AdminSportsList() {
           </a>
         )}
 
-        {/* Toss Result Button for Cricket */}
-        {isCricket && match.game_id === 1 && (
-          match.isResultDeclearToss === 0 ? (
-            <a 
-              href="javascript:void(0);" 
-              onClick={() => showTossWinnerModel(match.id)} 
-              className="btn btn-success btn-sm me-1"
-              style={{ opacity: isUpdating ? 0.6 : 1, pointerEvents: isUpdating ? 'none' : 'auto' }}
-            >
-              Toss Result
-            </a>
-          ) : (
-            <a 
-              href="javascript:void(0);" 
-              onClick={() => handleTossResultRollback(match.id)} 
-              className="btn btn-success btn-sm me-1"
-              style={{ opacity: isUpdating ? 0.6 : 1, pointerEvents: isUpdating ? 'none' : 'auto' }}
-            >
-              Toss Result Rollback
-            </a>
-          )
-        )}
 
         {/* Change Status Button */}
         <a 
@@ -714,9 +692,7 @@ function AdminSportsList() {
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
-    </div>
       </div>
-    </div>
     );
   }
 
@@ -738,33 +714,30 @@ function AdminSportsList() {
         `}
       </style>
       <div className="admin-sports-list">
-        <div className="row">
-      <div className="col-md-12 main-container">
-          <div className="listing-grid">
-            <div className="detail-row">
-              <h2 className="d-inline-block">{sportInfo.name} List</h2>
-            </div>
-    </div>
-            
-            <div className="table-responsive data-table">
-              <div className="card">
-                <div className="card-body">
-                  <input
-                    type="text"
+          <div className="col-md-12 main-container">
+            <div className="listing-grid">
+              <div className="detail-row">
+                <h2 className="d-inline-block">{sportInfo.name} List</h2>
+              </div>
+
+              <div className="table-responsive data-table">
+                <div className="card">
+                  <div className="card-body">
+                    <input
+                      type="text"
                     style={{ width: "20%", float: "right" }} 
-                    autoComplete="off"
+                      autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="off"
                     spellCheck="false"
                     autoFocus="true"
-                    className="form-control"
-                    placeholder={`Search ${sportInfo.name.toLowerCase()}...`}
-                    value={searchTerm}
-                    onChange={handleSearch}
-                  />
+                      className="form-control"
+                      placeholder={`Search ${sportInfo.name.toLowerCase()}...`}
+                      value={searchTerm}
+                      onChange={handleSearch}
+                    />
                   
-                  <div className="clearfix"></div>
-    </div>
+                    <div className="clearfix"></div>
 
                   <div className="table-responsive">
                     <table className="table table-striped">
@@ -772,7 +745,7 @@ function AdminSportsList() {
                         <tr>
                           <th>SR. NO.</th>
                           <th>{sportInfo.type === 'election' ? 'Election Name' : 'Match Name'}</th>
-                          <th 
+                          <th
                             style={{ cursor: 'pointer' }}
                             onClick={() => handleSort('match_date')}
                           >
@@ -796,10 +769,10 @@ function AdminSportsList() {
                               </td>
                               <td>{match.match_date}</td>
                               <td>{getStatusBadge(match.status)}</td>
-                            <td>
-                              <input 
-                                type="checkbox" 
-                                checked={match.favourite}
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={match.favourite}
                                 disabled={updatingFavourite === match.id}
                                 onChange={(e) => handleFavouriteChange(match.id, e.target.checked)}
                               />
@@ -821,14 +794,12 @@ function AdminSportsList() {
                       </tbody>
                     </table>
                   </div>
-    </div>
 
                   {!loading && matches.length > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
                       <div className="dataTables_info">
                         Showing {pagination.from} to {pagination.to} of {pagination.total} entries
                       </div>
-    </div>
                       <Pagination
                         currentPage={pagination.current_page}
                         totalPages={pagination.last_page}
@@ -837,20 +808,13 @@ function AdminSportsList() {
                         showPreviousNext={true}
                       />
                     </div>
-    </div>
                   )}
                 </div>
-    </div>
               </div>
-    </div>
             </div>
-    </div>
           </div>
-    </div>
         </div>
-    </div>
       </div>
-    </div>
 
       {/* Team Winner Modal */}
       <Modal show={showTeamWinnerModal} onHide={handleCloseTeamWinnerModal}>
@@ -886,10 +850,8 @@ function AdminSportsList() {
               <div className="text-center mt-2">
                 <i className="fas fa-spinner fa-spin"></i> Loading team names...
               </div>
-    </div>
             )}
           </div>
-    </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseTeamWinnerModal}>
@@ -950,10 +912,8 @@ function AdminSportsList() {
               <div className="text-center mt-2">
                 <i className="fas fa-spinner fa-spin"></i> Loading team names...
               </div>
-    </div>
             )}
           </div>
-    </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseTossWinnerModal}>

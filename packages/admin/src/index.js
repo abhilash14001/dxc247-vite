@@ -14,7 +14,7 @@ import AdminRouteGuard from "./components/AdminRouteGuard";
 import AdminLayout from "./layouts/AdminLayout";
 import CricketLayout from "./layouts/CricketLayout";
 import CasinoMain from "@dxc247/shared/components/casino/CasinoMain";
-
+import { AdminThemeWrapper } from "@dxc247/shared/components/providers/ThemeProvider";
 import { setIsAdmin } from "@dxc247/shared/store/admin/adminSlice";
 
 // Lazy load pages
@@ -92,14 +92,16 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ReduxProvider>
-      <CommonProvider>
-        <SportsProvider>
-          <Router>
-            <AdminStateManager>
-              <AuthProvider>
-                <CasinoProvider isAdmin={true}>
-                  <StakeProvider>
-                  <Suspense fallback={null}>
+      <AdminThemeWrapper>
+        <CommonProvider>
+          <SportsProvider>
+            <Router>
+              <AdminStateManager>
+                <AuthProvider>
+                  
+                  <CasinoProvider isAdmin={true}>
+                    <StakeProvider>
+                    <Suspense fallback={null}>
             <Routes>
               {/* Casino Route - Admin Route Condition */}
               <Route
@@ -835,6 +837,7 @@ root.render(
         />
         </SportsProvider>
       </CommonProvider>
+      </AdminThemeWrapper>
     </ReduxProvider>
   </React.StrictMode>
 );

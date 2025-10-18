@@ -197,7 +197,7 @@ const AdminLayout = ({ children }) => {
                 {mainMenuItems.map((item, index) => (
                   hasPermission(adminUser, item.permission) && (
                     <li key={index} className="nav-item">
-                      <Link to={`/${item.path}`}>
+                      <Link to={`${item.path}`}>
                         <b>{item.label}</b>
                       </Link>
                     </li>
@@ -239,7 +239,7 @@ const AdminLayout = ({ children }) => {
                   {reportsMenuItems.map((item, index) => (
                     hasPermission(adminUser, item.permission) && (
                       <li key={index}>
-                        <Link to={`/${item.path}`} className="dropdown-item">
+                        <Link to={`${item.path}`} className="dropdown-item">
                           <span><b>{item.label}</b></span>
                           <div className="lineanimation"></div>
                         </Link>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi } from './adminApi';
-import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faEdit, 
@@ -115,29 +114,13 @@ function AdminSportsMarket() {
     const isElection = sport.type === 'election';
     return (
       <div className="d-flex gap-1 flex-wrap">
-        <a 
-          href={`${ADMIN_BASE_PATH}/sports/add-remove-sport/${sport.name.toLowerCase()}`} 
-          className="btn btn-success btn-sm"
-        >
-          <FontAwesomeIcon icon={faPlusCircle} className="me-1" />
-          {isElection ? 'Add Election' : 'Add Match'}
-        </a>
-        {!isElection && (
-          <button 
-            className="btn btn-success btn-sm"
-            onClick={() => {
-              setSelectedSport(sport);
-              setShowLimitModal(true);
-            }}
-          >
-            Set Limit
-          </button>
-        )}
+      
+     
         <Link
-          to={`${ADMIN_BASE_PATH}/sports/list/${sport.name.toLowerCase()}`} 
+          to={`/sports/list/${sport.name.toLowerCase()}`} 
           className="btn btn-success btn-sm"
         >
-          <FontAwesomeIcon icon={faListAlt} className="me-1" />
+          <FontAwesomeIcon icon={faListAlt} className="me-1 mr-1" />
           Setting
         </Link>
       </div>

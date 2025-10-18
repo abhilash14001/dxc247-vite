@@ -52,7 +52,15 @@ const CasinoLayout = ({
   const dispatch = useDispatch();
   const location = useLocation();
   const  isAdmin = useIsAdmin();
-  
+  const {
+    casino_socket,
+    triggerSocket,
+    setTriggerSocket,
+    scoreBoardData,
+    setShouldBlinkForRoulette,
+    mybetModel,
+    setMybetModel,
+  } = useContext(CasinoContext);
 
 
   const [socketDisconnectModal, setSocketDisconnectModal] = useState(false);

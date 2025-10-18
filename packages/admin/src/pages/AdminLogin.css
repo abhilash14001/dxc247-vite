@@ -76,41 +76,7 @@
 
 
 
-/* Button styling based on CloudFront CSS .btn-theme */
-.btn-primary {
-    color: var(--primary-color) !important;
-    background-image: linear-gradient(to right, var(--theme1-bg), var(--theme2-bg)) !important;
-    width: 100% !important;
-    border-radius: 4px !important;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
-    border: 0 !important;
-    padding: 12px 20px !important;
-    cursor: pointer !important;
-    font-size: 16px !important;
-    position: relative;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-}
 
-.btn-primary:hover {
-    background-image: linear-gradient(to right, var(--theme1-bg), var(--theme2-bg)) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px -4px rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.3) !important;
-}
-
-.btn-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
-}
-
-.btn-primary:disabled {
-    background-image: linear-gradient(to right, #ccc, #ccc) !important;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
-}
 
 .error, small.text-danger {
     color: #ff0000;
@@ -147,9 +113,9 @@
 }
 
 .loginInner1 {
-    margin: 0;
-    max-width: 100%;
-    width: 100%;
+    width: 350px;
+    max-width: 90%;
+    margin: 15% auto;
 }
 
 .log-logo {

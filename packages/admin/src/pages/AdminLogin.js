@@ -14,7 +14,6 @@ import { setLiveModeData } from "@dxc247/shared/store/slices/commonDataSlice";
 import { useGameNames } from "@dxc247/shared/store/admin/useGameNames";
 import AdminRouteGuard from "../components/AdminRouteGuard";
 import Notify from "@dxc247/shared/utils/Notify";
-import "./AdminLoginStyles.css";
 
 function AdminLogin() {
   const navigate = useNavigate();
@@ -28,6 +27,34 @@ function AdminLogin() {
     role: "1",
   });
   
+
+  useEffect(() => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/src/pages/AdminLogin.css';
+    link.media = 'all';
+    link.crossOrigin = 'anonymous';
+    
+    // Preload for faster loading
+    const preloadLink = document.createElement('link');
+    preloadLink.rel = 'preload';
+    preloadLink.href = '/src/pages/AdminLogin.css';
+    preloadLink.as = 'style';
+    preloadLink.onload = () => {
+      document.head.appendChild(link);
+    };
+    
+    document.head.appendChild(preloadLink);
+
+    return () => {
+      if (document.head.contains(link)) {
+        document.head.removeChild(link);
+      }
+      if (document.head.contains(preloadLink)) {
+        document.head.removeChild(preloadLink);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     

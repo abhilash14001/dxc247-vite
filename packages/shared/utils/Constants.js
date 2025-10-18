@@ -456,7 +456,10 @@ async function axiosFetch(url, method, setList = null, data = {}, params = {}) {
     url: import.meta.env.VITE_API_URL + "/" + url,
     headers: {
       Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
+    
     params,
     data: data,
   })

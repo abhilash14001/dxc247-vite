@@ -306,7 +306,7 @@ function AdminCasino() {
                 games.map((casino) => (
                   <div key={casino.id} className="casino-list-item position-relative">
                     <Link
-                      to={`${ADMIN_BASE_PATH}/casino/${casino.match_id.toLowerCase()}`}
+                      to={`/casino/${casino.match_id.toLowerCase()}`}
                       className="position-relative d-block"
                     >
                       <div
