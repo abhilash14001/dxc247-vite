@@ -81,7 +81,7 @@ const AdminTransactionPassword = () => {
       if (response.success) {
         // Update Redux state
         dispatch(setTransactionPasswordChanged());
-        navigate(ADMIN_BASE_PATH);
+        navigate('/');
       }
     } catch (error) {
       console.error('Error updating transaction password status:', error);

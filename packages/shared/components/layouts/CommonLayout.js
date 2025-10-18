@@ -4,7 +4,6 @@ import Header from "@dxc247/shared/components/layouts/Header";
 import SidebarLayout from "@dxc247/shared/components/layouts/SidebarLayout";
 import RightSideBarSports from "@dxc247/shared/components/layouts/RightSideBarSports";
 import Footer from "@dxc247/shared/components/layouts/Footer";
-import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 
 const CommonLayout = ({
   children,

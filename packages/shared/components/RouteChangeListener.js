@@ -1,13 +1,12 @@
 import { useLocation } from 'react-router-dom';
-import { ADMIN_BASE_PATH } from '../utils/Constants';
 import UserRouteChangeListener from './UserRouteChangeListener';
 import AdminRouteChangeListener from './AdminRouteChangeListener';
-
+import { useIsAdmin } from '../hooks/useIsAdmin'; 
 const RouteChangeListener = () => {
   const location = useLocation();
-
+  const isAdmin = useIsAdmin();
   // Detect if we're in admin routes
-  const isAdminRoute = location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
+  const isAdminRoute = isAdmin;
 
   // Conditionally render the appropriate listener based on the route
   if (isAdminRoute) {

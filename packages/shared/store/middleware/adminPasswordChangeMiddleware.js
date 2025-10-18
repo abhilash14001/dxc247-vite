@@ -1,5 +1,4 @@
 import { loginSuccess as adminLoginSuccess, setPasswordChanged as adminSetPasswordChanged, setTransactionPasswordChanged as adminSetTransactionPasswordChanged } from "../admin/adminSlice";
-import { ADMIN_BASE_PATH } from "../../utils/Constants";
 import { navigate } from "../slices/navigationSlice";
 
 const adminPasswordChangeMiddleware = (store) => (next) => (action) => {
@@ -24,12 +23,12 @@ const adminPasswordChangeMiddleware = (store) => (next) => (action) => {
     if (adminState.isAuthenticated && adminState.user) {
       // Check if admin needs to change password
       if (adminState.user.change_password === 1) {
-        store.dispatch(navigate(`${ADMIN_BASE_PATH}/change-password`));
+        store.dispatch(navigate('/change-password'));
         return result;
       }
       // Check if admin needs to change transaction password
       else if (adminState.user.change_transaction_password === 1) {
-        store.dispatch(navigate(`${ADMIN_BASE_PATH}/transaction-password`));
+        store.dispatch(navigate('/transaction-password'));
         return result;
       }
     }
@@ -43,11 +42,11 @@ const adminPasswordChangeMiddleware = (store) => (next) => (action) => {
     if (adminState.isAuthenticated && adminState.user) {
       // Check if transaction password change is needed
       if (adminState.user.change_transaction_password === 1) {
-        store.dispatch(navigate(`${ADMIN_BASE_PATH}/transaction-password`));
+        store.dispatch(navigate('/transaction-password'));
         return result;
       } else {
         // Both passwords are changed, redirect to admin dashboard
-        store.dispatch(navigate(ADMIN_BASE_PATH));
+        store.dispatch(navigate('/'));
         return result;
       }
     }
@@ -60,7 +59,7 @@ const adminPasswordChangeMiddleware = (store) => (next) => (action) => {
     
     if (adminState.isAuthenticated) {
       // Admin transaction password changed, redirect to admin dashboard
-      store.dispatch(navigate(ADMIN_BASE_PATH));
+      store.dispatch(navigate('/'));
       return result;
     }
   }

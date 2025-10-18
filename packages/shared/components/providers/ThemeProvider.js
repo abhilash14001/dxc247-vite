@@ -1,17 +1,16 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { ADMIN_BASE_PATH } from '../../utils/Constants';
 import { UserThemeProvider } from './UserThemeProvider';
 import { AdminThemeWrapper } from './AdminThemeProvider';
-
+import {useIsAdmin} from '../../hooks/useIsAdmin';
 // Re-export the useTheme hook from UserThemeProvider for backward compatibility
 export { useTheme } from './UserThemeProvider';
 
 export const ThemeProvider = ({ children }) => {
   const location = useLocation();
-  
+  const isAdmin = useIsAdmin();
   // Detect if we're in admin routes
-  const isAdminRoute = location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
+  const isAdminRoute = isAdmin;
 
   // Conditionally render the appropriate provider based on the route
   if (isAdminRoute) {

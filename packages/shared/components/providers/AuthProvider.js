@@ -1,14 +1,14 @@
 import { useLocation } from "react-router-dom";
-import { ADMIN_BASE_PATH } from "../../utils/Constants";
 import { UserAuthProvider } from "./UserAuthProvider";
 import { AdminAuthProvider } from "./AdminAuthProvider";
-
+import { useIsAdmin } from "../../hooks/useIsAdmin";
 
 export const AuthProvider = (props) => {
     const location = useLocation();
-    
+    const isAdmin = useIsAdmin();
     // Detect if we're in admin routes
-    const isAdminRoute = location.pathname.toLowerCase().startsWith(ADMIN_BASE_PATH);
+    const isAdminRoute = isAdmin;
+    
 
     // Conditionally render the appropriate provider based on the route
     if (isAdminRoute) {

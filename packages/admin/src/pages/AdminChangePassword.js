@@ -83,7 +83,7 @@ const AdminChangePassword = () => {
   useEffect(() => {
     if (userRef.current && userRef.current.change_password === 0) {
       // Password already changed, redirect to admin dashboard
-      navigate(ADMIN_BASE_PATH);
+      navigate('/');
     }
   }, [user, navigate]);
 
@@ -151,10 +151,10 @@ const AdminChangePassword = () => {
         // Check if transaction password change is needed using useRef for safety
         if (userRef.current && userRef.current.change_transaction_password === 1) {
           // Redirect to transaction password page
-          navigate(`${ADMIN_BASE_PATH}/transaction-password`);
+          navigate('/transaction-password');
         } else {
           // Redirect to admin dashboard
-          navigate(ADMIN_BASE_PATH);
+          navigate('/');
         }
       } else {
         // Handle validation errors or other errors

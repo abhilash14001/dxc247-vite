@@ -14,7 +14,7 @@ import RightSideBarCasino from "../layouts/RightSideBarCasino";
 import Footer from "../layouts/Footer";
 import CricketScoreboard from "../CricketScoreboard";
 import MobileMatchedBetTable from "../MobileMatchedBetTable";
-
+import { useIsAdmin } from "../../hooks/useIsAdmin";
 import { SportsContext } from "../../contexts/SportsContext";
 
 
@@ -51,7 +51,7 @@ const CasinoLayout = ({
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { isAdmin } = useIsAdmin();
+  const  isAdmin = useIsAdmin();
   
 
 

@@ -1,22 +1,22 @@
 import { logout } from "../admin/adminSlice";
-import { isAdminRoute, ADMIN_BASE_PATH } from "../../utils/Constants";
 
 const tokenExpirationMiddleware = (store) => (next) => (action) => {
   const result = next(action);
 
   const state = store.getState();
   const token = state.admin?.token;
+  const isAdmin = state.admin?.isAdmin;
   const expiration = parseInt(state.admin?.tokenExpiresAt);
 
   // Only handle admin token expiration if we're on an admin route
-  if (token && expiration && isAdminRoute()) {
+  if (token && expiration && isAdmin) {
     const now = Date.now();
     
     if (now >= expiration) {
       // expired → logout immediately
       store.dispatch(logout());
       
-      window.location.href = `${ADMIN_BASE_PATH}/login`;    
+      window.location.href = '/login';    
     } else {
       // still valid → only set timer if not already set or if token changed
       const remainingTime = expiration - now;
@@ -39,7 +39,7 @@ const tokenExpirationMiddleware = (store) => (next) => (action) => {
         if (remainingTime > 0) {
           window.__logoutTimer = setTimeout(() => {
             store.dispatch(logout());
-            window.location.href = `${ADMIN_BASE_PATH}/login`;    
+            window.location.href = '/login';    
           }, remainingTime);
         }
       }

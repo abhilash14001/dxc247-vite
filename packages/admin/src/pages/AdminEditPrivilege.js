@@ -168,12 +168,12 @@ const AdminEditPrivilege = () => {
           });
         } else {
           toast.error(response.message || 'Failed to load privilege details');
-          navigate(`${ADMIN_BASE_PATH}/settings/multi-login`);
+          navigate('/settings/multi-login');
         }
       } catch (error) {
         console.error('Error loading privilege details:', error);
         toast.error('Failed to load privilege details');
-        navigate(`${ADMIN_BASE_PATH}/settings/multi-login`);
+        navigate('/settings/multi-login');
       } finally {
         setInitialLoading(false);
       }
@@ -260,7 +260,7 @@ const AdminEditPrivilege = () => {
       const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/update`, 'POST', apiData);
       if (response.success) {
         toast.success('Privilege user updated successfully');
-        navigate(`${ADMIN_BASE_PATH}/settings/multi-login`);
+        navigate('/settings/multi-login');
       } else {
         toast.error(response.message || 'Failed to update privilege user');
       }
@@ -294,7 +294,7 @@ const AdminEditPrivilege = () => {
                 <button 
                   type="button" 
                   className="btn btn-outline-secondary me-2"
-                  onClick={() => navigate(`${ADMIN_BASE_PATH}/settings/multi-login`)}
+                  onClick={() => navigate('/settings/multi-login')}
                 >
                   <i className="fas fa-arrow-left me-1"></i>
                   Back to List
@@ -453,7 +453,7 @@ const AdminEditPrivilege = () => {
                 <button 
                   type="button" 
                   className="btn btn-outline-secondary btn-lg px-4"
-                  onClick={() => navigate(`${ADMIN_BASE_PATH}/settings/multi-login`)}
+                  onClick={() => navigate('/settings/multi-login')}
                 >
                   <i className="fas fa-times me-2"></i>
                   Cancel

@@ -165,7 +165,7 @@ const AdminLayout = ({ children }) => {
 
   // Handle settings menu item clicks with password verification
   const handleSettingsMenuClick = (item) => {
-    const targetRoute = `${ADMIN_BASE_PATH}${item.path}`;
+        const targetRoute = item.path;
     checkAccess(adminUser, targetRoute);
   };
 

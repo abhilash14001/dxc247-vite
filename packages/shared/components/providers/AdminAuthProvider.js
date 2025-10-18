@@ -43,7 +43,7 @@ export const AdminAuthProvider = (props) => {
         clearInterval(balanceInterval.current);
 
         if (func != null) {
-            return nav(`${ADMIN_BASE_PATH}/login`);
+            return nav('/login');
         }
     };
 
@@ -61,7 +61,7 @@ export const AdminAuthProvider = (props) => {
             setACCESS_TOKEN(token);
             dispatch(loginSuccess({user: userData, token: token}));
             
-            nav(ADMIN_BASE_PATH);
+            nav('/');
         } catch (error) {
             console.error('Error saving admin login data:', error);
             throw error;
@@ -88,38 +88,38 @@ export const AdminAuthProvider = (props) => {
     };
 
     // Manage frontend CSS based on admin routes
-    useEffect(() => {
-        const isAdminCasinoRoute = location.pathname.startsWith(`${ADMIN_BASE_PATH}/casino/`);
+    // useEffect(() => {
+    //     const isAdminCasinoRoute = location.pathname.startsWith('/casino/');
         
-        if (location.pathname.startsWith(ADMIN_BASE_PATH) && !isAdminCasinoRoute) {
-            // Remove CSS for regular admin routes
-            const links = document.querySelectorAll(
-                'link[href*="/assets/css/style.css"], link[href*="/assets/css/admin/style.css"], link[href*="/assets/css/responsive.css"], link[href*="/assets/css/custom.css"], link[href*="/assets/css/theme.css"], link[href*="bootstrap.min.css"]'
-            );
-            links.forEach((link) => link.remove());
-        } else if (isAdminCasinoRoute) {
-            // Add CSS back for admin casino routes
-            const cssFiles = [
-                '/assets/css/admin/style.css',
-                '/assets/css/responsive.css', 
-                '/assets/css/custom.css',
-                '/assets/css/theme.css',
-                'bootstrap.min.css'
-            ];
+    //     if ((location.pathname.startsWith('/admin') || location.pathname.startsWith('/login') || location.pathname.startsWith('/change-password') || location.pathname.startsWith('/transaction-password') || location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/users') || location.pathname.startsWith('/casinos') || location.pathname.startsWith('/reports') || location.pathname.startsWith('/settings')) && !isAdminCasinoRoute) {
+    //         // Remove CSS for regular admin routes
+    //         const links = document.querySelectorAll(
+    //             'link[href*="/assets/css/style.css"], link[href*="/assets/css/admin/style.css"], link[href*="/assets/css/responsive.css"], link[href*="/assets/css/custom.css"], link[href*="/assets/css/theme.css"], link[href*="bootstrap.min.css"]'
+    //         );
+    //         links.forEach((link) => link.remove());
+    //     } else if (isAdminCasinoRoute) {
+    //         // Add CSS back for admin casino routes
+    //         const cssFiles = [
+    //             '/assets/css/admin/style.css',
+    //             '/assets/css/responsive.css', 
+    //             '/assets/css/custom.css',
+    //             '/assets/css/theme.css',
+    //             'bootstrap.min.css'
+    //         ];
 
-            cssFiles.forEach(href => {
-                // Check if CSS is already loaded
-                const existingLink = document.querySelector(`link[href*="${href}"]`);
-                if (!existingLink) {
-                    const link = document.createElement('link');
-                    link.rel = 'stylesheet';
+    //         cssFiles.forEach(href => {
+    //             // Check if CSS is already loaded
+    //             const existingLink = document.querySelector(`link[href*="${href}"]`);
+    //             if (!existingLink) {
+    //                 const link = document.createElement('link');
+    //                 link.rel = 'stylesheet';
 
-                    link.href = href.includes('bootstrap') ? `https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/${href}` : href;
-                    document.head.appendChild(link);
-                }
-            });
-        }
-    }, [location.pathname]);
+    //                 link.href = href.includes('bootstrap') ? `https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/${href}` : href;
+    //                 document.head.appendChild(link);
+    //             }
+    //         });
+    //     }
+    // }, [location.pathname]);
 
     return (
         <AuthContext.Provider value={{

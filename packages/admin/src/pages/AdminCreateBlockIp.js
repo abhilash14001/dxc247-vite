@@ -37,12 +37,12 @@ const AdminCreateBlockIp = () => {
         });
       } else {
         toast.error(response.message || 'Failed to load IP data');
-        navigate(`${ADMIN_BASE_PATH}/settings/block-ip`);
+        navigate('/settings/block-ip');
       }
     } catch (error) {
       console.error('Error loading IP data:', error);
       toast.error('Failed to load IP data. Please try again.');
-      navigate(`${ADMIN_BASE_PATH}/settings/block-ip`);
+      navigate('/settings/block-ip');
     } finally {
       setInitialLoading(false);
     }
@@ -87,7 +87,7 @@ const AdminCreateBlockIp = () => {
 
       if (response.success) {
         toast.success(isEdit ? "IP address updated successfully!" : "IP address blocked successfully!");
-        navigate(`${ADMIN_BASE_PATH}/settings/block-ip`);
+        navigate('/settings/block-ip');
       } else {
         toast.error(response.message || `Failed to ${isEdit ? 'update' : 'block'} IP address`);
       }
@@ -130,7 +130,7 @@ const AdminCreateBlockIp = () => {
               {isEdit ? 'Edit Blocked IP' : 'Block IP Address'}
               <button
                 className="btn btn-secondary btn-sm ms-2 pull-right"
-                onClick={() => navigate(`${ADMIN_BASE_PATH}/settings/block-ip`)}
+                onClick={() => navigate('/settings/block-ip')}
               >
                 <FontAwesomeIcon icon={faArrowLeft} className="me-1" />
                 Back to List

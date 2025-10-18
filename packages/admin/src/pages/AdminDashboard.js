@@ -31,7 +31,7 @@ function AdminDashboard() {
   // Authentication check
   useEffect(() => {
     if(!isAuthenticated) {
-      navigate(`${ADMIN_BASE_PATH}/login`);
+      navigate('/login');
       return;
     }
   }, [isAuthenticated, navigate]);

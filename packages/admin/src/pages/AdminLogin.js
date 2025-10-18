@@ -52,7 +52,7 @@ function AdminLogin() {
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated) {
-      navigate(ADMIN_BASE_PATH);
+      navigate('/');
       return;
     }
   }, [isAuthenticated, navigate]);
@@ -113,7 +113,7 @@ function AdminLogin() {
         // Fetch live mode data after successful login
     
         
-        navigate(ADMIN_BASE_PATH);
+        navigate('/');
       } else {
         
         Notify(data.message || "Login failed", null, null, 'danger');

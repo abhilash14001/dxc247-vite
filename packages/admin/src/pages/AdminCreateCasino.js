@@ -8,12 +8,12 @@ function AdminCreateCasino() {
 
   const handleSuccess = (casinoData) => {
     // Redirect to casino list after successful creation
-    navigate(`${ADMIN_BASE_PATH}/settings/casino-market`);
+    navigate('/settings/casino-market');
   };
 
   const handleCancel = () => {
     // Redirect back to casino list
-    navigate(`${ADMIN_BASE_PATH}/settings/casino-market`);
+    navigate('/settings/casino-market');
   };
 
   return (

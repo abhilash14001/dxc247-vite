@@ -196,7 +196,7 @@ const AdminCreatePrivilege = () => {
       );
       if (response.success) {
         toast.success("Privilege user created successfully");
-        navigate(`${ADMIN_BASE_PATH}/settings/multi-login`);
+        navigate('/settings/multi-login');
       } else toast.error(response.message || "Failed to create privilege user");
     } catch (error) {
       toast.error("Failed to create privilege user");

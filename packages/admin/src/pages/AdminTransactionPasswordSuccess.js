@@ -2,15 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setTransactionPasswordChanged } from '@dxc247/shared/store/admin/adminSlice';
-import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
-
 const AdminTransactionPasswordSuccess = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleBack = () => {
     dispatch(setTransactionPasswordChanged());
-    navigate(ADMIN_BASE_PATH);
+    navigate('/');
   };
 
   return (

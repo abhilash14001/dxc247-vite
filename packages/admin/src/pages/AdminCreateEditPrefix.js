@@ -84,12 +84,12 @@ const AdminCreateEditPrefix = () => {
         });
       } else {
         toast.error(response.message || 'Failed to load prefix data');
-        navigate(`${ADMIN_BASE_PATH}/settings/manage-prefix`);
+        navigate('/settings/manage-prefix');
       }
     } catch (error) {
       console.error('Error loading prefix data:', error);
       toast.error('Failed to load prefix data. Please try again.');
-      navigate(`${ADMIN_BASE_PATH}/settings/manage-prefix`);
+      navigate('/settings/manage-prefix');
     } finally {
       setInitialLoading(false);
     }
@@ -166,7 +166,7 @@ const AdminCreateEditPrefix = () => {
 
       if (response.success) {
         toast.success(isEdit ? 'Prefix updated successfully!' : 'Prefix created successfully!');
-        navigate(`${ADMIN_BASE_PATH}/settings/manage-prefix`);
+        navigate('/settings/manage-prefix');
       } else {
         // Show server validation message for 422 errors
         if (response.errors) {
@@ -228,7 +228,7 @@ const AdminCreateEditPrefix = () => {
             Prefix Domain Management / {isEdit ? 'Edit Domain' : 'Create Domain'}
             <button
               className="btn btn-secondary btn-sm ms-2 pull-right"
-              onClick={() => navigate(`${ADMIN_BASE_PATH}/settings/manage-prefix`)}
+              onClick={() => navigate('/settings/manage-prefix')}
             >
               <FontAwesomeIcon icon={faArrowLeft} className="me-1" />
               Back to List

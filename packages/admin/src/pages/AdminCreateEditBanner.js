@@ -38,12 +38,12 @@ const AdminCreateEditBanner = () => {
         setPreviewImage(data.image_path ? `${data.image_path}` : null);
       } else {
         Notify(response.message || 'Failed to load banner data', null, null, 'danger');
-        navigate(`${ADMIN_BASE_PATH}/settings/banner-manager`);
+        navigate('/settings/banner-manager');
       }
     } catch (error) {
       console.error('Error loading banner data:', error);
       Notify('Failed to load banner data. Please try again.', null, null, 'danger');
-      navigate(`${ADMIN_BASE_PATH}/settings/banner-manager`);
+      navigate('/settings/banner-manager');
     } finally {
       setInitialLoading(false);
     }
@@ -107,7 +107,7 @@ const AdminCreateEditBanner = () => {
       // Handle successful response
       if (response && response.success) {
         Notify(isEdit ? 'Banner updated successfully!' : 'Banner created successfully!', null, null, 'success');
-        navigate(`${ADMIN_BASE_PATH}/settings/banner-manager`);
+        navigate('/settings/banner-manager');
         return;
       }
 
@@ -162,7 +162,7 @@ const AdminCreateEditBanner = () => {
           }
         } else if (status === 401) {
           Notify('Unauthorized. Please login again.', null, null, 'danger');
-          navigate(`${ADMIN_BASE_PATH}/login`);
+          navigate('/login');
         } else if (status === 403) {
           Notify('Access denied. You do not have permission to perform this action.', null, null, 'danger');
         } else if (status === 404) {
@@ -212,7 +212,7 @@ const AdminCreateEditBanner = () => {
             Banner / {isEdit ? 'Edit' : 'Create'}
             <button
               className="btn btn-secondary btn-sm ms-2 pull-right"
-              onClick={() => navigate(`${ADMIN_BASE_PATH}/settings/banner-manager`)}
+              onClick={() => navigate('/settings/banner-manager')}
             >
               <FontAwesomeIcon icon={faArrowLeft} className="me-1" />
               Back to List

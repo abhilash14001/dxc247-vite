@@ -215,12 +215,12 @@
           }));
         } else {
           Notify('Failed to fetch user details', null, null, 'danger');
-          navigate(`${ADMIN_BASE_PATH}/users`);
+          navigate('/users');
         }
       } catch (error) {
         console.error('Error fetching user details:', error);
         Notify('Error fetching user details. Please try again.', null, null, 'danger');
-        navigate(`${ADMIN_BASE_PATH}/users`);
+        navigate('/users');
       } finally {
         setInitialLoading(false);
       }
@@ -304,7 +304,7 @@
             isEditMode ? 'User updated successfully!' : 'User created successfully!',
             null, null, 'success'
           );
-          navigate(`${ADMIN_BASE_PATH}/client/list`);
+          navigate('/client/list');
         } else {
           Notify(response.message || 'Operation failed', null, null, 'danger');
         }
