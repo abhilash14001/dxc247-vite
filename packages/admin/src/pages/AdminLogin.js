@@ -26,6 +26,7 @@ function AdminLogin() {
     password: "",
     role: "1",
   });
+  const [cssLoaded, setCssLoaded] = useState(false);
   
 
   useEffect(() => {
@@ -35,12 +36,27 @@ function AdminLogin() {
     link.media = 'all';
     link.crossOrigin = 'anonymous';
     
+    // Track when CSS is loaded
+    link.onload = () => {
+      setCssLoaded(true);
+    };
+    
+    link.onerror = () => {
+      console.warn('Failed to load AdminLogin.css, showing form anyway');
+      setCssLoaded(true);
+    };
+    
     // Preload for faster loading
     const preloadLink = document.createElement('link');
     preloadLink.rel = 'preload';
     preloadLink.href = '/src/pages/AdminLogin.css';
     preloadLink.as = 'style';
     preloadLink.onload = () => {
+      document.head.appendChild(link);
+    };
+    
+    preloadLink.onerror = () => {
+      // If preload fails, try direct loading
       document.head.appendChild(link);
     };
     
@@ -156,6 +172,49 @@ function AdminLogin() {
       
     }
   };
+
+  // Loading component
+  const LoadingScreen = () => (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: '#f8f9fa',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999
+    }}>
+      <div style={{
+        width: '50px',
+        height: '50px',
+        border: '4px solid #e3e3e3',
+        borderTop: '4px solid #007bff',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+        marginBottom: '20px'
+      }}></div>
+      <div style={{
+        fontSize: '16px',
+        color: '#666',
+        fontWeight: '500'
+      }}></div>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+
+  // Show loading screen until CSS is loaded
+  if (!cssLoaded) {
+    return <LoadingScreen />;
+  }
 
   return (
     <AdminRouteGuard>
