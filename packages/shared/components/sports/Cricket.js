@@ -11,6 +11,7 @@ import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Buffer } from "buffer";
 import Loader from "@dxc247/shared/components/Loader";
+import { useIsAdmin } from '../../hooks/useIsAdmin'; 
 
 // Lazy load components for better performance
 const SportsLayout = lazy(() => import("../layouts/SportsLayout"));
@@ -31,8 +32,9 @@ const Khado = lazy(() => import("./cricket/Khado"));
 const BallByBall = lazy(() => import("./cricket/BallByBall"));
 const CricketScoreboard = lazy(() => import("../CricketScoreboard"));
 
-const Cricket = ({ isAdmin = false }) => {
+const Cricket = () => {
   const [gameId, setGameId] = useState("");
+  const isAdmin = useIsAdmin();
 
   const nav = useNavigate();
   const scoreBoardData = useRef(null);
@@ -555,7 +557,7 @@ const Cricket = ({ isAdmin = false }) => {
         gameId={gameId}
         refreshSpecificBetType={refreshSpecificBetType}
       >
-        {scoreBoardData.current && (
+        {!isAdmin && scoreBoardData.current && (
           <CricketScoreboard data={scoreBoardData.current} />
         )}
 
