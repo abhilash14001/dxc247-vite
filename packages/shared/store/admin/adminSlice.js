@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import { resetCommonDataState } from "../slices/commonDataSlice";
+import { store } from "../index";
 const initialState = {
   dashboardStats: {
     totalUsers: 0,

@@ -233,6 +233,17 @@ const Cricket = ({ isAdmin = false }) => {
     };
     sports_socket.on("disconnect", handleDisconnect);
 
+    // Cleanup function to remove socket listeners
+    return () => {
+      if (sports_socket) {
+        sports_socket.off(socket_game, handleSportData);
+        sports_socket.off("disconnect", handleDisconnect);
+      }
+      // Clear any pending timeouts
+      if (emptyCheckTimeout.current) {
+        clearTimeout(emptyCheckTimeout.current);
+      }
+    };
   
     // eslint-disable-next-line
   }, [match_id, sports_socket]);
@@ -431,8 +442,9 @@ const Cricket = ({ isAdmin = false }) => {
 
   useEffect(() => {
     if (sportsSocketScoreboard) {
-        
-        sportsSocketScoreboard.emit(
+      const scoreboardEvent = "getScoreData" + "cricket" + match_id;
+      
+      sportsSocketScoreboard.emit(
         "setPurposeFor",
         "cricket",
         "cricket",
@@ -440,21 +452,26 @@ const Cricket = ({ isAdmin = false }) => {
         null,
         match_id
       );
-      sportsSocketScoreboard.on(
-        "getScoreData" + "cricket" + match_id,
-        (data) => {
-          let fetchedData = JSON.parse(Buffer.from(data).toString("utf8"));
-
-          fetchedData = JSON.parse(fetchedData);
-          
-
-          if (fetchedData?.data?.scoreboard) {
-            scoreBoardData.current = fetchedData.data;
-          } else {
-            scoreBoardData.current = null;
-          }
+      
+      const handleScoreData = (data) => {
+        let fetchedData = JSON.parse(Buffer.from(data).toString("utf8"));
+        fetchedData = JSON.parse(fetchedData);
+        
+        if (fetchedData?.data?.scoreboard) {
+          scoreBoardData.current = fetchedData.data;
+        } else {
+          scoreBoardData.current = null;
         }
-      );
+      };
+      
+      sportsSocketScoreboard.on(scoreboardEvent, handleScoreData);
+      
+      // Cleanup function to remove scoreboard socket listener
+      return () => {
+        if (sportsSocketScoreboard) {
+          sportsSocketScoreboard.off(scoreboardEvent, handleScoreData);
+        }
+      };
     }
   }, [sportsSocketScoreboard, match_id]);
 

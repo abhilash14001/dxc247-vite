@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { SportsContext } from '@dxc247/shared/contexts/SportsContext';
-import { logout } from '@dxc247/shared/store/admin/adminSlice';
+import { AuthContext } from '@dxc247/shared/contexts/AuthContext';
 import AdminRouteGuard from '../components/AdminRouteGuard';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 import { hasPermission } from '../utils/permissionUtils';
@@ -17,6 +17,7 @@ const AdminLayout = ({ children }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const { user: adminUser, token } = useSelector(state => state.admin);
+  const { logout } = useContext(AuthContext);
   
   // Check if user has role 6 (admin role)
   const isAdminRole = adminUser?.role === 6;
@@ -283,7 +284,7 @@ const AdminLayout = ({ children }) => {
                     <Link to={`/profile`}><b>Change Password</b></Link>
                   </li>
                   <li>
-                    <span onClick={() => dispatch(logout())}><b>Logout</b></span>
+                    <span onClick={() => logout()}><b>Logout</b></span>
                   </li>
                 </ul>
               </li>

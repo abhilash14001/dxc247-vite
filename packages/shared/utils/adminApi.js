@@ -1,4 +1,4 @@
-import { logout } from "../store/admin/adminSlice";
+import { logout as adminLogout } from "../store/admin/adminSlice";
 import { store } from "../store";
 import { ADMIN_BASE_PATH } from "./Constants";
 
@@ -44,7 +44,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
     if (!response.ok) {
       // Handle 401 Unauthorized - logout admin
       if (response.status === 401) {
-        store.dispatch(logout());
+        store.dispatch(adminLogout());
         return;
       }
       

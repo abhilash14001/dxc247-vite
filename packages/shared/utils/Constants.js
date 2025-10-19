@@ -439,9 +439,11 @@ export const handleCashoutLogic = async (params) => {
 export function getCurrentToken() {
   
   if (isAdminRoute()) {
+    
     // For admin routes, use admin token from Redux
     return store.getState().admin.token;
   } else {
+    
     // For regular routes, use user token from Redux
     return store.getState().user.token;
   }

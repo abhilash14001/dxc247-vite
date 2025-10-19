@@ -79,7 +79,8 @@ const commonDataSlice = createSlice({
     // Latest Events reducers
     
     resetCommonDataState: (state) => {
-      return initialState;
+      
+      state.data = initialState.data;
     },
   },
 });

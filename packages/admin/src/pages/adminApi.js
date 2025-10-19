@@ -1,4 +1,4 @@
-import { logout } from "@dxc247/shared/store/admin/adminSlice";
+import { logout as adminLogout } from "@dxc247/shared/store/admin/adminSlice";
 import { store } from "@dxc247/shared/store";
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 
@@ -44,7 +44,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
     if (!response.ok) {
       // Handle 401 Unauthorized - logout admin
       if (response.status === 401) {
-        store.dispatch(logout());
+        store.dispatch(adminLogout());
         return;
       }
       

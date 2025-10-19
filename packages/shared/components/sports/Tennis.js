@@ -192,37 +192,32 @@ const Tennis = ({ isAdmin = false }) => {
             let emptyCheckTimeout;
 
 
-            const gameConnect = () => {
-                sports_socket.on(socket_game, sportData => {
+            const handleSportData = (sportData) => {
+                const gameSet = [];
 
-                    const gameSet = [];
+                if (sportData !== null) {
+                    sportData = JSON.parse(Buffer.from(sportData).toString('utf8'))
 
-                    if (sportData !== null) {
+                    if (sportData && sportData.game_detail && sportData.game_detail.length > 0) {
+                        setShowLoader(false);
 
-                        sportData = JSON.parse(Buffer.from(sportData).toString('utf8'))
-
-                        if (sportData && sportData.game_detail && sportData.game_detail.length > 0) {
-                            setShowLoader(false);
-
-                            for (let i = 0; i < sportData.game_detail.length; i++) {
-                                const value = sportData.game_detail[i];
-
-                                const gtype = value?.mname?.toLowerCase();
-
-                                gameSet[gtype] = value;
-                            }
-
-                            if (Object.values(gameSet).length > 0 && emptyCheckTimeout) {
-                                clearTimeout(emptyCheckTimeout);  // Clear the timeout if data is received
-                                emptyCheckTimeout = null;
-                            }
-                            setAr_sectionData(gameSet)
-                            trackData.current = gameSet;
+                        for (let i = 0; i < sportData.game_detail.length; i++) {
+                            const value = sportData.game_detail[i];
+                            const gtype = value?.mname?.toLowerCase();
+                            gameSet[gtype] = value;
                         }
+
+                        if (Object.values(gameSet).length > 0 && emptyCheckTimeout) {
+                            clearTimeout(emptyCheckTimeout);  // Clear the timeout if data is received
+                            emptyCheckTimeout = null;
+                        }
+                        setAr_sectionData(gameSet)
+                        trackData.current = gameSet;
                     }
-                })
-            }
-            gameConnect();
+                }
+            };
+
+            sports_socket.on(socket_game, handleSportData);
 
             emptyCheckTimeout = setTimeout(() => {
                 if (Object.values(trackData.current).length === 0) {
@@ -235,7 +230,10 @@ const Tennis = ({ isAdmin = false }) => {
             });
 
             return () => {
-                sports_socket.off(socket_game);
+                if (sports_socket) {
+                    sports_socket.off(socket_game, handleSportData);
+                    sports_socket.off('disconnect');
+                }
                 setPopupDisplay(false)
                 setShowLoader(false);
                 

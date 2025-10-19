@@ -1,4 +1,4 @@
-import { logout } from "../admin/adminSlice";
+import { logout as adminLogout } from "../admin/adminSlice";
 
 const tokenExpirationMiddleware = (store) => (next) => (action) => {
   const result = next(action);
@@ -14,7 +14,7 @@ const tokenExpirationMiddleware = (store) => (next) => (action) => {
     
     if (now >= expiration) {
       // expired → logout immediately
-      store.dispatch(logout());
+      store.dispatch(adminLogout());
       
       window.location.href = '/login';    
     } else {
@@ -38,7 +38,7 @@ const tokenExpirationMiddleware = (store) => (next) => (action) => {
         // Set new timer only if remaining time is positive
         if (remainingTime > 0) {
           window.__logoutTimer = setTimeout(() => {
-            store.dispatch(logout());
+            store.dispatch(adminLogout());
             window.location.href = '/login';    
           }, remainingTime);
         }

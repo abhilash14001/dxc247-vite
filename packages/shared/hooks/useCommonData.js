@@ -29,14 +29,12 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
             }
             return;
         }
-
-        // If already fetching or loading, don't make another request
-        if (commonDataState.isFetching || commonDataState.loading || isApiCallInProgress) {
+     
+          // If already fetching or loading, don't make another request
+          if (commonDataState.isFetching || commonDataState.loading || isApiCallInProgress) {
             
             return;
         }
-
-        
         
         // Only fetch if we have a token
         if (!currentToken) {
@@ -48,7 +46,7 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
         // Set global flag and Redux flag immediately to prevent other components from making the same call
         isApiCallInProgress = true;
         dispatch(setFetching(true));
-   
+        
         const fetchData = async () => {
             try {
                 dispatch(setCommonDataLoading(true));
@@ -57,7 +55,7 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
                 let response = await axiosFetch('common_detail_data', 'get');
                 
                 // Store in Redux
-                console.log('data is ', response.data);
+                
                 dispatch(setCommonData(response.data));
                 dispatch(setBannerDetails(response.data.banner_data));
 

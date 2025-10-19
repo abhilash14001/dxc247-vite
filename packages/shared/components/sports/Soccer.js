@@ -180,58 +180,46 @@ const Soccer = ({ isAdmin = false }) => {
 
         sports_socket.emit('setPurposeFor', 'sports', gamename, '', '', match_id)
         let emptyCheckTimeout;
-            const gameConnect = () => {
-                sports_socket.on(socket_game, sportData => {
+            const handleSportData = (sportData) => {
+                if (sportData !== null) {
+                    const gameSet = [];
+                    sportData = JSON.parse(Buffer.from(sportData).toString('utf8'))
 
-                    if (sportData !== null) {
+                    if (sportData && sportData.game_detail && sportData.game_detail.length > 0) {
+                        setShowLoader(false);
 
-                        const gameSet = [];
-                        sportData = JSON.parse(Buffer.from(sportData).toString('utf8'))
-
-                        if (sportData && sportData.game_detail && sportData.game_detail.length > 0) {
-
-                            setShowLoader(false);
-
-                            for (let i = 0; i < sportData.game_detail.length; i++) {
-                                const value = sportData.game_detail[i];
-
-                                const gtype = value.mname.toLowerCase();
-
-
-                                gameSet[gtype] = value;
-                            }
-                            setAr_sectionData(gameSet)
-                            trackData.current = gameSet;
-
-                            if (Object.values(gameSet).length > 0 && emptyCheckTimeout) {
-                                clearTimeout(emptyCheckTimeout);  // Clear the timeout if data is received
-                                emptyCheckTimeout = null;
-                            }
-
+                        for (let i = 0; i < sportData.game_detail.length; i++) {
+                            const value = sportData.game_detail[i];
+                            const gtype = value.mname.toLowerCase();
+                            gameSet[gtype] = value;
                         }
+                        setAr_sectionData(gameSet)
+                        trackData.current = gameSet;
 
-
-                    }
-                    const elements = document.getElementsByClassName('checkdataval');
-
-                    for (let i = 0; i < elements.length; i++) {
-                        let element = elements[i];
-                        // compare data-old and data-new attributes
-                        let oldData = element.getAttribute('data-old');
-                        let newData = element.getAttribute('data-new');
-
-
-                        if (oldData !== newData) {
-                            // if data has changed, add the 'blink' class
-                            element.classList.add('blink');
-                        } else {
-                            element.classList.remove('blink');
+                        if (Object.values(gameSet).length > 0 && emptyCheckTimeout) {
+                            clearTimeout(emptyCheckTimeout);  // Clear the timeout if data is received
+                            emptyCheckTimeout = null;
                         }
-
                     }
-                })
-            }
-            gameConnect();
+                }
+                
+                const elements = document.getElementsByClassName('checkdataval');
+                for (let i = 0; i < elements.length; i++) {
+                    let element = elements[i];
+                    // compare data-old and data-new attributes
+                    let oldData = element.getAttribute('data-old');
+                    let newData = element.getAttribute('data-new');
+
+                    if (oldData !== newData) {
+                        // if data has changed, add the 'blink' class
+                        element.classList.add('blink');
+                    } else {
+                        element.classList.remove('blink');
+                    }
+                }
+            };
+
+            sports_socket.on(socket_game, handleSportData);
 
         emptyCheckTimeout = setTimeout(() => {
 
@@ -252,7 +240,10 @@ const Soccer = ({ isAdmin = false }) => {
             });
 
             return () => {
-                sports_socket.off(socket_game);
+                if (sports_socket) {
+                    sports_socket.off(socket_game, handleSportData);
+                    sports_socket.off('disconnect');
+                }
                 setPopupDisplay(false)
                 setShowLoader(false);
                 

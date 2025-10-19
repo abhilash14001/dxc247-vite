@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosFetch, { ADMIN_BASE_PATH } from "../../utils/Constants";
-import { loginSuccess } from "../../store/admin/adminSlice";
+import { loginSuccess, logout as adminLogout } from "../../store/admin/adminSlice";
+import { resetCommonDataState } from "../../store/slices/commonDataSlice";
 
 export const AdminAuthProvider = (props) => {
     const nav = useNavigate();
@@ -70,9 +71,12 @@ export const AdminAuthProvider = (props) => {
 
     const logout = () => {
         try {
-            // Admin logout logic can be added here if needed
-            // For now, we'll rely on Redux state management
+            // Admin logout - reset both admin state and commonData
+            
+            dispatch(adminLogout());
             clearIntervals();
+            dispatch(resetCommonDataState());
+            nav('/login');
         } catch (error) {
             console.error('Error during admin logout:', error);
         }
