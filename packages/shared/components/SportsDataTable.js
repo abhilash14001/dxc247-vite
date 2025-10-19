@@ -15,6 +15,7 @@ const SportsDataTable = ({
     useEffect(() => {
         if (listData && Object.keys(listData).length > 0) {
             
+            
             setCurrentOddsData(prev => ({
                 ...prev,
                 [activeTab]: listData
@@ -43,21 +44,39 @@ const SportsDataTable = ({
         }
     };
 
+    // Helper function to get property value with API fallback
+    const getPropertyValue = (sport, sportProperty, apiProperty) => {
+        let value = sport?.[sportProperty] || 0;
+        
+        // Check if we have API data for this match
+        if (currentOddsData && currentOddsData[activeTab]) {
+            const apiData = Object.values(currentOddsData[activeTab]).find(item => item.gmid === parseInt(sport.match_id));
+            if (apiData && apiData[apiProperty] !== undefined) {
+                value = apiData[apiProperty] == true ? 1 : 0;
+            }
+        }
+        
+        return value;
+    };
+
     const renderGameIcons = (sport) => {
+        const isPlay = getPropertyValue(sport, 'isPlay', 'iplay');
+        const isTv = getPropertyValue(sport, 'isTv', 'tv');
+        const isFancy = getPropertyValue(sport, 'isFancy', 'f');
+        const isBookmaker = getPropertyValue(sport, 'isBookmaker', 'bm');
+        
         return (
             <div className="game-icons">
                 <div className="game-icon">
-                    {sport && sport.isPlay !== 0 && (
+                    {isPlay !== 0 && (
                         <span className="active"></span>
                     )}
                 </div>
                 <div className="game-icon">
-                    {sport && sport.isTv !== 0 && (
-                        <i className="fas fa-tv icon-tv"></i>
-                    )}
+                    {isTv !== 0 && <i className="fas fa-tv icon-tv"></i>}
                 </div>
                 <div className="game-icon">    
-                    {sport && sport.isFancy !== 0 && (
+                    {isFancy !== 0 && (
                         <img
                             src="../img/icons/ic_fancy.png"
                             className="fancy-icon" 
@@ -66,7 +85,7 @@ const SportsDataTable = ({
                     )}
                 </div>
                 <div className="game-icon">
-                    {sport && sport.isBookmaker !== 0 && (
+                    {isBookmaker !== 0 && (
                         <img
                             src="../img/icons/ic_bm.png"
                             className="fancy-icon" 
