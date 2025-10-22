@@ -518,7 +518,8 @@ const Cricket = () => {
           setOdds: setBetOddValue,
           setPopupDisplay: setPopupDisplay,
           popupDisplay: popupDisplay,
-          refreshSpecificBetType: refreshSpecificBetType
+          refreshSpecificBetType: refreshSpecificBetType,
+          scoreboardData: scoreBoardData.current
         }}
       >
         <SportsLayout

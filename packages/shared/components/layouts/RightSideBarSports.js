@@ -20,6 +20,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setIsSubmitDisabled } from "@dxc247/shared/store/slices/casinoSlice";
 import { isAdminRoute, useDeleteMatchedBet } from "@dxc247/shared/utils/Constants";
 import useStakeValuesCheck from "@dxc247/shared/hooks/useStakeValuesCheck";
+import CricketScoreboard from "../CricketScoreboard";
 const RightSideBarSports = ({
   setPlacingBets = null,
   callTeamDatas = null,
@@ -45,6 +46,7 @@ const RightSideBarSports = ({
   sportList = {},
   minValue = 1,
   refreshSpecificBetType = () => {},
+  scoreboardData = null,
 }) => {
   const [isTVVisible, setIsTVVisible] = useState(false);
   const [stakeshowModal, setStakeShowModal] = useState(false);
@@ -948,6 +950,16 @@ const RightSideBarSports = ({
               </div>
             </Modal.Body>
           </Modal>
+
+          {/* Cricket Scoreboard - Admin Only */}
+          {isAdminRoute() && scoreboardData && (
+            <div className="sidebar-box cricket-scoreboard-container">
+              <div className="sidebar-title">
+                <h4>Cricket Scoreboard</h4>
+              </div>
+              <CricketScoreboard data={scoreboardData} />
+            </div>
+          )}
 
           {/* My Bet Section */}
           <div className="sidebar-box my-bet-container">
