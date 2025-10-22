@@ -2257,7 +2257,7 @@
     .detail-page .center-container {
         width: calc(100% - 352px);
     }
-    .right-sidebar {
+    .right-sidebar.sidebar {
         width: 350px;
     }
     .right-sidebar.sticky {

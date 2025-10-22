@@ -355,7 +355,7 @@ function Bookmaker({
           <div
             className={`market-body ${
               (
-                (bookmakerData?.status === "SUSPENDED" && !hasAnyActiveSection) ||
+                (bookmakerData?.status === "SUSPENDED") ||
                 sportList.match_suspend_bookmaker === 1 ||
                 sportList.match_suspend === 1
               )
@@ -364,7 +364,7 @@ function Bookmaker({
             }`}
             data-title={
               (
-                (bookmakerData?.status === "SUSPENDED" && !hasAnyActiveSection) ||
+                (bookmakerData?.status === "SUSPENDED") ||
                 sportList.match_suspend_bookmaker === 1 ||
                 sportList.match_suspend === 1
               )

@@ -77,7 +77,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
   };
 
   return (
-    <div className="col-md-12 d-flex" ref={dropdownRef}>
+    <div className="col-md-12 d-flex overflow-x" ref={dropdownRef}>
       <div className="dropdown market-btn width-btn" style={{ display: 'block' }}>
         <button 
           className="btn btn-back dropdown-toggle margin-button width-btn-100" 
