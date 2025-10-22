@@ -9,7 +9,7 @@ import {
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { adminApi } from "../utils/api";
-import { loginSuccess, setAuthLoading } from "@dxc247/shared/store/admin/adminSlice";
+import { loginSuccess, setAuthLoading, logout } from "@dxc247/shared/store/admin/adminSlice";
 import { setLiveModeData } from "@dxc247/shared/store/slices/commonDataSlice";
 import { useGameNames } from "@dxc247/shared/store/admin/useGameNames";
 import AdminRouteGuard from "../components/AdminRouteGuard";
@@ -18,7 +18,7 @@ import Notify from "@dxc247/shared/utils/Notify";
 function AdminLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated, loading } = useSelector(state => state.admin);
+  const { isAuthenticated, loading, token, tokenExpiresAt } = useSelector(state => state.admin);
   const { liveModeData } = useSelector(state => state.commonData);
   const { fetchGameNames } = useGameNames();
   const [formData, setFormData] = useState({
@@ -93,15 +93,24 @@ function AdminLogin() {
     initializePage();
   }, []);
 
+  // Check authentication and token validity
   useEffect(() => {
-     
-    // Redirect if already authenticated
-    if (isAuthenticated) {
-      navigate('/');
+    // Only redirect if authenticated AND token is valid
+    if (isAuthenticated && token && tokenExpiresAt) {
+      const now = Date.now();
+      const expiration = parseInt(tokenExpiresAt);
       
-      return;
+      // Check if token is still valid
+      if (now < expiration) {
+        navigate('/');
+        return;
+      } else {
+        // Token expired - dispatch logout to clear state
+        console.log('Token expired, logging out user');
+        dispatch(logout());
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, token, tokenExpiresAt]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

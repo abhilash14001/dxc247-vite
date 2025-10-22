@@ -820,7 +820,6 @@ root.render(
                   </AdminRouteGuard>
                 } 
               />
-              <Route path="/*" element={<AdminLogin />} />
             </Routes>
                   </Suspense>
                   </StakeProvider>
