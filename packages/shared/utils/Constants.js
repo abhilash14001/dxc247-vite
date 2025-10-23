@@ -624,11 +624,12 @@ MQIDAQAB
       
       const decryptedJSON = JSON.parse(decryptedText);
 
-      if (setList !== null) setList({ data: decryptedJSON });
-      return { data: decryptedJSON };
+      console.log('decrypted json is ', decryptedJSON);
+      if (setList !== null) setList( decryptedJSON);
+      return {data : decryptedJSON};
     } else {
-      if (setList !== null) setList({ data: response.data });
-      return { data: response.data };
+      if (setList !== null) setList(response.data);
+      return response.data;
     }
   } catch (err) {
     if (err?.error === "Unauthenticated" || err?.response?.status === 401) {

@@ -7,7 +7,7 @@ import { AuthContext } from "@dxc247/shared/contexts/AuthContext";
 import { useLoading } from "@dxc247/shared/hooks/useLoading";
 import Notify from "@dxc247/shared/utils/Notify";
 import { loginSuccess } from "@dxc247/shared/store/slices/userSlice";
-import { setLiveModeData } from "@dxc247/shared/store/slices/commonDataSlice";
+import { setLiveModeData, setServerPublicKey } from "@dxc247/shared/store/slices/commonDataSlice";
 import CryptoTest from "../components/CryptoTest";
 
 function Login() {
@@ -25,7 +25,7 @@ function Login() {
     setIsLoggedIn,
     getBalance,
   } = useContext(AuthContext);
-  const { liveModeData } = useSelector((state) => state.commonData);
+  const { liveModeData, serverPublicKey } = useSelector((state) => state.commonData);
 
   // Hide loading when Login component mounts
   useEffect(() => {
@@ -42,7 +42,19 @@ function Login() {
       password: state.password,
     })
       .then((res) => {
-        // Dispatch Redux login success action
+
+        
+        if(!serverPublicKey){
+          fetch(import.meta.env.VITE_API_URL + "/p-key-get", "GET")
+          .then(res => {
+            dispatch(setServerPublicKey(res.data.publicKey)); 
+          })
+          .catch(err => {
+            console.error("Error fetching server public key:", err);
+          });
+        }
+        
+      
         dispatch(
           loginSuccess({
             token: res.data.token,
@@ -106,6 +118,14 @@ function Login() {
   const handleDemoLogin = async () => {
     try {
       const demoLoginResponse = await demoLogin();
+      
+      
+        
+      if(!serverPublicKey){
+        const response = await axios.get(import.meta.env.VITE_API_URL + "/p-key-get");
+        dispatch(setServerPublicKey(response.data.publicKey));
+      } 
+      
       dispatch(
         loginSuccess({
           token: demoLoginResponse.data.token,

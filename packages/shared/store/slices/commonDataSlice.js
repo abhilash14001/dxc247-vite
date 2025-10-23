@@ -7,6 +7,7 @@ const initialState = {
   lastFetched: null,
   isFetching: false,
   liveModeData: [],
+  serverPublicKey: null,
   theme: {
     // User theme
     primary: '#0383C4',
@@ -41,6 +42,9 @@ const commonDataSlice = createSlice({
       state.error = null;
       state.lastFetched = Date.now();
       state.isFetching = false;
+    },
+    setServerPublicKey: (state, action) => {
+      state.serverPublicKey = action.payload;
     },
     setCommonDataLoading: (state, action) => {
       state.loading = action.payload;
@@ -87,6 +91,7 @@ const commonDataSlice = createSlice({
 
 export const {
   setCommonData,
+  setServerPublicKey,
   setCommonDataLoading,
   setCommonDataError,
   setFetching,

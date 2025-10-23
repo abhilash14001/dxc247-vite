@@ -3,15 +3,51 @@ import { store } from "../store";
 import { ADMIN_BASE_PATH } from "./Constants";
 
 // Admin API helper function
+import CryptoJS from 'crypto-js';
+import JSEncrypt from 'jsencrypt';
+
 export const adminApi = async (url, method = "GET", data = null) => {
   // Get token from Redux store if not provided
   const authToken = store.getState().admin.token;
   
-  
+  // 1️⃣ Generate AES key & IV
+  const aesKey = CryptoJS.lib.WordArray.random(32);
+  const aesIv = CryptoJS.lib.WordArray.random(16);
+
+  let encryptedPayload = null;
+
+  // 2️⃣ Encrypt payload if it's a POST/PUT/PATCH and has data
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && data && !(data instanceof FormData)) {
+    const jsonData = JSON.stringify(data);
+    encryptedPayload = CryptoJS.AES.encrypt(jsonData, aesKey, {
+      iv: aesIv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }).toString(); // Base64 string
+  }
+
+  // 3️⃣ Encrypt AES key using server's public key
+  const encryptor = new JSEncrypt();
+  encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA77YBndYGoCtviSV7tc+d
+UZAe1BQvkQtvEoPskg6yWLI4WGQGKEpGv9mELDWpq4KS2y0iWAmAuwybVvqoEMHp
+408gdlpF5UEq2of3vgnd61weIJs/5ZNVRQjADMYlSd+fa4p0Xa1/OkadcWoAuwDV
+QHiaLkIzKwPdvMqWrtFkaMZ+zOpXuJS8UfIQlxRUJ5DVI37+6cBkuYnAEnVtkZlu
+sx4dY0tU9uv2T1ShvYcTcFG83cZXfNEknNGMpHQHMCeeZSbksgftDrUgk6rJexrv
+VOPavpBJv7gcwP1UAHnmMzTMwYzT8NRNYnq5kD0C7XJU1dN4V5HHOc38KlcLoXdB
+MQIDAQAB
+-----END PUBLIC KEY-----`);
+
+  const encryptedAESKey = encryptor.encrypt(CryptoJS.enc.Base64.stringify(aesKey));
+
+  // 4️⃣ Build request config
   const config = {
     method: method,
     headers: {
       "Accept": "application/json",
+      "Content-Type": "application/json",
+      "X-Encrypted-Key": encryptedAESKey,
+      "X-IV": CryptoJS.enc.Base64.stringify(aesIv),
     },
   };
 
@@ -25,11 +61,17 @@ export const adminApi = async (url, method = "GET", data = null) => {
     // Check if data is FormData (for file uploads)
     if (data instanceof FormData) {
       // Don't set Content-Type for FormData, let browser set it with boundary
+      delete config.headers["Content-Type"];
       config.body = data;
     } else {
-      // For JSON data
-      config.headers["Content-Type"] = "application/json";
-      config.body = JSON.stringify(data);
+      // For JSON data with encryption
+      if (encryptedPayload) {
+        config.body = JSON.stringify({
+          payload: encryptedPayload,
+        });
+      } else {
+        config.body = JSON.stringify(data);
+      }
     }
   }
 
@@ -57,7 +99,21 @@ export const adminApi = async (url, method = "GET", data = null) => {
       throw error;
     }
 
-    return result;
+    // 5️⃣ Decrypt backend response if encrypted
+    const encryptedResponse = result?.data;
+    if (encryptedResponse) {
+      const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
+        iv: aesIv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      
+      const decryptedJSON = JSON.parse(decryptedText);
+      return { data: decryptedJSON };
+    } else {
+      return result;
+    }
   } catch (error) {
     console.error("Admin API error:", error);
     throw error;

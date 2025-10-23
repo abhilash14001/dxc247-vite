@@ -17,7 +17,7 @@ export const Mogambo = ({ lastResults, openPopup }) => {
         const isWin = result.win === "1"; // Mogambo wins when win === "2"
         const resultClass = isWin ? "result result-b" : "result result-a";
         const resultText = isWin ? "W" : "L";
-        console.log('result is ', result)
+        
         return (
           <span
             key={index}
