@@ -42,16 +42,7 @@ function Login() {
     })
       .then((res) => {
 
-        
-        if(!serverPublicKey){
-          fetch(import.meta.env.VITE_API_URL + "/p-key-get", "GET")
-          .then(res => {
-            dispatch(setServerPublicKey(res.data.publicKey)); 
-          })
-          .catch(err => {
-            console.error("Error fetching server public key:", err);
-          });
-        }
+     
         
       
         dispatch(
@@ -173,6 +164,14 @@ function Login() {
   useEffect(() => {
     const fetchLiveModeData = async () => {
       try {
+
+
+           
+        if(!serverPublicKey){
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/p-key-get`);
+          dispatch(setServerPublicKey(response.data.publicKey)); 
+        }
+
         const response = await axiosFetch("admin/domain-details", "GET");
         if (response && response.data) {
           dispatch(setLiveModeData(response.data?.data || response.data));
