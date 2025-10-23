@@ -28,15 +28,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
 
   // 3️⃣ Encrypt AES key using server's public key
   const encryptor = new JSEncrypt();
-  encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA77YBndYGoCtviSV7tc+d
-UZAe1BQvkQtvEoPskg6yWLI4WGQGKEpGv9mELDWpq4KS2y0iWAmAuwybVvqoEMHp
-408gdlpF5UEq2of3vgnd61weIJs/5ZNVRQjADMYlSd+fa4p0Xa1/OkadcWoAuwDV
-QHiaLkIzKwPdvMqWrtFkaMZ+zOpXuJS8UfIQlxRUJ5DVI37+6cBkuYnAEnVtkZlu
-sx4dY0tU9uv2T1ShvYcTcFG83cZXfNEknNGMpHQHMCeeZSbksgftDrUgk6rJexrv
-VOPavpBJv7gcwP1UAHnmMzTMwYzT8NRNYnq5kD0C7XJU1dN4V5HHOc38KlcLoXdB
-MQIDAQAB
------END PUBLIC KEY-----`);
+  encryptor.setPublicKey(store.getState().commonData.serverPublicKey);
 
   const encryptedAESKey = encryptor.encrypt(CryptoJS.enc.Base64.stringify(aesKey));
 
@@ -110,7 +102,7 @@ MQIDAQAB
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
       const decryptedJSON = JSON.parse(decryptedText);
-      return { data: decryptedJSON };
+      return decryptedJSON?.data || decryptedJSON;
     } else {
       return result;
     }
