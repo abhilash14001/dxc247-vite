@@ -54,6 +54,7 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
                 
                 let response = await axiosFetch('common_detail_data', 'get');
                 
+                
                 // Store in Redux
                 
                 dispatch(setCommonData(response.data));
@@ -65,6 +66,7 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
                 }
                 
             } catch (error) {
+                throw error;
                 console.error('Error fetching common data:', error);
                 dispatch(setCommonDataError(error.message));
             } finally {

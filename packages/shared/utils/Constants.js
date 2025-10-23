@@ -5,7 +5,8 @@ import { setIsSubmitDisabled } from "../store/slices/casinoSlice";
 import { store } from "../store";
 import { toast } from "react-toastify";
 import { useToastConfirm } from "../components/ui/ToastConfirm";
-import { useSelector } from "react-redux";
+import CryptoJS from 'crypto-js';
+import JSEncrypt from 'jsencrypt';
 let globalTimer = null;
 
 axios.defaults.withCredentials = true;
@@ -449,7 +450,74 @@ export function getCurrentToken() {
   }
 }
 
-async function axiosFetch(url, method, setList = null, data = {}, params = {}) {
+async function encryptData(url, data = {}, method = 'get' ) {
+  try {
+    // 1️⃣ Generate AES Key (32 bytes) and IV (16 bytes)
+    const aesKey = CryptoJS.lib.WordArray.random(32);
+    const aesIv = CryptoJS.lib.WordArray.random(16);
+
+    // 2️⃣ Prepare data to encrypt
+    const data = { plainText: 'Hello, world!' };
+    const jsonData = JSON.stringify(data);
+
+    // 3️⃣ Encrypt payload using AES
+    const encryptedPayload = CryptoJS.AES.encrypt(jsonData, aesKey, {
+      iv: aesIv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }).toString();
+
+    // 4️⃣ Encrypt AES key using server public RSA key
+    const encryptor = new JSEncrypt();
+    encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA77YBndYGoCtviSV7tc+d
+      UZAe1BQvkQtvEoPskg6yWLI4WGQGKEpGv9mELDWpq4KS2y0iWAmAuwybVvqoEMHp
+      408gdlpF5UEq2of3vgnd61weIJs/5ZNVRQjADMYlSd+fa4p0Xa1/OkadcWoAuwDV
+      QHiaLkIzKwPdvMqWrtFkaMZ+zOpXuJS8UfIQlxRUJ5DVI37+6cBkuYnAEnVtkZlu
+      sx4dY0tU9uv2T1ShvYcTcFG83cZXfNEknNGMpHQHMCeeZSbksgftDrUgk6rJexrv
+      VOPavpBJv7gcwP1UAHnmMzTMwYzT8NRNYnq5kD0C7XJU1dN4V5HHOc38KlcLoXdB
+      MQIDAQAB
+      -----END PUBLIC KEY-----`);
+
+    const encryptedAESKey = encryptor.encrypt(CryptoJS.enc.Base64.stringify(aesKey));
+
+    let response;
+    if(method === 'get'){
+    const params = new URLSearchParams();
+    params.append('encryptedKey', encryptedAESKey);
+    params.append('iv', CryptoJS.enc.Base64.stringify(aesIv));
+    
+    // 5️⃣ Send request to server
+    response = await axios.get(url + '?' + params.toString());
+  }
+  else{
+    const encryptedData = {
+      encryptedKey: encryptedAESKey,
+      iv: CryptoJS.enc.Base64.stringify(aesIv),
+      payload: data,
+    }
+    response = await axios.post(url, encryptedData);
+  }
+    console.log('Server Response:', response.data);
+
+    // 6️⃣ Decrypt backend response using SAME AES key & IV
+    const encryptedResponse = response.data.data; // Only encryptedData returned
+    if (encryptedResponse) {
+      const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
+        iv: aesIv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      
+    }
+  } catch (error) {
+    console.error('❌ Error:', error);
+  }
+}
+
+async function axiosFetch1(url, method, setList = null, data = {}, params = {}) {
   const token = getCurrentToken();
   
   return axios({
@@ -486,7 +554,92 @@ async function axiosFetch(url, method, setList = null, data = {}, params = {}) {
       throw err;
     });
 }
+export async function axiosFetch(url, method, setList = null, data = {}, params = {}) {
+  const token = getCurrentToken();
 
+  // 1️⃣ Generate AES key & IV
+  const aesKey = CryptoJS.lib.WordArray.random(32);
+  const aesIv = CryptoJS.lib.WordArray.random(16);
+
+  let encryptedPayload = null;
+
+  // 2️⃣ Encrypt payload if it's a POST/PUT/PATCH and has data
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && Object.keys(data).length > 0) {
+    const jsonData = JSON.stringify(data);
+    encryptedPayload = CryptoJS.AES.encrypt(jsonData, aesKey, {
+      iv: aesIv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }).toString(); // Base64 string
+  }
+
+  // 3️⃣ Encrypt AES key using server's public key
+  const encryptor = new JSEncrypt();
+  encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA77YBndYGoCtviSV7tc+d
+UZAe1BQvkQtvEoPskg6yWLI4WGQGKEpGv9mELDWpq4KS2y0iWAmAuwybVvqoEMHp
+408gdlpF5UEq2of3vgnd61weIJs/5ZNVRQjADMYlSd+fa4p0Xa1/OkadcWoAuwDV
+QHiaLkIzKwPdvMqWrtFkaMZ+zOpXuJS8UfIQlxRUJ5DVI37+6cBkuYnAEnVtkZlu
+sx4dY0tU9uv2T1ShvYcTcFG83cZXfNEknNGMpHQHMCeeZSbksgftDrUgk6rJexrv
+VOPavpBJv7gcwP1UAHnmMzTMwYzT8NRNYnq5kD0C7XJU1dN4V5HHOc38KlcLoXdB
+MQIDAQAB
+-----END PUBLIC KEY-----`);
+
+  const encryptedAESKey = encryptor.encrypt(CryptoJS.enc.Base64.stringify(aesKey));
+
+  // 4️⃣ Build request config
+  const requestConfig = {
+    method,
+    url: import.meta.env.VITE_API_URL + "/" + url,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "X-Encrypted-Key": encryptedAESKey,
+      "X-IV": CryptoJS.enc.Base64.stringify(aesIv),
+    },
+    params: { ...params },
+    data: {},
+  };
+
+  // For POST/PUT/PATCH, send encrypted payload in body
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && encryptedPayload) {
+    requestConfig.data = {
+      payload: encryptedPayload,
+    };
+  }
+
+  try {
+    const response = await axios(requestConfig);
+
+    // 5️⃣ Decrypt backend response if encrypted
+    const encryptedResponse = response.data?.data;
+    if (encryptedResponse) {
+      const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
+        iv: aesIv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      
+      const decryptedJSON = JSON.parse(decryptedText);
+
+      if (setList !== null) setList({ data: decryptedJSON });
+      return { data: decryptedJSON };
+    } else {
+      if (setList !== null) setList({ data: response.data });
+      return { data: response.data };
+    }
+  } catch (err) {
+    if (err?.error === "Unauthenticated" || err?.response?.status === 401) {
+      handleUnauthorized();
+      return null;
+    } else if (err?.code === "ERR_NETWORK") {
+      return null;
+    }
+    throw err;
+  }
+}
 // Function to handle unauthorized access (401 errors)
 function handleUnauthorized() {
   // Check if we're in admin context
