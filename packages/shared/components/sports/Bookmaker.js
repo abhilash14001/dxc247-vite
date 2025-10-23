@@ -358,7 +358,7 @@ function Bookmaker({
                 (bookmakerData?.status === "SUSPENDED") ||
                 sportList.match_suspend_bookmaker === 1 ||
                 sportList.match_suspend === 1
-              )
+              ) && !hasAnyActiveSection
                 ? "suspended-table"
                 : ""
             }`}
@@ -367,7 +367,7 @@ function Bookmaker({
                 (bookmakerData?.status === "SUSPENDED") ||
                 sportList.match_suspend_bookmaker === 1 ||
                 sportList.match_suspend === 1
-              )
+              ) && !hasAnyActiveSection
                 ? "SUSPENDED"
                 : ""
             }
