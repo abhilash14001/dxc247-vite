@@ -540,6 +540,7 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
 
     // 5️⃣ Decrypt backend response if encrypted
     const encryptedResponse = response.data?.data;
+    
     if (encryptedResponse) {
       const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
         iv: aesIv,
@@ -554,8 +555,9 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
       if (setList !== null) setList( decryptedJSON);
       return {data : decryptedJSON};
     } else {
+      
       if (setList !== null) setList(response.data);
-      return response.data;
+      return response;
     }
   } catch (err) {
     if (err?.error === "Unauthenticated" || err?.response?.status === 401) {
