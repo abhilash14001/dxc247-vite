@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { adminApi } from "../utils/api";
 import { loginSuccess, setAuthLoading, logout } from "@dxc247/shared/store/admin/adminSlice";
-import { setLiveModeData } from "@dxc247/shared/store/slices/commonDataSlice";
+import { setLiveModeData, setServerPublicKey } from "@dxc247/shared/store/slices/commonDataSlice";
 import { useGameNames } from "@dxc247/shared/store/admin/useGameNames";
 import AdminRouteGuard from "../components/AdminRouteGuard";
 import Notify from "@dxc247/shared/utils/Notify";
@@ -19,7 +19,7 @@ function AdminLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, loading, token, tokenExpiresAt } = useSelector(state => state.admin);
-  const { liveModeData } = useSelector(state => state.commonData);
+  const { liveModeData, serverPublicKey } = useSelector(state => state.commonData);
   const { fetchGameNames } = useGameNames();
   const [formData, setFormData] = useState({
     username: "",
@@ -74,19 +74,34 @@ function AdminLogin() {
 
   useEffect(() => {
     
-    // Simplified initialization - no CSS loading, just fetch live mode data
+    // Simplified initialization - fetch public key and live mode data
     const initializePage = async () => {
       dispatch(setAuthLoading(false));
 
       try {
+        // Fetch public key if not already stored
+        if (!serverPublicKey) {
+          console.log("🔐 Fetching public key from server...");
+          const keyResponse = await adminApi('/p-key-get', 'GET');
+          if (keyResponse && keyResponse.data && keyResponse.data.publicKey) {
+            dispatch(setServerPublicKey(keyResponse.data.publicKey));
+            console.log("✅ Public key fetched and stored in Redux");
+          } else {
+            console.warn("⚠️ Failed to fetch public key, will use fallback");
+          }
+        } else {
+          console.log("🔐 Using cached public key from Redux");
+        }
+
+        // Fetch live mode data
         if(liveModeData && liveModeData.length > 0) return;
         const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
-        if (liveModeResponse.success && liveModeResponse.data) {
-          dispatch(setLiveModeData(liveModeResponse.data));
+        if (liveModeResponse) {
+          dispatch(setLiveModeData(liveModeResponse));
         }
       } catch (error) {
-        console.error('Failed to fetch live mode data:', error);
-        // Don't block page if live mode data fetch fails
+        console.error('Failed to initialize page:', error);
+        // Don't block page if initialization fails
       }
     };
 

@@ -3,6 +3,7 @@ import { store } from "@dxc247/shared/store";
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
+import axios from 'axios';
 
 // Admin API helper function
 export const adminApi = async (url, method = "GET", data = null) => {
@@ -16,7 +17,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
   let encryptedPayload = null;
 
   // 2️⃣ Encrypt payload if it's a POST/PUT/PATCH and has data
-  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && data && !(data instanceof FormData)) {
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && Object.keys(data || {}).length > 0) {
     const jsonData = JSON.stringify(data);
     encryptedPayload = CryptoJS.AES.encrypt(jsonData, aesKey, {
       iv: aesIv,
@@ -25,9 +26,26 @@ export const adminApi = async (url, method = "GET", data = null) => {
     }).toString(); // Base64 string
   }
 
-  // 3️⃣ Encrypt AES key using server's public key
-  const encryptor = new JSEncrypt();
-  encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
+  // 3️⃣ Get server public key from Redux or fetch from API if not set
+  let publicKey = store.getState().commonData.serverPublicKey;
+  
+  if (!publicKey) {
+    try {
+      console.log("🔐 Fetching public key from server...");
+      const keyResponse = await axios.get(`${import.meta.env.VITE_API_URL}/p-key-get`);
+      if (keyResponse.data && keyResponse.data.publicKey) {
+        publicKey = keyResponse.data.publicKey;
+        // Store in Redux for future use
+        const { setServerPublicKey } = await import('@dxc247/shared/store/slices/commonDataSlice');
+        store.dispatch(setServerPublicKey(publicKey));
+        console.log("✅ Public key fetched and stored in Redux");
+      } else {
+        throw new Error("Invalid public key response from server");
+      }
+    } catch (error) {
+      console.error("❌ Failed to fetch public key:", error);
+      // Fallback to hardcoded key if API fails
+      publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA77YBndYGoCtviSV7tc+d
 UZAe1BQvkQtvEoPskg6yWLI4WGQGKEpGv9mELDWpq4KS2y0iWAmAuwybVvqoEMHp
 408gdlpF5UEq2of3vgnd61weIJs/5ZNVRQjADMYlSd+fa4p0Xa1/OkadcWoAuwDV
@@ -35,72 +53,44 @@ QHiaLkIzKwPdvMqWrtFkaMZ+zOpXuJS8UfIQlxRUJ5DVI37+6cBkuYnAEnVtkZlu
 sx4dY0tU9uv2T1ShvYcTcFG83cZXfNEknNGMpHQHMCeeZSbksgftDrUgk6rJexrv
 VOPavpBJv7gcwP1UAHnmMzTMwYzT8NRNYnq5kD0C7XJU1dN4V5HHOc38KlcLoXdB
 MQIDAQAB
------END PUBLIC KEY-----`);
+-----END PUBLIC KEY-----`;
+      console.log("⚠️ Using fallback hardcoded public key");
+    }
+  } else {
+    console.log("🔐 Using cached public key from Redux");
+  }
+
+  const encryptor = new JSEncrypt();
+  encryptor.setPublicKey(publicKey);
 
   const encryptedAESKey = encryptor.encrypt(CryptoJS.enc.Base64.stringify(aesKey));
 
   // 4️⃣ Build request config
-  const config = {
-    method: method,
+  const requestConfig = {
+    method,
+    url: import.meta.env.VITE_API_URL +  url,
     headers: {
-      "Accept": "application/json",
+      Authorization: `Bearer ${authToken}`,
+      Accept: "application/json",
       "Content-Type": "application/json",
       "X-Encrypted-Key": encryptedAESKey,
       "X-IV": CryptoJS.enc.Base64.stringify(aesIv),
     },
+    data: {},
   };
 
-  // Add authorization header if token exists
-  if (authToken) {
-    config.headers["Authorization"] = `Bearer ${authToken}`;
-  }
-
-  // Add data for POST/PUT requests
-  if (data && (method === "POST" || method === "PUT")) {
-    // Check if data is FormData (for file uploads)
-    if (data instanceof FormData) {
-      // Don't set Content-Type for FormData, let browser set it with boundary
-      delete config.headers["Content-Type"];
-      config.body = data;
-    } else {
-      // For JSON data with encryption
-      if (encryptedPayload) {
-        config.body = JSON.stringify({
-          payload: encryptedPayload,
-        });
-      } else {
-        config.body = JSON.stringify(data);
-      }
-    }
+  // For POST/PUT/PATCH, send encrypted payload in body
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && encryptedPayload) {
+    requestConfig.data = {
+      payload: encryptedPayload,
+    };
   }
 
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}${url}`,
-      config
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      // Handle 401 Unauthorized - logout admin
-      if (response.status === 401) {
-        store.dispatch(adminLogout());
-        return;
-      }
-      
-      // Create an error object that preserves the response data
-      const error = new Error(`HTTP error! status: ${response.status}`);
-      error.response = {
-        status: response.status,
-        data: result
-      };
-      throw error;
-    }
+    const response = await axios(requestConfig);
 
     // 5️⃣ Decrypt backend response if encrypted
-    const encryptedResponse = result?.data;
-    
+    const encryptedResponse = response.data?.data;
     if (encryptedResponse) {
       const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
         iv: aesIv,
@@ -110,14 +100,20 @@ MQIDAQAB
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
       const decryptedJSON = JSON.parse(decryptedText);
-      
-      return { data: decryptedJSON };
+
+      console.log('decrypted json is ', decryptedJSON);
+      return decryptedJSON?.data || decryptedJSON;
     } else {
-      return result;
+      return response.data;
     }
-  } catch (error) {
-    console.error("Admin API error:", error);
-    throw error;
+  } catch (err) {
+    if (err?.error === "Unauthenticated" || err?.response?.status === 401) {
+      store.dispatch(adminLogout());
+      return null;
+    } else if (err?.code === "ERR_NETWORK") {
+      return null;
+    }
+    throw err;
   }
 };
 
