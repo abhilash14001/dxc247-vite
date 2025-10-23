@@ -8,7 +8,6 @@ import { useLoading } from "@dxc247/shared/hooks/useLoading";
 import Notify from "@dxc247/shared/utils/Notify";
 import { loginSuccess } from "@dxc247/shared/store/slices/userSlice";
 import { setLiveModeData, setServerPublicKey } from "@dxc247/shared/store/slices/commonDataSlice";
-import CryptoTest from "../components/CryptoTest";
 
 function Login() {
   const nav = useNavigate();
@@ -253,7 +252,7 @@ function Login() {
                     Login with demo ID
                     <i className="fas fa-sign-in-alt float-end mt-1"></i>
                   </button>
-                  <CryptoTest  />
+                  
                 </div>
 
                 <small className="recaptchaTerms mt-1">
