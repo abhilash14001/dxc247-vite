@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminApi } from "./adminApi";
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 import LoadingSpinner from "@dxc247/shared/components/ui/LoadingSpinner";
 import { toast } from "react-toastify";

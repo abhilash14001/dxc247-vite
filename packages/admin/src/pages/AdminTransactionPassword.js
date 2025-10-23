@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTransactionPasswordChanged } from '@dxc247/shared/store/admin/adminSlice';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 
 const AdminTransactionPassword = () => {

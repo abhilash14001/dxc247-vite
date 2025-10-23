@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { adminApi } from "../utils/api";
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import DataTable from "react-data-table-component";
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 

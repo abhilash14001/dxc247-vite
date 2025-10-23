@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { adminApiMethods } from './adminApi';
+import { adminApiMethods } from '@dxc247/shared/utils/adminApi';
 import DataTable from 'react-data-table-component';
 import AdminLayout from '../layouts/AdminLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

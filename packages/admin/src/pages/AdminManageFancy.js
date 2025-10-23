@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '@dxc247/shared/components/ui/LoadingSpinner';

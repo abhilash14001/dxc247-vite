@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faSort,

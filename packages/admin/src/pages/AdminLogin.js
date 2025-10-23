@@ -8,7 +8,7 @@ import {
   faLock,
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { adminApi } from "../utils/api";
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { loginSuccess, setAuthLoading, logout } from "@dxc247/shared/store/admin/adminSlice";
 import { setLiveModeData, setServerPublicKey } from "@dxc247/shared/store/slices/commonDataSlice";
 import { useGameNames } from "@dxc247/shared/store/admin/useGameNames";

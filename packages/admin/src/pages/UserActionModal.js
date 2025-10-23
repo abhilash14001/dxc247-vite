@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import Notify from '@dxc247/shared/utils/Notify';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 

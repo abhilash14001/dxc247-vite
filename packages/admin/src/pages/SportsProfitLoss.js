@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { adminApi } from "../utils/api";
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import Pagination from "@dxc247/shared/components/common/Pagination";
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

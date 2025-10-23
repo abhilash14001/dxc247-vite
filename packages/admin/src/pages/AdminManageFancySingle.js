@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { adminApi } from "../utils/api";
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
 
 import LoadingSpinner from "@dxc247/shared/components/ui/LoadingSpinner";

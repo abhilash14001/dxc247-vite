@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Pagination from "@dxc247/shared/components/common/Pagination";
-import { adminApi } from "../utils/api";
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 import UserActionModal from "./UserActionModal";

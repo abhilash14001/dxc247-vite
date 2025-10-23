@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import DataTable from 'react-data-table-component';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';

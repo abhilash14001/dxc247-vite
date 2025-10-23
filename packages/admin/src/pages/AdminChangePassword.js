@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPasswordChanged } from '@dxc247/shared/store/admin/adminSlice';
-import { adminApi } from './adminApi';
+import { adminApi } from '@dxc247/shared/utils/adminApi';
 import Notify from '@dxc247/shared/utils/Notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKey, faSpinner, faLock } from '@fortawesome/free-solid-svg-icons';

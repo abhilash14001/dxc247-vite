@@ -11,7 +11,7 @@ import {
   faGamepad,
   faDice,
 } from "@fortawesome/free-solid-svg-icons";
-import { adminApiMethods as adminApi } from "../utils/api";
+import { adminApiMethods as adminApi } from '@dxc247/shared/utils/adminApi';
 import Pagination from "@dxc247/shared/components/common/Pagination";
 
 const AdminBlockMarket = () => {

@@ -1,6 +1,6 @@
   import React, { useState, useEffect } from 'react';
   import { useParams, useNavigate } from 'react-router-dom';
-  import { adminApi } from './adminApi';
+  import { adminApi } from '@dxc247/shared/utils/adminApi';
   import Notify from '@dxc247/shared/utils/Notify';
   import CenteredSpinner from '@dxc247/shared/components/ui/CenteredSpinner';
   import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
