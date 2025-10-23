@@ -113,6 +113,12 @@ function Bookmaker2({
     const bookmaker2Data = useMemo(() => ar_sectionData?.['bookmaker 2'] || ar_sectionData?.bookmaker2, [ar_sectionData]);
     const sections = bookmaker2Data?.section || [];
 
+    // Determine if any section (runner) is ACTIVE (not suspended)
+    const hasAnyActiveSection = useMemo(() => {
+        if (!sections || sections.length === 0) return false;
+        return sections.some((s) => s?.gstatus && s.gstatus !== "SUSPENDED");
+    }, [sections]);
+
     useEffect(() => {
         if (setMaxValue !== null && bookmaker2Data?.max) {
             setMaxValue((prevState) => {
@@ -254,9 +260,26 @@ function Bookmaker2({
                         <div className="market-odd-box back"><b>Back</b></div>
                         <div className="market-odd-box lay"><b>Lay</b></div>
                     </div>
-                    <div className="market-body" data-title={sections.some(oddsArr => 
-                        oddsArr.gstatus === 'SUSPENDED' || sportList.match_suspend_bookmaker === 1 || sportList.match_suspend === 1
-                    ) ? "SUSPENDED" : ""}>
+                    <div 
+                        className={`market-body ${
+                            (
+                                (bookmaker2Data?.status === "SUSPENDED") ||
+                                sportList.match_suspend_bookmaker === 1 ||
+                                sportList.match_suspend === 1
+                            ) && !hasAnyActiveSection
+                                ? "suspended-table"
+                                : ""
+                        }`}
+                        data-title={
+                            (
+                                (bookmaker2Data?.status === "SUSPENDED") ||
+                                sportList.match_suspend_bookmaker === 1 ||
+                                sportList.match_suspend === 1
+                            ) && !hasAnyActiveSection
+                                ? "SUSPENDED"
+                                : ""
+                        }
+                    >
                         {sections.map((oddsArr, key) => {
                             let isSuspended = "", isSuspendedClass = "";
                             let tot = 1;

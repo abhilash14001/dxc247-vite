@@ -57,6 +57,12 @@ function CPLCupBookmaker({
 
   const sections = bookmakerData?.section || [];
 
+  // Determine if any section (runner) is ACTIVE (not suspended)
+  const hasAnyActiveSection = useMemo(() => {
+    if (!sections || sections.length === 0) return false;
+    return sections.some((s) => s?.gstatus && s.gstatus !== "SUSPENDED");
+  }, [sections]);
+
   useEffect(() => {
     if (setMaxValue !== null && bookmakerData?.max) {
       setMaxValue((prevState) => {
@@ -260,14 +266,21 @@ function CPLCupBookmaker({
             </div>
           </div>
           <div
-            className="market-body"
+            className={`market-body ${
+              (
+                (bookmakerData?.status === "SUSPENDED") ||
+                sportList.match_suspend_bookmaker === 1 ||
+                sportList.match_suspend === 1
+              ) && !hasAnyActiveSection
+                ? "suspended-table"
+                : ""
+            }`}
             data-title={
-              sections.some(
-                (oddsArr) =>
-                  oddsArr.gstatus === "SUSPENDED" ||
-                  sportList.match_suspend_bookmaker === 1 ||
-                  sportList.match_suspend === 1
-              )
+              (
+                (bookmakerData?.status === "SUSPENDED") ||
+                sportList.match_suspend_bookmaker === 1 ||
+                sportList.match_suspend === 1
+              ) && !hasAnyActiveSection
                 ? "SUSPENDED"
                 : ""
             }
