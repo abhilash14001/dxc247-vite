@@ -92,8 +92,7 @@ export const UserAuthProvider = (props) => {
             balanceInterval.current = setInterval(async () => {
                 try {
                     const response = await getBalance();
-                    
-                    if (response && response.status === 200) {
+                    if (response && response.data) {
                         // Continue to next interval on success
                         return;
                     } else {
@@ -112,7 +111,7 @@ export const UserAuthProvider = (props) => {
             clearInterval(balanceInterval.current);
             balanceInterval.current = null;
         };
-    }, [ACCESS_TOKEN]); // Removed exposure from dependencies to prevent infinite loop
+    }, []); // Removed exposure from dependencies to prevent infinite loop
 
     useEffect(() => {
         if(showPopupAfterRedirect){
