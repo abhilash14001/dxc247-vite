@@ -4,7 +4,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
 import {
-    getExByTeamNameForCasino, resetBetFields, placeCasinoBet, getSize
+    getExByTeamNameForCasino, resetBetFields, placeCasinoBet, getSize,
+    exposureCheck
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";

@@ -5,7 +5,8 @@ import {CasinoLastResult} from "../components/casino/CasinoLastResult";
 import axiosFetch, {
     getExByColor,
     getExBySingleTeamNameCasino,
-    getPlayerCardAccordingToNumberOfPlayers, resetBetFields, placeCasinoBet
+    getPlayerCardAccordingToNumberOfPlayers, resetBetFields, placeCasinoBet,
+    exposureCheck
 } from "../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../contexts/SportsContext";

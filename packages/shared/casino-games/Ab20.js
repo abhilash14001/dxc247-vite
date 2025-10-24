@@ -4,7 +4,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 import axiosFetch, {
     cardMap, getExByColor,
-    resetBetFields, placeCasinoBet
+    resetBetFields, placeCasinoBet,
+    exposureCheck
 } from "../utils/Constants";
 import { SportsContext } from "../contexts/SportsContext";
 import { AuthContext } from "../contexts/AuthContext";
