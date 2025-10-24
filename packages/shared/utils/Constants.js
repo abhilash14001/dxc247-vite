@@ -547,6 +547,7 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7,
       });
+      console.log('decrypted is ', decrypted)
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
       const decryptedJSON = JSON.parse(decryptedText);

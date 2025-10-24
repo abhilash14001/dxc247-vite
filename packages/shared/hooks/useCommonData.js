@@ -51,14 +51,16 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
             try {
                 dispatch(setCommonDataLoading(true));
                 dispatch(setCommonDataError(null));
-                
+                let bannerResponse = await axiosFetch('banner_data', 'get');
+                dispatch(setBannerDetails(bannerResponse.data.banner_data));
+
+
                 let response = await axiosFetch('common_detail_data', 'get');
                 
+                // Fetch banner data separately
                 
                 // Store in Redux
-                
                 dispatch(setCommonData(response.data));
-                dispatch(setBannerDetails(response.data.banner_data));
 
                 // Call setValue if provided
                 if (setValue && response.data) {
