@@ -119,7 +119,7 @@ const Dt6 = () => {
     const [hideLoading, setHideLoading] = useState(true)
     const ruleImage = '/img/rules/dt20.jpg'
     const ruleDescription = '';
-    const exposure = localStorage.getItem('exposure')
+    const exposure = exposureCheck()
 
     const [data, setData] = useState([]);
     const [playerStatuses, setPlayerStatuses] = useState({});

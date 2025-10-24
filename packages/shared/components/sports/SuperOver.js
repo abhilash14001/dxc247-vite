@@ -4,7 +4,8 @@ import {
     handleShowRules,
     organiseOdds,
     generateBackAndLayFunction,
-     handleCashoutLogic
+     handleCashoutLogic,
+     exposureCheck
 } from "@dxc247/shared/utils/Constants";
 // import {handleCashoutLogic} from "../../../Common_Functions/CashoutLogic";
 import {getActiveBets} from "@dxc247/shared/utils/betUtils";
@@ -40,7 +41,7 @@ function SuperOver({
     const { setTeam, clearTeam } = useSetCashoutTeam();
     
     const [hasActiveBets, setHasActiveBets] = useState(false);
-    const exposure = localStorage.getItem('exposure')
+    const exposure = exposureCheck()
     // Check for active bets when component mounts or myBetModel changes
     useEffect(() => {
         const checkActiveBets = async (type = 'SUPER_OVER') => {

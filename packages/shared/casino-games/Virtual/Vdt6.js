@@ -4,7 +4,8 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {CasinoLastResult} from "../../components/casino/CasinoLastResult";
 
 import axiosFetch, {
-    getExByColor, resetBetFields
+    getExByColor, resetBetFields,
+    exposureCheck
 } from "../../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../../contexts/SportsContext";
@@ -107,7 +108,7 @@ const Vdt6 = () => {
     const [hideLoading, setHideLoading] = useState(true)
     const ruleImage = '/img/rules/dt20.jpg'
     const ruleDescription = '';
-    const exposure = localStorage.getItem('exposure')
+    const exposure = exposureCheck()
     const teamNames = useRef(["Player A", "Player B"])
 
     const [data, setData] = useState([]);

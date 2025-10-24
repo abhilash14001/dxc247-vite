@@ -6,7 +6,8 @@ import {CasinoLastResult} from "../components/casino/CasinoLastResult";
 import axiosFetch, {
     getExByColor,
     resetBetFields,
-    getExByTeamNameForCasino, getPlayerCardAccordingToNumberOfPlayers, updatePlayerStats, placeCasinoBet
+    getExByTeamNameForCasino, getPlayerCardAccordingToNumberOfPlayers, updatePlayerStats, placeCasinoBet,
+    exposureCheck
 } from "../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../contexts/SportsContext";
@@ -92,7 +93,7 @@ const Poker = () => {
 
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
 

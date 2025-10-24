@@ -19,7 +19,7 @@ const Dt201 = () => {
 
     const sportLength = Object.keys(data).length;
 
-    const exposure = localStorage.getItem('exposure')
+    const exposure = exposureCheck()
     const {fetchDataDragonTiger} = useContext(CasinoContext)
     const {getBalance} = useContext(AuthContext)
     const {mybetModel} = useContext(CasinoContext)

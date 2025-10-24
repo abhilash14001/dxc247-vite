@@ -233,7 +233,7 @@ const Ab3 = () => {
 
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
     const processData = (d_data) => {
 

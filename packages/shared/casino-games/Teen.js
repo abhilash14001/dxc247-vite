@@ -4,7 +4,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
 import axiosFetch, {
-    getExByTeamNameForCasino, resetBetFields, placeCasinoBet
+    getExByTeamNameForCasino, resetBetFields, placeCasinoBet,
+    exposureCheck
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
@@ -86,7 +87,7 @@ const Teen = () => {
         }
     }, [data?.card]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
     useEffect(() => {

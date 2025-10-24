@@ -196,7 +196,7 @@ const Lucky15 = () => {
         }
     }, [data?.remark]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
     useEffect(() => {

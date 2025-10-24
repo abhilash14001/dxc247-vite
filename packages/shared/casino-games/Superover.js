@@ -5,7 +5,8 @@ import {CasinoLastResult} from "../components/casino/CasinoLastResult";
 
 import {
     getExByColor,
-    getExByTeamNameForCasino, resetBetFields, placeCasinoBet, calculateUpdatedBets, updatePlacingBetsState
+    getExByTeamNameForCasino, resetBetFields, placeCasinoBet, calculateUpdatedBets, updatePlacingBetsState,
+    exposureCheck
 } from "../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../contexts/SportsContext";
@@ -167,7 +168,7 @@ const Superover = () => {
 
     }, [data?.t1?.card]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
     const updateAmount =  async () => {
         await getExByTeamNameForCasino(sportList.id, data?.t1?.gmid, 'ENG', match_id).then(res => setPlayerA(res.data))

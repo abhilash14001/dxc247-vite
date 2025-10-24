@@ -6,7 +6,8 @@ import {CasinoLastResult} from "../../components/casino/CasinoLastResult";
 import axiosFetch, {
     getExByColor, getExBySingleTeamNameCasino,
 
-    resetBetFields
+    resetBetFields,
+    exposureCheck
 } from "../../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../../contexts/SportsContext";
@@ -216,7 +217,7 @@ const Vteenmuf = () => {
         }
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
     const updateAmounts = async () => {

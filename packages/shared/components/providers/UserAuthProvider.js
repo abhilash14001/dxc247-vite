@@ -14,7 +14,7 @@ export const UserAuthProvider = (props) => {
     // User authentication states
     const [ACCESS_TOKEN, setACCESS_TOKEN] = useState(null);
     const [userBalance, setUserBalance] = useState(localStorage.getItem('balance') ?? 0);
-    const [exposure, setExposure] = useState(localStorage.getItem('exposure') ?? 0);
+    const [exposure, setExposure] = useState(exposureCheck() ?? 0);
     const [casinoList, setCasinoList] = useState(JSON.parse(localStorage.getItem('casinoList')) ?? []);
     const [cricketList, setCricketList] = useState(JSON.parse(localStorage.getItem('cricketList')) ?? []);
     const [bannerDetails, setBannerDetails] = useState({});
@@ -180,10 +180,14 @@ export const UserAuthProvider = (props) => {
 
     const logout = () => {
         try {
+            axiosFetch('logout', 'post');
+
             // Regular user logout - clear common data
             dispatch(resetCommonDataState());
             // Clear Redux token and user data
+            
             dispatch(userLogout());
+
             
             // Clear remaining localStorage items
             localStorage.removeItem('isLoggedIn');

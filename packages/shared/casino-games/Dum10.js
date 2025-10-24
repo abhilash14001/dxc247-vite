@@ -257,7 +257,7 @@ const Dum10 = () => {
             remark.current = data.remark || 'Welcome';
         }, [data]);
 
-        const exposure = localStorage.getItem('exposure');
+        const exposure = exposureCheck();
         const sportLength = Object.keys(data).length;
 
     const updateAmounts = async () => { 

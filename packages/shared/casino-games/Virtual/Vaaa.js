@@ -7,6 +7,7 @@ import axiosFetch, {
     cardMap,
     getExByColor, getExBySingleTeamNameCasino,
     getExByTeamNameForCasino, resetBetFields,
+    exposureCheck
 } from "../../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../../contexts/SportsContext";
@@ -155,7 +156,7 @@ const Vaaa = () => {
 
         }, [data]);
 
-        const exposure = localStorage.getItem('exposure');
+        const exposure = exposureCheck();
         const sportLength = Object.keys(data).length;
 
 

@@ -512,7 +512,7 @@ const Card32eu = () => {
             }
         }, [data?.card]);
 
-        const exposure = localStorage.getItem('exposure');
+        const exposure = exposureCheck();
         const sportLength = Object.keys(data).length;
 
 

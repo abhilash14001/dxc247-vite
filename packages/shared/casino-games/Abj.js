@@ -355,7 +355,7 @@ const Abj = () => {
 
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
     const updateAmounts = async () => {
         const amount = await getExBySingleTeamNameCasino(sportList.id, roundId, '', match_id);

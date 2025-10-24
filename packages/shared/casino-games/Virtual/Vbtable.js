@@ -6,7 +6,8 @@ import {CasinoLastResult} from "../../components/casino/CasinoLastResult";
 import axiosFetch, {
     getExByColor, getExBySingleTeamNameCasino,
 
-    getExByTeamNameForCasino, resetBetFields
+    getExByTeamNameForCasino, resetBetFields,
+    exposureCheck
 } from "../../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../../contexts/SportsContext";
@@ -129,7 +130,7 @@ const Vbtable = () => {
         }
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
 

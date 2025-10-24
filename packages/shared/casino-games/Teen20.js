@@ -315,7 +315,7 @@ const Teen20 = () => {
         }
     }, [data?.card]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
 

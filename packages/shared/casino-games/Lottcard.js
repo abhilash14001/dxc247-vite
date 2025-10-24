@@ -73,7 +73,7 @@ const Lottcard = () => {
         }
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
     useEffect(() => {

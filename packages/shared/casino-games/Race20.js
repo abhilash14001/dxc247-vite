@@ -6,7 +6,8 @@ import {
     getExByColor,
     getExByTeamNameForCasino,
     resetBetFields,
-    placeCasinoBet
+    placeCasinoBet,
+    exposureCheck
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
@@ -305,7 +306,7 @@ const Race20 = () => {
 
     }, [cards]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
 

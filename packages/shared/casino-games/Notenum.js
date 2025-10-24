@@ -431,7 +431,7 @@ const Notenum = () => {
         }
     }, [data?.sub]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     
 
 

@@ -10,7 +10,8 @@ import {CasinoLastResult} from "../components/casino/CasinoLastResult";
 
 import  {
     getExByColor, getExByTeamNameForCasino,
-    resetBetFields, placeCasinoBet
+    resetBetFields, placeCasinoBet,
+    exposureCheck
 } from "../utils/Constants";
 import {useParams} from "react-router-dom";
 import {SportsContext} from "../contexts/SportsContext";
@@ -265,7 +266,7 @@ const Trap = () => {
 
     }, [data]);
 
-    const exposure = localStorage.getItem('exposure');
+    const exposure = exposureCheck();
     const sportLength = Object.keys(data).length;
 
     const updateAmounts = async () => {
