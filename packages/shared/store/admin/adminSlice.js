@@ -37,6 +37,7 @@ const initialState = {
   tokenExpiresInMinutes: null,
   isAuthenticated: false,
   loading: true,
+  transactionPassword: null,
   
   // Match data for fancy history
   selectedMatchData: null,
@@ -157,14 +158,7 @@ const adminSlice = createSlice({
       // Reset match data
       state.selectedMatchData = null;
       
-      // Clear admin-specific localStorage items
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('admin_balance');
-        localStorage.removeItem('admin_exposure');
-        localStorage.removeItem('admin_isLoggedIn');
-        localStorage.removeItem('admin_user');
-        localStorage.removeItem('admin_theme');
-      }
+      // Admin state is now managed by Redux, no need for localStorage cleanup
     },
 
     setAuthLoading: (state, action) => {
@@ -179,6 +173,9 @@ const adminSlice = createSlice({
       if (state.user) {
         state.user.change_transaction_password = 0; // 0 means transaction password has been changed
       }
+    },
+    setTransactionPassword: (state, action) => {
+      state.transactionPassword = action.payload;
     },
     setSelectedMatchData: (state, action) => {
       state.selectedMatchData = action.payload;
@@ -207,6 +204,7 @@ export const {
   setGameNamesLoading,
   setGameNamesError,
   setPasswordChanged,
+  setTransactionPassword,
   setTransactionPasswordChanged,
   setSelectedMatchData,
   clearSelectedMatchData,

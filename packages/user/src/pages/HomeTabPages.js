@@ -22,7 +22,10 @@ function HomeTabPages() {
     const {match} = useParams()
 
     const token = useSelector(state => state.user.token);
-    const { unAuthorizeHandle, casinoList } = useContext(AuthContext);
+    
+    // Get casino data from Redux instead of AuthContext
+    const casinoList = useSelector(state => state.casino.casinoList);
+    const { unAuthorizeHandle } = useContext(AuthContext);
     
     const [listData, setListData] = useState({});
 
@@ -47,9 +50,7 @@ function HomeTabPages() {
 
     const { formatDateTime } = useContext(CommonContext);
 
-    useEffect(() => {
-        localStorage.setItem('casinoList', JSON.stringify(casinoList))
-    }, [casinoList]);
+    // casinoList is now managed by Redux, no need for localStorage
 
     return (
         <div>

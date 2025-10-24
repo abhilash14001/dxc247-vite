@@ -12,6 +12,7 @@ import {
   handleShowRules,
   generateBackAndLayFunction,
   handleCashoutLogic,
+  exposureCheck,
 } from "@dxc247/shared/utils/Constants";
 import { getActiveBets } from "@dxc247/shared/utils/betUtils";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
@@ -51,7 +52,7 @@ function Bookmaker({
 
   const [hasActiveBets, setHasActiveBets] = useState(false);
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   // Check for active bets when component mounts
   useEffect(() => {
     const checkActiveBets = async () => {

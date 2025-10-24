@@ -32,7 +32,9 @@ const Teen42 = () => {
   const { match_id } = useParams();
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
-  const { getBalance } = useContext(AuthContext);
+  
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
 
   const [hideLoading, setHideLoading] = useState(true);
 
@@ -115,7 +117,7 @@ const Teen42 = () => {
     };
   }, [data?.sub]);
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
 
   useEffect(() => {

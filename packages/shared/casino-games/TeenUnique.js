@@ -146,7 +146,8 @@ const TeenUnique = () => {
     availableTeenUniqueCards,
     setAvailableTeenUniqueCards,
   } = useContext(CasinoContext);
-  const { getBalance } = useContext(AuthContext);
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const teamNames = useRef(["Player A", "Player B"]);
@@ -192,7 +193,7 @@ const TeenUnique = () => {
 
   // Dynamic cards from API response
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
-import axiosFetch, { isAdminRoute, ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
+import axiosFetch, { isAdminRoute, ADMIN_BASE_PATH, exposureCheck } from "@dxc247/shared/utils/Constants";
 import { getBetListData } from "@dxc247/shared/utils/betUtils";
 import { adminApi } from "@dxc247/shared/utils/adminApi";
 import Pagination from "@dxc247/shared/components/common/Pagination";
@@ -86,7 +86,7 @@ const SportsLayout = ({
   const { formatDateTime } = useContext(CommonContext);
   const { showLoader, triggerSocket, setTriggerSocket } =
     useContext(SportsContext);
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
 
   useEffect(() => {
     const getData = async () => {

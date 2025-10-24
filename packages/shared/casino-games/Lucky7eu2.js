@@ -1,5 +1,6 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { React, useContext, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
@@ -208,8 +209,10 @@ const Lucky7eu2 = () => {
   const { match_id } = useParams();
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
-  const {getBalance} = useContext(AuthContext)
-    const {mybetModel} = useContext(CasinoContext);
+  const {mybetModel} = useContext(CasinoContext);
+  
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const teamNames = useRef(["Player A", "Player B"]);
@@ -397,7 +400,7 @@ const Lucky7eu2 = () => {
     }
   }, [data]);
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
 
   useEffect(() => {
     if (data?.sub && sportList?.id) {

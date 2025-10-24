@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setTransactionPasswordChanged } from '@dxc247/shared/store/slices/userSlice';
 
 const TransactionPasswordSuccess = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const transactionPassword = useSelector(state => state.user.transactionPassword);
 
   const handleBack = () => {
     dispatch(setTransactionPasswordChanged());
@@ -42,7 +43,7 @@ const TransactionPasswordSuccess = () => {
                 fontSize: '1.2em'
               }}
             >
-              {localStorage.getItem('transactionPassword') || 'N/A'}
+              {transactionPassword || 'N/A'}
             </span>
             .
           </h1>
@@ -72,7 +73,7 @@ const TransactionPasswordSuccess = () => {
                   fontSize: '1.2em'
                 }}
               >
-                {localStorage.getItem('transactionPassword') || 'N/A'}
+                {transactionPassword || 'N/A'}
               </span>{' '}
               है।
             </h1>

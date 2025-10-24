@@ -21,9 +21,11 @@ function Login() {
     getCasinoList,
     getCricketList,
     setACCESS_TOKEN,
-    setIsLoggedIn,
     getBalance,
   } = useContext(AuthContext);
+  
+  // Get user data from Redux instead of AuthContext
+  const isLoggedIn = useSelector(state => state.user.isAuthenticated);
   const { liveModeData, serverPublicKey } = useSelector((state) => state.commonData);
 
   // Hide loading when Login component mounts
@@ -151,8 +153,6 @@ function Login() {
 
   const updateLocalStorage = (response) => {
     // Token is now managed by Redux, no need to store in localStorage
-    setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", true);
     setACCESS_TOKEN(response.data.token);
   };
 

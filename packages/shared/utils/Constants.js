@@ -552,7 +552,6 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
       
       const decryptedJSON = JSON.parse(decryptedText);
 
-      
       if (setList !== null) setList( decryptedJSON);
       return {data : decryptedJSON};
     } else {
@@ -1043,7 +1042,7 @@ export async function getExByTeamNameForAllBetTypes(
   });
 
   try {
-    // Make single bulk API call for all teams and bet types
+    // Make single bulk API call for all .then and bet types
     const response = await getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNamesArray);
     
     // Process the response
@@ -1230,7 +1229,16 @@ export function getExBySingleTeamNameCasino(
     match_id: match_id,
     betType: convertedBetType,
   };
-  return axiosFetch("getExBySingleTeamNameCasino", "post", null, data);
+  return axiosFetch("getExBySingleTeamNameCasino", "post", null, data).then(response => {
+    if (response && response.data?.data) {
+    
+      return {
+        ...response,
+        data: Number(response.data?.data) || 0
+      };
+    }
+    return response;
+  });
 }
 
 export const gameNames = {
@@ -2071,7 +2079,9 @@ export const calculateProfitCommon = (
   }
 };
 export const exposureCheck = () => {
-  return localStorage.getItem("exposure") || null;
+  // Get exposure from Redux store instead of localStorage
+  const state = store.getState();
+  return state.user.exposure || 0.00;
 };
 
 export const setGlobalVar = (val) => {

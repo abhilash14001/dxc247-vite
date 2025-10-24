@@ -1,5 +1,6 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
@@ -10,6 +11,7 @@ import axiosFetch, {
   resetBetFields,
   placeCasinoBet,
   cardMap,
+  exposureCheck,
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
@@ -49,8 +51,10 @@ const Cmeter = () => {
   const { match_id } = useParams();
     const { betType, setBetType, setPopupDisplayForDesktop } =
         useContext(SportsContext);
-    const { getBalance } = useContext(AuthContext);
     const { mybetModel } = useContext(CasinoContext);
+    
+    // Get user data from Redux instead of AuthContext
+    const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const ruleDescription = `<div><style type="text/css">
@@ -288,7 +292,7 @@ const Cmeter = () => {
     }
   };
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
 
   const updateAmounts = async () => {

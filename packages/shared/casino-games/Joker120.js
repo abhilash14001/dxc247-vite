@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
+import { useSelector } from "react-redux";
 import CasinoLayout from "../components/casino/CasinoLayout";
 import axiosFetch, {
   getExBySingleTeamNameCasino,
@@ -150,7 +151,9 @@ const Joker120 = () => {
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   const { setShowMobilePopup } = useContext(CasinoContext);
-  const { getBalance } = useContext(AuthContext);
+  
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const teamNames = useRef(["Player A", "Player B"]);
@@ -201,7 +204,7 @@ const Joker120 = () => {
   const { selectedJoker, setSelectedJoker } = useContext(CasinoContext);
   const [jokerSelectionError, setJokerSelectionError] = useState("");
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
 
   const refreshPlayerExposures = () => {

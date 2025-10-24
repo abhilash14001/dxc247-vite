@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState, lazy } from "react";
 import { AuthContext } from "@dxc247/shared/contexts/AuthContext";
+import { useSelector } from 'react-redux';
+
 import { Link, useNavigate } from "react-router-dom";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import useSocketConnection from "@dxc247/shared/hooks/useSocketConnection";
@@ -8,9 +10,6 @@ import useSportsData from "@dxc247/shared/hooks/useSportsData";
 import useCommonData from "@dxc247/shared/hooks/useCommonData";
 
 import { BackAndLayForSports } from "@dxc247/shared/utils/sportsUtils";
-
-import { CasinoContext } from "@dxc247/shared/contexts/CasinoContext";
-
 
 
 // Lazy load components for better performance
@@ -28,7 +27,10 @@ function Home() {
   const { setShowLoader } = useContext(SportsContext);
   
   const token = getCurrentToken();
-  const { unAuthorizeHandle, casinoList } = useContext(AuthContext);
+  
+  // Get casino data from Redux instead of AuthContext
+  const casinoList = useSelector(state => state.casino.casinoList);
+  const { unAuthorizeHandle } = useContext(AuthContext);
   
   const [listData, setListData] = useState({});
 
@@ -116,10 +118,7 @@ function Home() {
   // Trigger data loading when active tab changes or when filtered tabs are updated
  
 
-  useEffect(() => {
-    localStorage.setItem("casinoList", JSON.stringify(casinoList));
-
-  }, [casinoList]);
+  // casinoList is now managed by Redux, no need for localStorage
 
 
 

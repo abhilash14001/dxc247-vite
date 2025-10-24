@@ -84,8 +84,14 @@ function Header() {
   ];
 
   const { match } = useParams();
-  const { userBalance, exposure, setIsLoggedIn, logout, getCricketList } =
-    useContext(AuthContext);
+  
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
+  const exposure = useSelector(state => state.user.exposure);
+  const isLoggedIn = useSelector(state => state.user.isAuthenticated);
+  const cricketList = useSelector(state => state.casino.cricketList);
+  
+  const { logout, getCricketList } = useContext(AuthContext);
 
   useEffect(() => {
     const handleDocumentClick = (event) => {

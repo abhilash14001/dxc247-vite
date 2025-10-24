@@ -178,7 +178,8 @@ const Abj = () => {
         setPopupDisplayForDesktop,
 
     } = useContext(SportsContext)
-    const {getBalance} = useContext(AuthContext)
+    // Get user data from Redux instead of AuthContext
+    const userBalance = useSelector(state => state.user.balance);
     const {mybetModel} = useContext(CasinoContext)
     const [hideLoading, setHideLoading] = useState(true)
 

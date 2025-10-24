@@ -1,5 +1,6 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Buffer } from "buffer";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
@@ -8,6 +9,7 @@ import axiosFetch, {
   getExByTeamNameForCasino,
   resetBetFields,
   placeCasinoBet,
+  exposureCheck,
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
@@ -43,8 +45,10 @@ const Superover3 = () => {
   const { match_id } = useParams();
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
-  const {getBalance} = useContext(AuthContext)
-    const {mybetModel} = useContext(CasinoContext);
+  const {mybetModel} = useContext(CasinoContext);
+  
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   useEffect(() => {
@@ -200,7 +204,7 @@ const Superover3 = () => {
     }
   }, [data?.t1?.gmid, casino_socket_scoreboard]);
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
   const updateAmount = async () => {
     await getExByTeamNameForCasino(

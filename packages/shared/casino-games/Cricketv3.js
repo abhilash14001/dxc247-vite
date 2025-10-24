@@ -1,5 +1,6 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 import { Buffer } from "buffer";
 import {
@@ -38,7 +39,9 @@ const Cricketv3 = () => {
     useContext(SportsContext);
   const { casino_socket_scoreboard, scoreBoardData } =
     useContext(CasinoContext);
-  const { getBalance } = useContext(AuthContext);
+    
+  // Get user data from Redux instead of AuthContext
+  const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const teamNames = useRef(["AUS", "IND"]);
@@ -144,7 +147,7 @@ const Cricketv3 = () => {
     }
   }, [data]);
 
-  const exposure = localStorage.getItem("exposure");
+  const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
   const updateAmount = async () => {
     await getExByTeamNameForCasino(

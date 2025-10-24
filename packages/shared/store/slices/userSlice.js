@@ -5,12 +5,11 @@ const initialState = {
   user: null,
   balance: 0,
   exposure: 0,
-  casinoList: [],
-  cricketList: [],
   isAuthenticated: false,
   loading: true,
   showModal: false,
   bannerDetails: {},
+  transactionPassword: null,
 };
 
 const userSlice = createSlice({
@@ -18,13 +17,11 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      const { token, user, balance, exposure, casinoList, cricketList, bannerDetails } = action.payload;
+      const { token, user, balance, exposure, bannerDetails } = action.payload;
       state.token = token;
       state.user = user;
       state.balance = balance;
       state.exposure = exposure;
-      state.casinoList = casinoList;
-      state.cricketList = cricketList;
       state.bannerDetails = bannerDetails || {};
       state.isAuthenticated = true;
       state.loading = false;
@@ -36,8 +33,6 @@ const userSlice = createSlice({
       state.user = null;
       state.balance = 0;
       state.exposure = 0;
-      state.casinoList = [];
-      state.cricketList = [];
       state.isAuthenticated = false;
       state.loading = false;
     },
@@ -46,12 +41,6 @@ const userSlice = createSlice({
     },
     setExposure: (state, action) => {
       state.exposure = action.payload;
-    },
-    setCasinoList: (state, action) => {
-      state.casinoList = action.payload;
-    },
-    setCricketList: (state, action) => {
-      state.cricketList = action.payload;
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
@@ -72,6 +61,9 @@ const userSlice = createSlice({
     setBannerDetails: (state, action) => {
       state.bannerDetails = action.payload;
     },
+    setTransactionPassword: (state, action) => {
+      state.transactionPassword = action.payload;
+    },
     resetUserState: () => initialState,
   },
 });
@@ -81,13 +73,12 @@ export const {
   logout,
   setBalance,
   setExposure,
-  setCasinoList,
-  setCricketList,
   setLoading,
   setPasswordChanged,
   setTransactionPasswordChanged,
   setShowModal,
   setBannerDetails,
+  setTransactionPassword,
   resetUserState,
 } = userSlice.actions;
 

@@ -5,6 +5,7 @@ import axiosFetch, {
   getSize,
   handleShowRules,
   useFancyHideStatus,
+  exposureCheck,
 } from "@dxc247/shared/utils/Constants";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 
@@ -78,7 +79,7 @@ const OddEven = ({
       calculateBetevEn();
     }
     // eslint-disable-next-line
-  }, [Object.keys(model).length, localStorage.getItem("exposure"), gameData?.["oddeven"]?.section.length]);
+  }, [Object.keys(model).length, exposureCheck(), gameData?.["oddeven"]?.section.length]);
 
   // Early return after all hooks
   if (!gameData || !gameData?.["oddeven"]) return null;

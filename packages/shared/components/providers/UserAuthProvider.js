@@ -1,7 +1,8 @@
 import { AuthContext } from "../../contexts/AuthContext";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { logout as userLogout } from "../../store/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout as userLogout, setBalance, setExposure } from "../../store/slices/userSlice";
+import { setCasinoList, setCricketList } from "../../store/slices/casinoSlice";
 import { useNavigate } from "react-router-dom";
 import axiosFetch, { exposureCheck } from "../../utils/Constants";
 import { resetCommonDataState } from "../../store/slices/commonDataSlice";
@@ -10,15 +11,17 @@ import { store } from "../../store";
 export const UserAuthProvider = (props) => {
     const nav = useNavigate();
     const dispatch = useDispatch();
+    
+    // Get user data from Redux state
+    const userBalance = useSelector(state => state.user.balance);
+    const exposure = useSelector(state => state.user.exposure);
+    const casinoList = useSelector(state => state.casino.casinoList);
+    const cricketList = useSelector(state => state.casino.cricketList);
+    const isLoggedIn = useSelector(state => state.user.isAuthenticated);
 
     // User authentication states
     const [ACCESS_TOKEN, setACCESS_TOKEN] = useState(null);
-    const [userBalance, setUserBalance] = useState(localStorage.getItem('balance') ?? 0);
-    const [exposure, setExposure] = useState(exposureCheck() ?? 0);
-    const [casinoList, setCasinoList] = useState(JSON.parse(localStorage.getItem('casinoList')) ?? []);
-    const [cricketList, setCricketList] = useState(JSON.parse(localStorage.getItem('cricketList')) ?? []);
     const [bannerDetails, setBannerDetails] = useState({});
-    const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') ?? false);
     const [showPopupAfterRedirect, setShowPopupAfterRedirect] = useState(false);
 
     // Function to disconnect all sockets when 401 error occurs
@@ -36,8 +39,7 @@ export const UserAuthProvider = (props) => {
     const unAuthorizeHandle = () => {
         // Clear Redux token and user data for regular users
         dispatch(userLogout());
-        // Token is now managed by Redux, no need to remove from localStorage
-        localStorage.removeItem('exposure');
+        // Balance and exposure are now managed by Redux, no need to remove from localStorage
         clearIntervals();
     };
 
@@ -47,8 +49,6 @@ export const UserAuthProvider = (props) => {
 
     const clearIntervals = (func = null) => {
         // Token and user data are now managed by Redux, no need to remove from localStorage
-        localStorage.removeItem('isLoggedIn');
-
         clearInterval(balanceInterval.current);
 
         if (func != null) {
@@ -62,11 +62,9 @@ export const UserAuthProvider = (props) => {
             if (token !== null) {
                 return axiosFetch('user_balance', 'get')
                     .then((res) => {
-                        setUserBalance(res.data.balance);
-                        setExposure(res.data.exposure);
-                        
-                        localStorage.setItem('balance', res.data.balance);
-                        localStorage.setItem('exposure', res.data.exposure);
+                        // Dispatch to Redux for balance and exposure
+                        dispatch(setBalance(res.data.balance));
+                        dispatch(setExposure(res.data.exposure));
 
                         return res; // Return the response
                     })
@@ -128,8 +126,7 @@ export const UserAuthProvider = (props) => {
                 if (typeof cricketInterval === 'undefined') {
                     cricketInterval.current = setInterval(() => getCricketList(token), 5000);
                 }
-                setCricketList(res.data);
-                localStorage.setItem('cricketList', JSON.stringify(res.data));
+                dispatch(setCricketList(res.data));
             }).catch((error) => {
                 if (error.code === 'ERR_NETWORK') {
                     clearInterval(casinoInterval.current);
@@ -155,8 +152,7 @@ export const UserAuthProvider = (props) => {
     const getCasinoList = (token) => {
         try {
             axiosFetch("getCasinoList", 'get').then((res) => {
-                setCasinoList(res.data);
-                localStorage.setItem('casinoList', JSON.stringify(res.data));
+                dispatch(setCasinoList(res.data));
 
                 if (typeof casinoInterval === 'undefined') {
                     casinoInterval.current = setInterval(() => getCasinoList(token), 5000);
@@ -191,16 +187,11 @@ export const UserAuthProvider = (props) => {
             
             // Clear remaining localStorage items
             localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('balance');
-            localStorage.removeItem('exposure');
-            localStorage.removeItem('casinoList');
-            localStorage.removeItem('cricketList');
             
-            setIsLoggedIn(false);
-            setUserBalance(0);
-            setExposure(0);
-            setCasinoList([]);
-            setCricketList([]);
+            dispatch(setBalance(0));
+            dispatch(setExposure(0));
+            dispatch(setCasinoList([]));
+            dispatch(setCricketList([]));
             clearIntervals();
             nav('/login');
         } catch (error) {
@@ -217,14 +208,11 @@ export const UserAuthProvider = (props) => {
             userBalance,
             exposure,
             casinoList,
-            setUserBalance,
             cricketList,
             setACCESS_TOKEN,
             isLoggedIn,
-            setIsLoggedIn,
             bannerDetails,
             clearIntervals,
-            setCricketList,
             unAuthorizeHandle,
             getCasinoList,
             getCricketList,
