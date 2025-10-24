@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { setOddsData, selectMatchOdds } from '../store/slices/oddsDataSlice';
 
 const SportsDataTable = ({ 
     activeTab, 
@@ -10,18 +12,42 @@ const SportsDataTable = ({
     matchParam = null,
     formatDateTime = null
 }) => {
-    const [currentOddsData, setCurrentOddsData] = useState(null);
-    // Update previous data when listData changes
+    const dispatch = useDispatch();
+    const oddsDataState = useSelector(state => state.oddsData);
+    const debounceTimeoutRef = useRef(null);
+    const lastDataRef = useRef(null);
+    
+    // Debounced function to update Redux (only when data actually changes)
+    const debouncedUpdateOddsData = useCallback((newListData) => {
+        // Clear existing timeout
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        
+        // Set new timeout
+        debounceTimeoutRef.current = setTimeout(() => {
+            // Only dispatch if data has actually changed
+            const dataString = JSON.stringify(newListData);
+            if (dataString !== lastDataRef.current) {
+                lastDataRef.current = dataString;
+                dispatch(setOddsData({ activeTab, listData: newListData }));
+            }
+        }, 500); // 500ms debounce
+    }, [activeTab]);
+    
+    // Update odds data in Redux when listData changes (with debouncing)
     useEffect(() => {
         if (listData && Object.keys(listData).length > 0) {
-            
-            
-            setCurrentOddsData(prev => ({
-                ...prev,
-                [activeTab]: listData
-            }));
+            debouncedUpdateOddsData(listData);
         }
-    }, [listData, activeTab]);
+        
+        // Cleanup timeout on unmount
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, [listData, debouncedUpdateOddsData]);
 
 
 
@@ -44,20 +70,23 @@ const SportsDataTable = ({
         }
     };
 
+    // Memoized selector for better performance
+    const getOddsDataForMatch = useCallback((matchId) => {
+        return selectMatchOdds({ oddsData: oddsDataState }, activeTab, matchId);
+    }, [oddsDataState, activeTab]);
+
     // Helper function to get property value with API fallback
-    const getPropertyValue = (sport, sportProperty, apiProperty) => {
+    const getPropertyValue = useCallback((sport, sportProperty, apiProperty) => {
         let value = sport?.[sportProperty] || 0;
         
-        // Check if we have API data for this match
-        if (currentOddsData && currentOddsData[activeTab]) {
-            const apiData = Object.values(currentOddsData[activeTab]).find(item => item.gmid === parseInt(sport.match_id));
-            if (apiData && apiData[apiProperty] !== undefined) {
-                value = apiData[apiProperty] == true ? 1 : 0;
-            }
+        // Check if we have API data for this match from Redux
+        const apiData = getOddsDataForMatch(sport.match_id);
+        if (apiData && apiData[apiProperty] !== undefined) {
+            value = apiData[apiProperty] == true ? 1 : 0;
         }
         
         return value;
-    };
+    }, [getOddsDataForMatch]);
 
     const renderGameIcons = (sport) => {
         const isPlay = getPropertyValue(sport, 'isPlay', 'iplay');
@@ -98,23 +127,9 @@ const SportsDataTable = ({
         );
     };
 
-    const renderOddsButtons = (matchId, sportType, sport) => {
-        // Use currentOddsData (which includes previous data) instead of listData
-        let oddsData = {};
-
-        // First, try to get API data from currentOddsData
-        if (currentOddsData && currentOddsData[activeTab]) {
-            // Filter for the specific match
-            const apiData = Object.values(currentOddsData[activeTab]).find(item => item.gmid === parseInt(matchId));
-            if (apiData) {
-                oddsData = apiData;
-            }
-        }
-    
-      
-    
-        // If still nothing, create empty structure to avoid errors
-        if (!oddsData) oddsData = {};
+    const renderOddsButtons = useCallback((matchId, sportType, sport) => {
+        // Get odds data from Redux with memoization
+        const oddsData = getOddsDataForMatch(matchId);
         
         const { Back1, Lay1, Back2, Lay2, BackX, LayX } = BackAndLayForSports(oddsData, sport);
         
@@ -170,7 +185,7 @@ const SportsDataTable = ({
                 </div>
             </>
         );
-    };
+    }, [getOddsDataForMatch, BackAndLayForSports]);
 
     const renderSportData = () => {
         

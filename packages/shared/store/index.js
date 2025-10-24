@@ -12,6 +12,7 @@ import adminPasswordReducer from './admin/adminPasswordSlice';
 import userReducer from './slices/userSlice';
 import navigationReducer from './slices/navigationSlice';
 import commonDataReducer from './slices/commonDataSlice';
+import oddsDataReducer from './slices/oddsDataSlice';
 import tokenExpirationMiddleware from './middleware/tokenExpirationMiddleware';
 import userPasswordChangeMiddleware from './middleware/userPasswordChangeMiddleware';
 import adminPasswordChangeMiddleware from './middleware/adminPasswordChangeMiddleware';
@@ -19,7 +20,7 @@ import adminPasswordChangeMiddleware from './middleware/adminPasswordChangeMiddl
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [ 'roulette', 'cardSelection', 'cashoutTeam', 'admin', 'adminPassword', 'commonData','user']
+  whitelist: [ 'roulette', 'cardSelection', 'cashoutTeam', 'admin', 'adminPassword', 'commonData','user', 'oddsData']
 };
 
 
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   user:  userReducer,
   navigation: navigationReducer,
   commonData: commonDataReducer,
+  oddsData: oddsDataReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
