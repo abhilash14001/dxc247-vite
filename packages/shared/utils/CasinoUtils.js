@@ -1,5 +1,5 @@
 import {Buffer} from 'buffer';
-
+import { decryptAndVerifyResponse } from './decryptAndVerifyResponse';
 /**
  * Common function to process casino socket data for both Desktop and Mobile
  * @param {Object} casino_socket - Socket instance
@@ -23,7 +23,9 @@ export const createGameConnect = (casino_socket, socket_game, setData, setLastRe
     let previousRoundId = null;
     
     const gameConnect = () => {
-        casino_socket.on(socket_game, sportData => {
+        casino_socket.on(socket_game, decryptSportData => {
+            
+            const sportData = decryptAndVerifyResponse(decryptSportData)
             
             if (sportData !== null) {
                 

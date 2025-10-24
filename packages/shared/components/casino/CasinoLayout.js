@@ -16,7 +16,7 @@ import CricketScoreboard from "../CricketScoreboard";
 import MobileMatchedBetTable from "../MobileMatchedBetTable";
 import { useIsAdmin } from "../../hooks/useIsAdmin";
 import { SportsContext } from "../../contexts/SportsContext";
-
+import encryptHybrid from "../../utils/encryptHybrid";
 
 const CasinoLayout = ({
   teamname,
@@ -130,8 +130,18 @@ const CasinoLayout = ({
 
     
     if (casino_socket && match_id) {
+
+      const payload = {
+        purpose: "casinos",
+        match_id: match_id,
+        extra: ""
+      };
+
+      const encryptedPayload =  encryptHybrid(payload); 
+
+      
       // Clear previous casino purpose and set new one - this should only happen once
-      casino_socket.emit("setPurposeFor", "casinos", match_id, "");
+      casino_socket.emit("setPurposeFor",encryptedPayload);
       
     }
 
