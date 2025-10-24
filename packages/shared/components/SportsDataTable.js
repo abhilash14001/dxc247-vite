@@ -100,7 +100,7 @@ const SportsDataTable = ({
 
     const renderOddsButtons = (matchId, sportType, sport) => {
         // Use currentOddsData (which includes previous data) instead of listData
-        let oddsData = null;
+        let oddsData = {};
 
         // First, try to get API data from currentOddsData
         if (currentOddsData && currentOddsData[activeTab]) {
@@ -111,15 +111,7 @@ const SportsDataTable = ({
             }
         }
     
-        // If API data not found, fallback to DB data
-        if (!oddsData && sport.sport_new_data) {
-            try {
-                const parsedData = JSON.parse(sport.sport_new_data);
-                oddsData = parsedData.listData || {};
-            } catch (e) {
-                oddsData = {};
-            }
-        }
+      
     
         // If still nothing, create empty structure to avoid errors
         if (!oddsData) oddsData = {};
