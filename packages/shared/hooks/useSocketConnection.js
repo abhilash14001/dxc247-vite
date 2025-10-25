@@ -90,10 +90,7 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
           
           if (parsedData && Object.keys(parsedData).length > 0) {
             
-            console.log('parsedData is ', parsedData.data, matchesData)
-
-
-              
+             
             
             setListData(parsedData.data);
           }
