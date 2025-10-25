@@ -228,6 +228,11 @@ const SportsDataTable = ({
           {sportList.map((sport, index) => {
             const oddsData = getOddsDataForMatch(sport.match_id);
 
+
+            if(Object.keys(oddsData).length == 0){
+                return;
+            }
+
             
             return (
               <div key={index} className="bet-table-row">
