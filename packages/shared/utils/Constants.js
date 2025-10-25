@@ -576,19 +576,13 @@ function handleUnauthorized() {
   
   if (isAdmin) {
     // For admin routes, dispatch admin logout
-    Promise.all([
-      import('../store'),
-      import('../store/admin/adminSlice')
-    ]).then(([{ store }, { logout }]) => {
+    import('../store/admin/adminSlice').then(({ logout }) => {
       store.dispatch(logout());
       window.location.href = '/admin/login';
     });
   } else {
     // For regular user routes, dispatch user logout
-    Promise.all([
-      import('../store'),
-      import('../store/slices/userSlice')
-    ]).then(([{ store }, { logout }]) => {
+    import('../store/slices/userSlice').then(({ logout }) => {
       store.dispatch(logout());
       window.location.href = '/login';
     });

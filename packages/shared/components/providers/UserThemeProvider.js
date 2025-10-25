@@ -43,7 +43,6 @@ export const UserThemeProvider = ({ children }) => {
     
     const root = document.documentElement;
     
-    console.log('Applying user theme:', { themeData, force });
     
     // User theme variables
     root.style.setProperty('--bg-primary', themeData.primary);
@@ -55,12 +54,7 @@ export const UserThemeProvider = ({ children }) => {
     root.style.setProperty('--bg-secondary85', themeData.secondary85);
     root.style.setProperty('--text-secondary', themeData.textSecondary);
     root.style.setProperty('--bg-news', themeData.news);
-    
-    console.log('User theme applied:', {
-      '--bg-primary': themeData.primary,
-      '--bg-secondary': themeData.secondary
-    });
-    
+        
     themeAppliedRef.current = true;
   };
 
