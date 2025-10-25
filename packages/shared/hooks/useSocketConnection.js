@@ -90,6 +90,9 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
           
           if (parsedData && Object.keys(parsedData).length > 0) {
             
+            
+              
+            
             setListData(parsedData.data);
           }
         } catch (error) {

@@ -92,6 +92,7 @@ export const selectOddsDataByTab = (state, activeTab) => {
 
 export const selectMatchOdds = (state, activeTab, matchId) => {
   const sportKey = getSportKey(activeTab);
+  
   const tabData = state.oddsData.oddsData[sportKey];
   if (tabData) {
     return Object.values(tabData).find(item => item.gmid === parseInt(matchId)) || {};

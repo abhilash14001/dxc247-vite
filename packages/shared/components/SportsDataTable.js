@@ -16,6 +16,8 @@ const SportsDataTable = ({
     const oddsDataState = useSelector(state => state.oddsData);
     const debounceTimeoutRef = useRef(null);
     const lastDataRef = useRef(null);
+
+    
     
     // Debounced function to update Redux (only when data actually changes)
     const debouncedUpdateOddsData = useCallback((newListData) => {
@@ -28,7 +30,7 @@ const SportsDataTable = ({
         debounceTimeoutRef.current = setTimeout(() => {
             // Only dispatch if data has actually changed
             const dataString = JSON.stringify(newListData);
-            console.log('dataString is ', dataString)
+            
             if (dataString !== lastDataRef.current) {
                 lastDataRef.current = dataString;
                 // Now each sport will have its own separate storage
@@ -40,7 +42,7 @@ const SportsDataTable = ({
     
     // Update odds data in Redux when listData changes (with debouncing)
     useEffect(() => {
-        console.log('listData is ', listData)
+        
         if (listData && Object.keys(listData).length > 0) {
             debouncedUpdateOddsData(listData);
         }
@@ -135,10 +137,11 @@ const SportsDataTable = ({
         // Get odds data from Redux with memoization
         const oddsData = getOddsDataForMatch(matchId);
         
-        const { Back1, Lay1, Back2, Lay2, BackX, LayX } = BackAndLayForSports(oddsData, sport);
+       
+
+        const { Back1, Lay1, Back2, Lay2, BackX, LayX, Back1Suspended, Back2Suspended, BackXSuspended } = BackAndLayForSports(oddsData, sport);
         
-        const isSuspended = (odds) => odds > 0 ? '' : 'suspended-box';
-        const isSuspendedX = (odds) => odds > 0 ? '' : 'suspended-box11';
+        
         
         return (
             <>
@@ -151,7 +154,7 @@ const SportsDataTable = ({
                 <div className="bet-nation-odd d-xl-none">
                     <b>2</b>
                 </div>
-                <div className={`bet-nation-odd ${isSuspended(Back1?.[matchId])}`}>
+                <div className={`bet-nation-odd ${Back1Suspended?.[matchId] ?? ""}`}>
                     <div className="back odd-box">
                         <span className="bet-odd">
                             <b>{Back1?.[matchId] ?? '-'}</b>
@@ -163,7 +166,7 @@ const SportsDataTable = ({
                         </span>
                     </div>
                 </div>
-                <div className={`bet-nation-odd ${sportType === 'Cricket' ? isSuspendedX(BackX?.[matchId]) : isSuspended(BackX?.[matchId])}`}>
+                <div className={`bet-nation-odd ${BackXSuspended?.[matchId] ?? ""}`}>
                     <div className="back odd-box">
                         <span className="bet-odd">
                             <b>{BackX?.[matchId] ?? '-'}</b>
@@ -175,7 +178,7 @@ const SportsDataTable = ({
                         </span>
                     </div>
                 </div>
-                <div className={`bet-nation-odd ${isSuspended(Back2?.[matchId])}`}>
+                <div className={`bet-nation-odd ${Back2Suspended?.[matchId] ?? ""}`}>
                     <div className="back odd-box">
                         <span className="bet-odd">
                             <b>{Back2?.[matchId] ?? '-'}</b>

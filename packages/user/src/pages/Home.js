@@ -78,6 +78,10 @@ function Home() {
   );
 
   
+  useEffect(() => {
+    console.log("listData is ", cricketList)
+    
+  }, [cricketList])
   
   const [commonData] = useCommonData(token, setShowLoader);
 
