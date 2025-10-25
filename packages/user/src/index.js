@@ -36,6 +36,7 @@ const TransactionPasswordSuccess = lazy(() => import("./pages/TransactionPasswor
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 const HomeTabPages = lazy(() => import("./pages/HomeTabPages"));
 const FantasyGames = lazy(() => import("./pages/FantasyGames"));
+const FantasyGame = lazy(() => import("./pages/FantasyGame"));
 const Rules = lazy(() => import("./pages/Rules"));
 const AviatorList = lazy(() => import("@dxc247/shared/components/AviatorList"));
 
@@ -53,6 +54,7 @@ const CasinoMainWithLoading = withPageLoading(CasinoMain);
 const AllCasinosWithLoading = withPageLoading(AllCasinos);
 const HomeTabPagesWithLoading = withPageLoading(HomeTabPages);
 const FantasyGamesWithLoading = withPageLoading(FantasyGames);
+const FantasyGameWithLoading = withPageLoading(FantasyGame);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -83,6 +85,7 @@ root.render(
                                 <Route path="/tennis/:match_id" element={<TennisWithLoading />} />
                                 <Route path="/game-list/:match" element={<HomeTabPagesWithLoading />} />
                                 <Route path="/fantasy" element={<FantasyGamesWithLoading />} />
+                                <Route path="/fantasy-list" element={<FantasyGameWithLoading />} />
                                 <Route path="/account-statement" element={<AccountStatementWithLoading />} />
                                 <Route path="/current-bets" element={<CurrentBetsWithLoading />} />
                                 <Route path="/profit-loss" element={<ProfitLossWithLoading />} />
