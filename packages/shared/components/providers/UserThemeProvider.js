@@ -66,14 +66,14 @@ export const UserThemeProvider = ({ children }) => {
 
   // Load theme from liveModeData
   useEffect(() => {
-    console.log('UserThemeProvider useEffect triggered:', { liveModeData, theme });
+    
     
     // Reset theme applied flag when liveModeData changes
     themeAppliedRef.current = false;
     
     if (!liveModeData) {
       // Apply default theme if no liveModeData
-      console.log('No liveModeData, applying default user theme');
+      
       applyThemeToDocument(theme, true);
       return;
     }

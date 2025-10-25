@@ -21,7 +21,6 @@ const SidebarLayout = () => {
     
 
     useEffect(() => {
-        console.log('matchesData is ', matchesData);
         
         // Only run when matchesData is available and has sidebar_data
         if (!matchesData || !matchesData.sidebar_data) {

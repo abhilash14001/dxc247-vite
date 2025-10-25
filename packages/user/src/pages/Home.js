@@ -52,7 +52,7 @@ function Home() {
 
 
 
-  
+
   const sportsTabs = [
     { name: "Cricket", dataOption: "cricketData", canonicalName: "Cricket" },
     { name: "Football", dataOption: "soccerData", canonicalName: "Soccer" },
@@ -83,12 +83,7 @@ function Home() {
     true
   );
 
-  
-  useEffect(() => {
-    console.log("listData is ", cricketList)
     
-  }, [cricketList])
-  
   const [commonData] = useCommonData(token, setShowLoader);
 
   // Filter sports tabs based on blocked sports with safety checks

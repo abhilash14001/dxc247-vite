@@ -67,7 +67,7 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
 
     // Create new socket only if none exists
     if (!socketRef.current) {
-      console.log('Creating socket connection');
+      
       const socket = io(socketUrl, {
         transports: ["websocket", "polling"],
         timeout: 20000,
