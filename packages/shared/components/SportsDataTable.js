@@ -34,7 +34,7 @@ const SportsDataTable = ({
             if (dataString !== lastDataRef.current) {
                 lastDataRef.current = dataString;
                 // Now each sport will have its own separate storage
-                console.log('ilst data is ', newListData, ' active tab is ', activeTab)
+                
                 dispatch(setOddsData({ activeTab, listData: newListData }));
             }
         }, 500); // 500ms debounce
@@ -42,7 +42,7 @@ const SportsDataTable = ({
     
     // Update odds data in Redux when listData changes (with debouncing)
     useEffect(() => {
-        
+        console.log('SportsDataTable useEffect - activeTab:', activeTab, 'listData:', listData);
         if (listData && Object.keys(listData).length > 0) {
             debouncedUpdateOddsData(listData);
         }
@@ -78,7 +78,7 @@ const SportsDataTable = ({
 
     // Memoized selector for better performance - now uses sport-specific storage
     const getOddsDataForMatch = useCallback((matchId) => {
-        return selectMatchOdds({ oddsData: oddsDataState }, activeTab, matchId);
+        return selectMatchOdds(oddsDataState, activeTab, matchId);
     }, [oddsDataState, activeTab]);
 
     // Helper function to get property value with API fallback

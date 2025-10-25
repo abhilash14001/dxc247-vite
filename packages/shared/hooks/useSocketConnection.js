@@ -90,7 +90,9 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
           
           if (parsedData && Object.keys(parsedData).length > 0) {
             
-            
+            console.log('parsedData is ', parsedData.data, matchesData)
+
+
               
             
             setListData(parsedData.data);
@@ -118,12 +120,12 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
         socketRef.current = null;
       }
     };
-  }, [socketUrl]); // Only run when socketUrl changes
+  }, [socketUrl, matchesData]); // Only run when socketUrl changes
 
   // Update socket purpose if matchesData changes
   useEffect(() => {
     if (socketRef.current && matchesData) {
-
+      
       const payload = {
         type: "list",
         game: SPORT_ARRAY[matchesData],

@@ -45,6 +45,8 @@ const oddsDataSlice = createSlice({
     },
     updateMatchOdds: (state, action) => {
       const { activeTab, matchId, oddsData } = action.payload;
+
+   
       const sportKey = getSportKey(activeTab);
       if (!state.oddsData[sportKey]) {
         state.oddsData[sportKey] = {};
@@ -87,14 +89,17 @@ export const {
 // Selectors for better performance
 export const selectOddsDataByTab = (state, activeTab) => {
   const sportKey = getSportKey(activeTab);
-  return state.oddsData.oddsData[sportKey] || {};
+  return state.oddsData[sportKey] || {};
 };
 
 export const selectMatchOdds = (state, activeTab, matchId) => {
   const sportKey = getSportKey(activeTab);
   
-  const tabData = state.oddsData.oddsData[sportKey];
+  const tabData = state.oddsData[sportKey];
+
+  
   if (tabData) {
+    
     return Object.values(tabData).find(item => item.gmid === parseInt(matchId)) || {};
   }
   return {};

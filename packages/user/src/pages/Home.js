@@ -31,22 +31,28 @@ function Home() {
   // Get casino data from Redux instead of AuthContext
   const casinoList = useSelector(state => state.casino.casinoList);
   const { unAuthorizeHandle } = useContext(AuthContext);
-  
-  const [listData, setListData] = useState({});
 
-  // Latest events hook
-  
+  // Separate listData for each sport to prevent data mixing
+  const [listData, setListData] = useState({});
 
   // Socket connection for real-time data
 
-  
-
   const [activeTab, setActiveTab] = useState("Cricket");
+  
+  // Single socket connection that handles all sports
   useSocketConnection(
     activeTab.toLowerCase(),
-    setListData,
+    (data) => {
+      
+        setListData(data);
+      
+    },
     import.meta.env.VITE_LIST_URL
   );
+
+
+
+  
   const sportsTabs = [
     { name: "Cricket", dataOption: "cricketData", canonicalName: "Cricket" },
     { name: "Football", dataOption: "soccerData", canonicalName: "Soccer" },
@@ -204,7 +210,7 @@ function Home() {
                         ? soccerList
                         : []
                     }
-                    listData={listData}
+                    listData={listData || {}}
                     BackAndLayForSports={BackAndLayForSports}
                   />
                 
