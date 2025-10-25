@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, lazy } from "react";
+import React, { useContext, useEffect, useState, lazy, act } from "react";
 import { AuthContext } from "@dxc247/shared/contexts/AuthContext";
 import { useSelector } from 'react-redux';
 
@@ -33,7 +33,7 @@ function Home() {
   const { unAuthorizeHandle } = useContext(AuthContext);
 
   // Separate listData for each sport to prevent data mixing
-  const [listData, setListData] = useState({});
+  
   const [cricketData, setCricketData] = useState({});
   const [tennisData, setTennisData] = useState({});
   const [soccerData, setSoccerData] = useState({});
@@ -46,35 +46,11 @@ function Home() {
   
  
 
-  // Call all 3 games at once at the beginning with separate state
-  useSocketConnection(
-    "cricket",
-    (data) => {
-      setCricketData(data);
-    },
-    import.meta.env.VITE_LIST_URL
-  );
-
-  useSocketConnection(
-    "tennis", 
-    (data) => {
-      setTennisData(data);
-    },
-    import.meta.env.VITE_LIST_URL
-  );
-  
-  useSocketConnection(
-    "soccer",
-    (data) => {
-      setSoccerData(data);
-    },
-    import.meta.env.VITE_LIST_URL
-  );
-
   // Single socket connection that handles all sports
   useSocketConnection(
     activeTab.toLowerCase(),
     (data) => {
+      console.log(`${activeTab} socket received data:`, data);
       // Update the appropriate state based on active tab
       if (activeTab === "Cricket") {
         setCricketData(data);
@@ -82,12 +58,11 @@ function Home() {
         setTennisData(data);
       } else if (activeTab === "Football") {
         setSoccerData(data);
-      } else {
-        setListData(data);
-      }
+      } 
     },
     import.meta.env.VITE_LIST_URL
   );
+
 
 
   const sportsTabs = [

@@ -108,7 +108,7 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
         }
       });
     }
-
+    
     // Cleanup on unmount
     return () => {
       if (socketRef.current) {
@@ -117,6 +117,7 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
         socketRef.current = null;
       }
     };
+    
   }, [socketUrl, matchesData]); // Only run when socketUrl changes
 
   // Update socket purpose if matchesData changes
