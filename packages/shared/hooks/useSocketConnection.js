@@ -134,6 +134,7 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
       socketRef.current.emit("setPurposeFor", encryptedPayload);
     }
     
+    
   }, [matchesData]);
 
   return socketRef;

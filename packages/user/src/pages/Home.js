@@ -34,23 +34,60 @@ function Home() {
 
   // Separate listData for each sport to prevent data mixing
   const [listData, setListData] = useState({});
+  const [cricketData, setCricketData] = useState({});
+  const [tennisData, setTennisData] = useState({});
+  const [soccerData, setSoccerData] = useState({});
 
   // Socket connection for real-time data
 
   const [activeTab, setActiveTab] = useState("Cricket");
   
-  // Single socket connection that handles all sports
+  // Call all 3 games at once at the beginning
+  
+ 
+
+  // Call all 3 games at once at the beginning with separate state
   useSocketConnection(
-    activeTab.toLowerCase(),
+    "cricket",
     (data) => {
-      
-        setListData(data);
-      
+      setCricketData(data);
     },
     import.meta.env.VITE_LIST_URL
   );
 
+  useSocketConnection(
+    "tennis", 
+    (data) => {
+      setTennisData(data);
+    },
+    import.meta.env.VITE_LIST_URL
+  );
+  
+  useSocketConnection(
+    "soccer",
+    (data) => {
+      setSoccerData(data);
+    },
+    import.meta.env.VITE_LIST_URL
+  );
 
+  // Single socket connection that handles all sports
+  useSocketConnection(
+    activeTab.toLowerCase(),
+    (data) => {
+      // Update the appropriate state based on active tab
+      if (activeTab === "Cricket") {
+        setCricketData(data);
+      } else if (activeTab === "Tennis") {
+        setTennisData(data);
+      } else if (activeTab === "Football") {
+        setSoccerData(data);
+      } else {
+        setListData(data);
+      }
+    },
+    import.meta.env.VITE_LIST_URL
+  );
 
 
   const sportsTabs = [
@@ -205,7 +242,15 @@ function Home() {
                         ? soccerList
                         : []
                     }
-                    listData={listData || {}}
+                    listData={
+                      activeTab === "Cricket"
+                        ? cricketData
+                        : activeTab === "Tennis"
+                        ? tennisData
+                        : activeTab === "Football"
+                        ? soccerData
+                        : listData
+                    }
                     BackAndLayForSports={BackAndLayForSports}
                   />
                 
