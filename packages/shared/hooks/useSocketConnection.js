@@ -5,6 +5,8 @@ import { useContext } from "react";
 import { SportsContext } from "../contexts/SportsContext";
 import { CasinoContext } from "../contexts/CasinoContext";
 import { API_ENDPOINTS, isOnline, waitForOnline } from "../utils/networkUtils";
+import encryptHybrid from "../utils/encryptHybrid";
+import { decryptAndVerifyResponse } from "../utils/decryptAndVerifyResponse";
 
 const SPORT_ARRAY = {
   soccer: 1,
@@ -80,9 +82,12 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
 
       // Listen for incoming data
       socket.on("getListData", (userDatas) => {
+        
         if (!userDatas) return;
         try {
-          const parsedData = JSON.parse(Buffer.from(userDatas).toString("utf8"));
+          
+          const parsedData = decryptAndVerifyResponse(userDatas);
+          
           if (parsedData && Object.keys(parsedData).length > 0) {
             
             setListData(parsedData.data);
@@ -114,9 +119,19 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
 
   // Update socket purpose if matchesData changes
   useEffect(() => {
-    if (socketRef.current && matchesData && matchesData.length > 0) {
-      socketRef.current.emit("setPurposeFor", "list", SPORT_ARRAY[matchesData], "", "", matchesData);
+    if (socketRef.current && matchesData) {
+
+      const payload = {
+        type: "list",
+        game: SPORT_ARRAY[matchesData],
+        match_ids: matchesData,
+      };
+
+      const encryptedPayload = encryptHybrid(payload);
+
+      socketRef.current.emit("setPurposeFor", encryptedPayload);
     }
+    
   }, [matchesData]);
 
   return socketRef;

@@ -553,7 +553,7 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
       const decryptedJSON = JSON.parse(decryptedText);
 
       if (setList !== null) setList( decryptedJSON);
-      return {data : decryptedJSON};
+      return {data : decryptedJSON?.data || decryptedJSON};
     } else {
       
       if (setList !== null) setList(response.data);

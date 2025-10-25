@@ -32,6 +32,7 @@ const OddEven = ({
   // Move hooks before early return
   const mainValue = gameData?.["oddeven"];
   const ar_sectionData = mainValue?.section;
+  
   const maxValue = useMemo(() => ar_sectionData?.[0]?.['maxb'] || mainValue?.max, [ar_sectionData, mainValue]);
   
   useEffect(() => {
@@ -64,6 +65,7 @@ const OddEven = ({
     if (typeof promises !== "undefined") {
       Promise.all(promises)
         .then((results) => {
+          console.log('results is ', results)
           results.forEach((result, index) => {
             const teamName = gameData["oddeven"]?.section[index].nat;
             betEvenCalculation.current[teamName] = result.data;
@@ -82,7 +84,7 @@ const OddEven = ({
   }, [Object.keys(model).length, exposureCheck(), gameData?.["oddeven"]?.section.length]);
 
   // Early return after all hooks
-  if (!gameData || !gameData?.["oddeven"]) return null;
+  if (!gameData || !gameData?.["oddeven"] || !mainValue || !ar_sectionData) return null;
 
   return (
     <>
@@ -245,7 +247,10 @@ const OddEven = ({
                       }
 
                       let getFancySessionValue =
-                        betEvenCalculation.current?.[teamName] != 0 ? betEvenCalculation.current?.[teamName] : "";
+                        betEvenCalculation.current?.[teamName] != 0 ? 
+                          (typeof betEvenCalculation.current?.[teamName] === 'object' ? 
+                            betEvenCalculation.current?.[teamName]?.data || betEvenCalculation.current?.[teamName] : 
+                            betEvenCalculation.current?.[teamName]) : "";
 
                       if (oddsArr.min) minValue = oddsArr.min;
                       if (oddsArr.max) maxValue = oddsArr.max;

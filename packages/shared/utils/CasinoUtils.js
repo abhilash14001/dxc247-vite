@@ -29,8 +29,8 @@ export const createGameConnect = (casino_socket, socket_game, setData, setLastRe
             
             if (sportData !== null) {
                 
-                let fetchedData = JSON.parse(Buffer.from(sportData).toString('utf8'))
-                const parsedData = fetchedData[0]; // Assuming this is the data you want to work with.
+                let fetchedData = sportData
+                const parsedData = sportData[0]; // Assuming this is the data you want to work with.
                 
                 // Use existing data as base instead of resetting
                 const processedData = {

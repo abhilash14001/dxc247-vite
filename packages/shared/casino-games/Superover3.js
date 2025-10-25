@@ -1,10 +1,10 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Buffer } from "buffer";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
-
-import axiosFetch, {
+import encryptHybrid from "../utils/encryptHybrid";
+import { decryptAndVerifyResponse } from "../utils/decryptAndVerifyResponse";
+import {
   getExByColor,
   getExByTeamNameForCasino,
   resetBetFields,
@@ -13,7 +13,7 @@ import axiosFetch, {
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
-import { AuthContext } from "../contexts/AuthContext";
+
 import Notify from "../utils/Notify";
 import { CasinoContext } from "../contexts/CasinoContext";
 
@@ -45,10 +45,10 @@ const Superover3 = () => {
   const { match_id } = useParams();
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
-  const {mybetModel} = useContext(CasinoContext);
-  
+  const { mybetModel } = useContext(CasinoContext);
+
   // Get user data from Redux instead of AuthContext
-  const userBalance = useSelector(state => state.user.balance);
+  const userBalance = useSelector((state) => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   useEffect(() => {
@@ -136,7 +136,6 @@ const Superover3 = () => {
       );
 
       remark.current = data.remark || "Welcome";
-
     }
 
     // Update teamNameCurrentBets
@@ -145,7 +144,6 @@ const Superover3 = () => {
     }
     teamNameCurrentBets.current["BOOKMAKER"]["IND"] = playerA;
     teamNameCurrentBets.current["BOOKMAKER"]["AUS"] = playerB;
-
   }, [data?.t2]);
 
   useEffect(() => {
@@ -178,19 +176,21 @@ const Superover3 = () => {
 
   useEffect(() => {
     if (data?.t1?.gmid && casino_socket_scoreboard) {
-      casino_socket_scoreboard.emit(
-        "setPurposeFor",
-        "casino",
-        "superover3",
-        null,
-        data?.t1?.gmid,
-        "superover3"
-      );
+      const payload = {
+        type: "casino",
+        game: "superover3",
+        scard: data?.t1?.gmid,
+        match_id: "superover3",
+      };
+
+      const encryptedPayload = encryptHybrid(payload);
+
+      casino_socket_scoreboard.emit("setPurposeFor", encryptedPayload);
 
       casino_socket_scoreboard.on(
         "getScoreDatasuperover3" + match_id,
         (data) => {
-          let fetchedData = JSON.parse(Buffer.from(data).toString("utf8"));
+          let fetchedData = decryptAndVerifyResponse(data);
 
           fetchedData = JSON.parse(fetchedData);
 
@@ -281,7 +281,7 @@ const Superover3 = () => {
       setPopupDisplayForDesktop(true);
       teamname.current = teamnam;
       setOdds(oddvalue);
-    } 
+    }
   };
 
   // Helper function to find data in data.sub for Superover3
@@ -311,11 +311,7 @@ const Superover3 = () => {
       if (card === null) return null;
       return (
         <div className="mt-1" key={index}>
-          <img
-                        key={index}
-            src={card}
-            alt={`card-${index}`}
-          />
+          <img key={index} src={card} alt={`card-${index}`} />
         </div>
       );
     });
@@ -371,13 +367,9 @@ const Superover3 = () => {
 
     return success;
   };
-  const renderVideoBox = () => {  
-    return (
-        <div className="casino-video-cards">
-            {renderCards()}
-        </div>
-    )
-}
+  const renderVideoBox = () => {
+    return <div className="casino-video-cards">{renderCards()}</div>;
+  };
   // Function to get current min/max limits for the active bet
   const getMinMaxLimits = () => {
     if (teamname.current && betType) {
@@ -385,7 +377,7 @@ const Superover3 = () => {
       if (foundData) {
         return {
           min: foundData.min || 100,
-          max: foundData.max || 100000
+          max: foundData.max || 100000,
         };
       }
     }
@@ -394,9 +386,9 @@ const Superover3 = () => {
 
   return (
     <CasinoLayout
-    raceClass="super-over"
-    videoBox="video-box-container"
-    virtualVideoCards={renderVideoBox}
+      raceClass="super-over"
+      videoBox="video-box-container"
+      virtualVideoCards={renderVideoBox}
       ruleImage={ruleImage}
       getMinMaxLimits={getMinMaxLimits}
       ruleDescription={ruleDescription}
@@ -417,11 +409,6 @@ const Superover3 = () => {
       setData={setData}
       setLastResult={setLastResult}
     >
-
-     
-
-      
-
       <div className="casino-detail detail-page-container position-relative">
         <div className="game-market market-2">
           <div className="market-title">

@@ -20,7 +20,7 @@ import adminPasswordChangeMiddleware from './middleware/adminPasswordChangeMiddl
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [ 'roulette', 'cardSelection', 'cashoutTeam', 'admin', 'adminPassword', 'commonData','user', 'oddsData']
+  whitelist: [ 'roulette', 'cardSelection', 'cashoutTeam', 'admin', 'adminPassword', 'commonData','user', 'oddsData','casino']
 };
 
 

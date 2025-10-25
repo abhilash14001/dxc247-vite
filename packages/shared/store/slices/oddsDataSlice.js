@@ -1,7 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// Helper function to map sport types to consistent keys
+const getSportKey = (activeTab) => {
+  switch(activeTab) {
+    case 'Cricket':
+      return 'Cricket';
+    case 'Tennis':
+      return 'Tennis';
+    case 'Football':
+    case 'Soccer':
+      return 'Soccer';
+    default:
+      return 'Cricket';
+  }
+};
+
 const initialState = {
-  oddsData: {}, // Structure: { [activeTab]: { [matchId]: oddsData } }
+  oddsData: {
+    Cricket: {}, // Separate storage for Cricket
+    Tennis: {},  // Separate storage for Tennis  
+    Soccer: {},  // Separate storage for Soccer
+    Football: {} // Alias for Soccer
+  },
   loading: false,
   error: null,
 };
@@ -13,27 +33,37 @@ const oddsDataSlice = createSlice({
     setOddsData: (state, action) => {
       const { activeTab, listData } = action.payload;
       if (listData && Object.keys(listData).length > 0) {
+        // Map sport types to consistent keys
+        const sportKey = getSportKey(activeTab);
+        
         // Only update if data has actually changed (performance optimization)
-        const currentData = state.oddsData[activeTab];
+        const currentData = state.oddsData[sportKey];
         if (JSON.stringify(currentData) !== JSON.stringify(listData)) {
-          state.oddsData[activeTab] = listData;
+          state.oddsData[sportKey] = listData;
         }
       }
     },
     updateMatchOdds: (state, action) => {
       const { activeTab, matchId, oddsData } = action.payload;
-      if (!state.oddsData[activeTab]) {
-        state.oddsData[activeTab] = {};
+      const sportKey = getSportKey(activeTab);
+      if (!state.oddsData[sportKey]) {
+        state.oddsData[sportKey] = {};
       }
-      state.oddsData[activeTab][matchId] = oddsData;
+      state.oddsData[sportKey][matchId] = oddsData;
     },
     clearOddsData: (state) => {
-      state.oddsData = {};
+      state.oddsData = {
+        Cricket: {},
+        Tennis: {},
+        Soccer: {},
+        Football: {}
+      };
     },
     clearTabOddsData: (state, action) => {
       const { activeTab } = action.payload;
-      if (state.oddsData[activeTab]) {
-        delete state.oddsData[activeTab];
+      const sportKey = getSportKey(activeTab);
+      if (state.oddsData[sportKey]) {
+        state.oddsData[sportKey] = {};
       }
     },
     setLoading: (state, action) => {
@@ -55,9 +85,14 @@ export const {
 } = oddsDataSlice.actions;
 
 // Selectors for better performance
-export const selectOddsDataByTab = (state, activeTab) => state.oddsData.oddsData[activeTab] || {};
+export const selectOddsDataByTab = (state, activeTab) => {
+  const sportKey = getSportKey(activeTab);
+  return state.oddsData.oddsData[sportKey] || {};
+};
+
 export const selectMatchOdds = (state, activeTab, matchId) => {
-  const tabData = state.oddsData.oddsData[activeTab];
+  const sportKey = getSportKey(activeTab);
+  const tabData = state.oddsData.oddsData[sportKey];
   if (tabData) {
     return Object.values(tabData).find(item => item.gmid === parseInt(matchId)) || {};
   }

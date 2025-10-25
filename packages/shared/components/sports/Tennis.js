@@ -2,9 +2,10 @@ import React, {useContext, useEffect, useRef, useState, Suspense, lazy} from "re
 
 import {exposureCheck, getExByTeamNameForCricket, getExByTeamNameForAllBetTypes, isAdminRoute} from "@dxc247/shared/utils/Constants";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
+import { decryptAndVerifyResponse } from "../../utils/decryptAndVerifyResponse";
 
 import {useNavigate, useParams} from "react-router-dom";
-import {Buffer} from "buffer";
+import encryptHybrid from "../../utils/encryptHybrid";
 import Loader from "@dxc247/shared/components/Loader";
 
 // Lazy load components for better performance
@@ -187,7 +188,15 @@ const Tennis = ({ isAdmin = false }) => {
     useEffect(() => {
         if (sports_socket) {
             let gamename = 'tennis'
-            sports_socket.emit('setPurposeFor', 'sports', gamename, '', '', match_id)
+
+            const payload = {
+                type: "sports",
+                game: gamename,
+                match_id: match_id
+              };
+          
+              const encryptedPayload =  encryptHybrid(payload); 
+            sports_socket.emit('setPurposeFor', encryptedPayload);
             let socket_game = `getSportData${gamename}${match_id}`;
             let emptyCheckTimeout;
 
@@ -196,7 +205,9 @@ const Tennis = ({ isAdmin = false }) => {
                 const gameSet = [];
 
                 if (sportData !== null) {
-                    sportData = JSON.parse(Buffer.from(sportData).toString('utf8'))
+                    
+
+                    sportData = decryptAndVerifyResponse(sportData)
 
                     if (sportData && sportData.game_detail && sportData.game_detail.length > 0) {
                         setShowLoader(false);

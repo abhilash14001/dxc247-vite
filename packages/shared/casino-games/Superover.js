@@ -1,6 +1,5 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import {useContext, useEffect, useRef, useState} from "react";
-import { Buffer } from "buffer";
 import {CasinoLastResult} from "../components/casino/CasinoLastResult";
 
 import {
@@ -14,6 +13,8 @@ import {CasinoContext} from "../contexts/CasinoContext";
 import {AuthContext} from "../contexts/AuthContext";
 import Notify from "../utils/Notify";
 import { getSize } from "../utils/Constants";
+import { decryptAndVerifyResponse } from "../utils/decryptAndVerifyResponse";
+import encryptHybrid from "../utils/encryptHybrid";
 
 const Superover = () => {
     const [roundId, setRoundId] = useState('')
@@ -71,12 +72,15 @@ const Superover = () => {
         
         if (data?.t1?.gmid && casino_socket_scoreboard) {
             
+            const payload = {type : 'casino', game : 'superover', scard : data?.t1?.gmid, match_id : "superover"}
+
+            const encryptedPayload = encryptHybrid(payload);
             
-        casino_socket_scoreboard.emit('setPurposeFor', 'casino', 'superover', null, data?.t1?.gmid, 'superover')
+        casino_socket_scoreboard.emit('setPurposeFor', encryptedPayload);
 
         
         casino_socket_scoreboard.on('getScoreDatasuperover' + match_id, (data) => {
-            let fetchedData = JSON.parse(Buffer.from(data).toString('utf8'))
+            let fetchedData = decryptAndVerifyResponse(data);
 
             fetchedData = JSON.parse(fetchedData)
 

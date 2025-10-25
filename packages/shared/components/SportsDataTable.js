@@ -28,8 +28,11 @@ const SportsDataTable = ({
         debounceTimeoutRef.current = setTimeout(() => {
             // Only dispatch if data has actually changed
             const dataString = JSON.stringify(newListData);
+            console.log('dataString is ', dataString)
             if (dataString !== lastDataRef.current) {
                 lastDataRef.current = dataString;
+                // Now each sport will have its own separate storage
+                console.log('ilst data is ', newListData, ' active tab is ', activeTab)
                 dispatch(setOddsData({ activeTab, listData: newListData }));
             }
         }, 500); // 500ms debounce
@@ -37,6 +40,7 @@ const SportsDataTable = ({
     
     // Update odds data in Redux when listData changes (with debouncing)
     useEffect(() => {
+        console.log('listData is ', listData)
         if (listData && Object.keys(listData).length > 0) {
             debouncedUpdateOddsData(listData);
         }
@@ -70,7 +74,7 @@ const SportsDataTable = ({
         }
     };
 
-    // Memoized selector for better performance
+    // Memoized selector for better performance - now uses sport-specific storage
     const getOddsDataForMatch = useCallback((matchId) => {
         return selectMatchOdds({ oddsData: oddsDataState }, activeTab, matchId);
     }, [oddsDataState, activeTab]);

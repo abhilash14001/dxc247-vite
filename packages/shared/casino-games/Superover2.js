@@ -1,8 +1,8 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import {useContext, useEffect, useRef, useState} from "react";
-import { Buffer } from "buffer";
 import {CasinoLastResult} from "../components/casino/CasinoLastResult";
-
+import encryptHybrid from "../utils/encryptHybrid";
+import { decryptAndVerifyResponse } from "../utils/decryptAndVerifyResponse";
 import axiosFetch, {
     getExByColor,
     getExByTeamNameForCasino, resetBetFields, placeCasinoBet, calculateUpdatedBets, updatePlacingBetsState, getSize,
@@ -169,12 +169,15 @@ const Superover2 = () => {
         
         if (data?.t1?.gmid && casino_socket_scoreboard) {
             
+            const payload = {type : 'casino', game : 'superover2', scard : data?.t1?.gmid, match_id : "superover2"}
+
+            const encryptedPayload = encryptHybrid(payload);
             
-        casino_socket_scoreboard.emit('setPurposeFor', 'casino', 'superover', null, data?.t1?.gmid, 'superover')
+        casino_socket_scoreboard.emit('setPurposeFor', encryptedPayload);
 
         
-        casino_socket_scoreboard.on('getScoreDatasuperover' + match_id, (data) => {
-            let fetchedData = JSON.parse(Buffer.from(data).toString('utf8'))
+        casino_socket_scoreboard.on('getScoreDatasuperover2' + match_id, (data) => {
+            let fetchedData = decryptAndVerifyResponse(data);
 
             fetchedData = JSON.parse(fetchedData)
 

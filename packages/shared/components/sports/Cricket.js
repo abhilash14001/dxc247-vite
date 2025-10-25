@@ -1,18 +1,25 @@
-import React, { useContext, useEffect, useRef, useState, Suspense, lazy } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  Suspense,
+  lazy,
+} from "react";
 import {
   getExByTeamNameForCricket,
   getExByTeamNameForAllBetTypes,
   showCricketSessionBook,
-  isAdminRoute,
+  
   exposureCheck,
 } from "@dxc247/shared/utils/Constants";
+import { decryptAndVerifyResponse } from "../../utils/decryptAndVerifyResponse";
 
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { Buffer } from "buffer";
 import Loader from "@dxc247/shared/components/Loader";
-import { useIsAdmin } from '../../hooks/useIsAdmin'; 
-
+import { useIsAdmin } from "../../hooks/useIsAdmin";
+import encryptHybrid from "../../utils/encryptHybrid";
 // Lazy load components for better performance
 const SportsLayout = lazy(() => import("../layouts/SportsLayout"));
 const CommonLayout = lazy(() => import("../layouts/CommonLayout"));
@@ -82,28 +89,28 @@ const Cricket = () => {
 
   const [sportList, setSportList] = useState({});
   const [myBetModel, setMyBetModel] = useState([]);
-  
+
   // Add missing variables for RightSideBarSports
   // Use defaultTeamName as teamname for RightSideBarSports (this is what getOddValue sets)
   const teamname = defaultTeamName;
   // Use betOddValue as odds for RightSideBarSports (this is what setBetOddValue sets)
   const [odds, setOdds] = useState(0);
   const data = ar_sectionData; // Use ar_sectionData as data
-  
+
   // Sync odds state with betOddValue when it changes
   useEffect(() => {
     setOdds(betOddValue);
   }, [betOddValue]);
 
   const trackData = useRef({});
-  
+
   // Define localGetBetListData function using dynamic import
   const localGetBetListData = async () => {
     try {
       const { getBetListData } = await import("../../utils/betUtils");
       await getBetListData(match_id, setMyBetModel);
     } catch (error) {
-      console.error('Error fetching bet list data:', error);
+      console.error("Error fetching bet list data:", error);
     }
   };
   const tvTrigger = async (gammmmee) => {
@@ -135,10 +142,16 @@ const Cricket = () => {
 
     if (!sports_socket) return;
 
+    const payload = {
+      type: "sports",
+      game: "cricket",
+      match_id: match_id,
+    };
 
-    
+    const encryptedPayload = encryptHybrid(payload);
+
     // Emit purpose
-    sports_socket.emit("setPurposeFor", "sports", "cricket", "", "", match_id);
+    sports_socket.emit("setPurposeFor", encryptedPayload);
 
     const socket_game = `getSportDatacricket${match_id}`;
 
@@ -146,9 +159,11 @@ const Cricket = () => {
     const emptyCheckTimeout = { current: null };
 
     // Handler for incoming data
-    const handleSportData = (sportData) => {
+    const handleSportData = (sportDat1a) => {
+      const sportData = decryptAndVerifyResponse(sportDat1a);
+
       if (sportData !== null) {
-        let parsedData = JSON.parse(Buffer.from(sportData).toString("utf8"));
+        let parsedData = sportData;
 
         if (
           parsedData &&
@@ -164,9 +179,6 @@ const Cricket = () => {
             }
             const gtype = value.mname ? value.mname.toLowerCase() : "";
 
-
-
-            
             gameSet[gtype] = value;
           }
 
@@ -204,8 +216,6 @@ const Cricket = () => {
         }
       }
     };
-
-    
 
     // Listen for game data
     sports_socket.on(socket_game, handleSportData);
@@ -246,12 +256,9 @@ const Cricket = () => {
         clearTimeout(emptyCheckTimeout.current);
       }
     };
-  
+
     // eslint-disable-next-line
   }, [match_id, sports_socket]);
-
-
-
 
   useEffect(() => {
     if (tvTriggered === false && gameId !== "") {
@@ -337,11 +344,7 @@ const Cricket = () => {
     if (!cplCupKey) {
       cplCupKey = keys.find((key) => {
         const lowerKey = key.toLowerCase();
-        return (
-          
-          lowerKey.includes("cup") 
-          
-        );
+        return lowerKey.includes("cup");
       });
     }
 
@@ -357,41 +360,36 @@ const Cricket = () => {
 
     try {
       if (ar_lengt > 0 && sportListLength > 0 && !showLoader) {
-
-        
         // If betType only contains one entry (partial update), only update that specific bet type
         const isPartialUpdate = Object.keys(betType).length === 1;
-
-        
-        
 
         // Always use bulk function for both partial and full updates
         if (isPartialUpdate) {
           // For partial updates, still use bulk function but only with the specific bet type
           const [index, value] = Object.entries(betType)[0];
-          
+
           // Create a mapping for the specific bet type
           const partialSetFunctions = {};
           switch (index) {
             case "ODDS":
-              partialSetFunctions['match_odds'] = setOddsTeamData;
+              partialSetFunctions["match_odds"] = setOddsTeamData;
               break;
             case "SUPER_OVER":
-              partialSetFunctions['super_over'] = setSuperOverTeamData;
+              partialSetFunctions["super_over"] = setSuperOverTeamData;
               break;
             case "BOOKMAKER":
-              partialSetFunctions['bookmaker'] = setBookmakerTeamData;
+              partialSetFunctions["bookmaker"] = setBookmakerTeamData;
               break;
             case "BOOKMAKER2":
-              partialSetFunctions['bookmaker2'] = setBookmaker2TeamData;
+              partialSetFunctions["bookmaker2"] = setBookmaker2TeamData;
               break;
             case "cup":
-              partialSetFunctions['cup'] = setCplbookmakerTeamData;
+              partialSetFunctions["cup"] = setCplbookmakerTeamData;
               break;
             default:
-              partialSetFunctions['tied_match'] = setTiedMatchData;
+              partialSetFunctions["tied_match"] = setTiedMatchData;
           }
-          
+
           getExByTeamNameForAllBetTypes(
             ar_sectionData,
             sportList.id,
@@ -405,17 +403,17 @@ const Cricket = () => {
             sportList.id,
             {},
             {
-              'match_odds': setOddsTeamData,
-              'bookmaker': setBookmakerTeamData,
-              'bookmaker2': setBookmaker2TeamData,
-              'cup': setCplbookmakerTeamData,
-              'tied_match': setTiedMatchData,
-              'super_over': setSuperOverTeamData,
-              'fancy_session': setFancySessionTeamData,
-              'over_by_over': setOverByOverTeamData,
-              'meter': setMeterTeamData,
-              'normal': setNormalTeamData,
-              'oddeven': setOddevenTeamData
+              match_odds: setOddsTeamData,
+              bookmaker: setBookmakerTeamData,
+              bookmaker2: setBookmaker2TeamData,
+              cup: setCplbookmakerTeamData,
+              tied_match: setTiedMatchData,
+              super_over: setSuperOverTeamData,
+              fancy_session: setFancySessionTeamData,
+              over_by_over: setOverByOverTeamData,
+              meter: setMeterTeamData,
+              normal: setNormalTeamData,
+              oddeven: setOddevenTeamData,
             }
           );
         }
@@ -445,29 +443,30 @@ const Cricket = () => {
   useEffect(() => {
     if (sportsSocketScoreboard) {
       const scoreboardEvent = "getScoreData" + "cricket" + match_id;
-      
-      sportsSocketScoreboard.emit(
-        "setPurposeFor",
-        "cricket",
-        "cricket",
-        null,
-        null,
-        match_id
-      );
-      
+
+      const payload = {
+        type: "cricket",
+        game: "cricket",
+        scard : "",
+        match_id: match_id,
+      };
+
+      const encryptedPayload = encryptHybrid(payload);
+      sportsSocketScoreboard.emit("setPurposeFor", encryptedPayload);
+
       const handleScoreData = (data) => {
-        let fetchedData = JSON.parse(Buffer.from(data).toString("utf8"));
+        let fetchedData = decryptAndVerifyResponse(data);
         fetchedData = JSON.parse(fetchedData);
-        
+
         if (fetchedData?.data?.scoreboard) {
           scoreBoardData.current = fetchedData.data;
         } else {
           scoreBoardData.current = null;
         }
       };
-      
+
       sportsSocketScoreboard.on(scoreboardEvent, handleScoreData);
-      
+
       // Cleanup function to remove scoreboard socket listener
       return () => {
         if (sportsSocketScoreboard) {
@@ -477,10 +476,8 @@ const Cricket = () => {
     }
   }, [sportsSocketScoreboard, match_id]);
 
-
   useEffect(() => {
     setTriggerSocketScoreboard(true);
-
   }, []);
 
   // Disconnect scoreboard on unmount
@@ -489,15 +486,15 @@ const Cricket = () => {
       if (sportsSocketScoreboard) {
         console.log("Disconnecting scoreboard socket on component unmount");
         sportsSocketScoreboard.disconnect();
-        setTriggerSocketScoreboard(false)
+        setTriggerSocketScoreboard(false);
       }
     };
   }, [sportsSocketScoreboard]);
   return (
     <Suspense fallback={<Loader />}>
-      <CommonLayout showSportsRightSidebar={true}
-      isAdminRoute={isAdmin}
-      
+      <CommonLayout
+        showSportsRightSidebar={true}
+        isAdminRoute={isAdmin}
         sportsProps={{
           gameId: gameId,
           getBetListData: localGetBetListData,
@@ -519,52 +516,52 @@ const Cricket = () => {
           setPopupDisplay: setPopupDisplay,
           popupDisplay: popupDisplay,
           refreshSpecificBetType: refreshSpecificBetType,
-          scoreboardData: scoreBoardData.current
+          scoreboardData: scoreBoardData.current,
         }}
       >
         <SportsLayout
-        callTeamDatas={callTeamDatas}
-        setOddsTeamData={setOddsTeamData}
-        placingBets={placingBets}
-        setPlacingBets={setPlacingBets}
-        currentOddValue={currentOddValue}
-        maxValue={maxValue}
-        minValue={minValue}
-        teamNameCurrentBets={teamNameCurrentBets}
-        showCalculation={true}
-        individualBetPlaceFetch={individualBetPlaceFetch}
-        betType={betType}
-        backOrLay={backOrLay}
-        teamname={defaultTeamName}
-        odds={betOddValue}
-        teamNames={
-          [
-            "ODDS",
-            "SUPER_OVER",
-            "BOOKMAKER",
-            "BOOKMAKER2",
-            "cup",
-            "TIED_MATCH",
-          ].includes(betType)
-            ? allTeamName
-            : teamNames
-        }
-        setOdds={setBetOddValue}
-        setPopupDisplay={setPopupDisplay}
-        popupDisplay={popupDisplay}
-        sportList={sportList}
-        data={ar_sectionData}
-        setSportList={setSportList}
-        gameId={gameId}
-        refreshSpecificBetType={refreshSpecificBetType}
-      >
-        {!isAdmin && scoreBoardData.current && (
-          <CricketScoreboard data={scoreBoardData.current} />
-        )}
+          callTeamDatas={callTeamDatas}
+          setOddsTeamData={setOddsTeamData}
+          placingBets={placingBets}
+          setPlacingBets={setPlacingBets}
+          currentOddValue={currentOddValue}
+          maxValue={maxValue}
+          minValue={minValue}
+          teamNameCurrentBets={teamNameCurrentBets}
+          showCalculation={true}
+          individualBetPlaceFetch={individualBetPlaceFetch}
+          betType={betType}
+          backOrLay={backOrLay}
+          teamname={defaultTeamName}
+          odds={betOddValue}
+          teamNames={
+            [
+              "ODDS",
+              "SUPER_OVER",
+              "BOOKMAKER",
+              "BOOKMAKER2",
+              "cup",
+              "TIED_MATCH",
+            ].includes(betType)
+              ? allTeamName
+              : teamNames
+          }
+          setOdds={setBetOddValue}
+          setPopupDisplay={setPopupDisplay}
+          popupDisplay={popupDisplay}
+          sportList={sportList}
+          data={ar_sectionData}
+          setSportList={setSportList}
+          gameId={gameId}
+          refreshSpecificBetType={refreshSpecificBetType}
+        >
+          {!isAdmin && scoreBoardData.current && (
+            <CricketScoreboard data={scoreBoardData.current} />
+          )}
 
-        <>
+          <>
             <MatchOdds
-            isAdmin={isAdmin}
+              isAdmin={isAdmin}
               oddsChange={oddsChange}
               placingBets={placingBets}
               currentOddValue={currentOddValue}
@@ -602,45 +599,43 @@ const Cricket = () => {
 
             {/* Bookmaker and Bookmaker2 - Display in same row if both present, otherwise individually */}
             <Bookmaker
-            isAdmin={isAdmin}
-                    placingBets={placingBets}
-                    currentOddValue={currentOddValue}
-                    setMaxValue={setMaxValue}
-                    setMinValue={setMinValue}
-                    teamNameCurrentBets={teamNameCurrentBets}
-                    allTeamName={allTeamName}
-                    setDefaultTeamName={defaultTeamName}
-                    bookmakerTeamData={bookmakerTeamData}
-                    setBetOddValue={setBetOddValue}
-                    setbackOrLay={setbackOrLay}
-                    teamNames={teamNames}
-                    setPopupDisplay={setPopupDisplay}
-                    ar_sectionData={ar_sectionData}
-                    sportList={sportList}
-                    oddsChange={oddsChange}
-                    setPlacingBets={setPlacingBets}
-                  />
-                
-                
-                  <Bookmaker2
-                    isAdmin={isAdmin}
-                    placingBets={placingBets}
-                    currentOddValue={currentOddValue}
-                    setMaxValue={setMaxValue}
-                    setMinValue={setMinValue}
-                    teamNameCurrentBets={teamNameCurrentBets}
-                    allTeamName={allTeamName}
-                    setDefaultTeamName={defaultTeamName}
-                    bookmakerTeamData={bookmaker2TeamData}
-                    setBetOddValue={setBetOddValue}
-                    setbackOrLay={setbackOrLay}
-                    teamNames={teamNames}
-                    setPopupDisplay={setPopupDisplay}
-                    ar_sectionData={ar_sectionData}
-                    sportList={sportList}
-                    oddsChange={oddsChange}
-                  />
-          
+              isAdmin={isAdmin}
+              placingBets={placingBets}
+              currentOddValue={currentOddValue}
+              setMaxValue={setMaxValue}
+              setMinValue={setMinValue}
+              teamNameCurrentBets={teamNameCurrentBets}
+              allTeamName={allTeamName}
+              setDefaultTeamName={defaultTeamName}
+              bookmakerTeamData={bookmakerTeamData}
+              setBetOddValue={setBetOddValue}
+              setbackOrLay={setbackOrLay}
+              teamNames={teamNames}
+              setPopupDisplay={setPopupDisplay}
+              ar_sectionData={ar_sectionData}
+              sportList={sportList}
+              oddsChange={oddsChange}
+              setPlacingBets={setPlacingBets}
+            />
+
+            <Bookmaker2
+              isAdmin={isAdmin}
+              placingBets={placingBets}
+              currentOddValue={currentOddValue}
+              setMaxValue={setMaxValue}
+              setMinValue={setMinValue}
+              teamNameCurrentBets={teamNameCurrentBets}
+              allTeamName={allTeamName}
+              setDefaultTeamName={defaultTeamName}
+              bookmakerTeamData={bookmaker2TeamData}
+              setBetOddValue={setBetOddValue}
+              setbackOrLay={setbackOrLay}
+              teamNames={teamNames}
+              setPopupDisplay={setPopupDisplay}
+              ar_sectionData={ar_sectionData}
+              sportList={sportList}
+              oddsChange={oddsChange}
+            />
 
             <CPLCupBookmaker
               isAdmin={isAdmin}
@@ -687,13 +682,13 @@ const Cricket = () => {
               teamNames={teamNames}
               setMaxValue={setMaxValue}
               setMinValue={setMinValue}
-                    
               setbackOrLay={setbackOrLay}
               setBetOddValue={setBetOddValue}
-              data={ar_sectionData}RDF
+              data={ar_sectionData}
+              RDF
               showCricketSessionBook={showCricketSessionBook}
             />
-            
+
             <OverByOver
               isAdmin={isAdmin}
               betPlaceStatus={betPlaceStatus}
@@ -709,7 +704,7 @@ const Cricket = () => {
               gameData={ar_sectionData}
               showCricketSessionBook={showCricketSessionBook}
             />
-            
+
             <BallByBall
               betPlaceStatus={betPlaceStatus}
               setDefaultTeamName={defaultTeamName}
@@ -724,7 +719,7 @@ const Cricket = () => {
               data={ar_sectionData}
               showCricketSessionBook={showCricketSessionBook}
             />
-            
+
             <Fancy1
               betPlaceStatus={betPlaceStatus}
               setDefaultTeamName={defaultTeamName}
@@ -738,7 +733,7 @@ const Cricket = () => {
               setBetOddValue={setBetOddValue}
               data={ar_sectionData}
             />
-            
+
             <Khado
               betPlaceStatus={betPlaceStatus}
               setDefaultTeamName={defaultTeamName}
@@ -753,7 +748,7 @@ const Cricket = () => {
               data={ar_sectionData}
               showCricketSessionBook={showCricketSessionBook}
             />
-            
+
             <OddEven
               setBetOddValue={setBetOddValue}
               setMaxValue={setMaxValue}
@@ -770,9 +765,9 @@ const Cricket = () => {
                                setBetOddValue={setBetOddValue} data={ar_sectionData}
                                showCricketSessionBook={showCricketSessionBook}
                         /> */}
-        </>
-      </SportsLayout>
-    </CommonLayout>
+          </>
+        </SportsLayout>
+      </CommonLayout>
     </Suspense>
   );
 };

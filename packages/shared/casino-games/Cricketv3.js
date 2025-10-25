@@ -2,7 +2,6 @@ import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
-import { Buffer } from "buffer";
 import {
   getExByColor,
   getExByTeamNameForCasino,
@@ -13,7 +12,8 @@ import {
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
 import { CasinoContext } from "../contexts/CasinoContext";
-import { AuthContext } from "../contexts/AuthContext";
+import encryptHybrid from "../utils/encryptHybrid";
+import { decryptAndVerifyResponse } from "../utils/decryptAndVerifyResponse";
 import Notify from "../utils/Notify";
 
 const Cricketv3 = () => {
@@ -72,19 +72,21 @@ const Cricketv3 = () => {
    
     if (data?.t1?.gmid && casino_socket_scoreboard) {
      
+      const payload = {type : 'casino', game : 'superover', scard : data?.t1?.gmid, match_id : "superover"}
+
+      const encryptedPayload = encryptHybrid(payload);
+      
+
+
       casino_socket_scoreboard.emit(
         "setPurposeFor",
-        "casino",
-        "cricketv3",
-        null,
-        data?.t1?.gmid,
-        "cricketv3"
+        encryptedPayload
       );
 
       casino_socket_scoreboard.on(
         "getScoreDatacricketv3" + match_id,
         (data) => {
-          let fetchedData = JSON.parse(Buffer.from(data).toString("utf8"));
+          let fetchedData = decryptAndVerifyResponse(data);
 
           fetchedData = JSON.parse(fetchedData);
 
