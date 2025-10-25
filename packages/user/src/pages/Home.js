@@ -249,7 +249,7 @@ function Home() {
                         ? tennisData
                         : activeTab === "Football"
                         ? soccerData
-                        : listData
+                        : cricketData
                     }
                     BackAndLayForSports={BackAndLayForSports}
                   />
