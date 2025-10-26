@@ -47,8 +47,8 @@ const Teen41 = () => {
   const [data, setData] = useState([]);
   const [playerA, setPlayerA] = useState(0); // Example player A value
   const [playerStatuses, setPlayerStatuses] = useState({
-    "Player A": "suspended-row",
-    "Player B": "suspended-row",
+    "Player A": "suspended-box",
+    "Player B": "suspended-box",
     "Player B Under 21": "suspended-box",
     "Player B Over 21": "suspended-box",
   });
@@ -576,7 +576,7 @@ const PlayerTable = ({
       <div className="casino-odds-box lay">Lay</div>
     </div>
     <div className={`casino-table-body`}>
-      <div className={`casino-table-row ${playerStatus}`}>
+      <div className={`casino-table-row`}>
         <div className="casino-nation-detail">
           <div className="casino-nation-name">Main</div>
           <p className="m-b-0">
@@ -590,13 +590,13 @@ const PlayerTable = ({
           </p>
         </div>
         <div
-          className="casino-odds-box back"
+          className={`casino-odds-box back ${playerStatus}`}
           onClick={() => openPopup("back", playerName, playerBack)}
         >
           <span className="casino-odds">{playerBack}</span>
         </div>
         <div
-          className="casino-odds-box lay"
+          className={`casino-odds-box lay ${playerStatus}`}
           onClick={() => openPopup("lay", playerName, playerLay)}
         >
           <span className="casino-odds">{playerLay}</span>
