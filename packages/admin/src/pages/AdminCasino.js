@@ -52,11 +52,11 @@ function AdminCasino() {
       // Use the new admin/get-casino-list API
       const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list`, "GET");
       
-      if (response.success) {
-        setGames(response.data || []);
-        console.log("Casino list data:", response.data);
+      if (response) {
+        setGames(response || []);
+        console.log("Casino list data:", response);
       } else {
-        console.error("Failed to load casino list:", response.message);
+        console.error("Failed to load casino list:", response);
         setGames([]);
       }
     } catch (error) {

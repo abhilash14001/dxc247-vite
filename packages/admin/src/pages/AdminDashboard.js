@@ -102,9 +102,11 @@ function AdminDashboard() {
       
       const marketResponse = await adminApi(`${ADMIN_BASE_PATH}/market-analysis?${params}`, 'GET');
       
-      if (marketResponse.success) {
-        const newData = marketResponse.data || [];
-        console.log('API Response - Page:', currentPage, 'Data length:', newData.length, 'Total pages:', marketResponse.pagination?.last_page);
+
+      if (marketResponse) {
+        const newData = marketResponse || [];
+
+        
         
         if (currentPage === 1) {
           // First page - replace all data

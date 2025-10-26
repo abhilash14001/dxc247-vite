@@ -43,7 +43,7 @@ const BetHistory = () => {
     try {
       setLoadingUsers(true);
       const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
-      if (res && res.success) {
+      if (res && res.clients) {
         setUserOptions(res.clients || []);
       } else {
         console.error("Failed to load users:", res?.message);
@@ -75,8 +75,8 @@ const BetHistory = () => {
 
         const res = await adminApi(`${ADMIN_BASE_PATH}/admin-bet-history`, "POST", params);
 
-        if (res && res.success) {
-          setBetData(res.data || []);
+        if (res && res) {
+          setBetData(res || []);
           setCurrentPage(res.pagination?.current_page || 1);
           setTotalPages(res.pagination?.total_pages || 1);
           setTotalRecords(res.pagination?.total_records || 0);

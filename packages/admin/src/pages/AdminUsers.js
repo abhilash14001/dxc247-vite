@@ -135,13 +135,13 @@ function AdminUsers() {
       const url = uuid ? `${ADMIN_BASE_PATH}/client/list/${uuid}?${params}` : `${ADMIN_BASE_PATH}/client/list?${params}`;
       const response = await adminApi(url, 'GET');
       
-      if (response.success) {
-        setUsers(response.data.users);
-        setPagination(response.data.pagination);
-        setUserInfo(response.data.user_info);
+      if (response.users) {
+        setUsers(response.users);
+        setPagination(response.pagination);
+        setUserInfo(response.user_info);
         setCurrentUuid(uuid); // Set the current UUID being viewed
-        if (response.data.balance_data) {
-          setBalanceData(response.data.balance_data);
+        if (response.balance_data) {
+          setBalanceData(response.balance_data);
         }
       } else {
         console.error('Failed to fetch users:', response.message);

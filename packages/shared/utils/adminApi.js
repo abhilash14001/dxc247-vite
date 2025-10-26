@@ -29,6 +29,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
   // 3️⃣ Encrypt AES key using server's public key
   const encryptor = new JSEncrypt();
   encryptor.setPublicKey(store.getState().commonData.serverPublicKey);
+  
 
   const encryptedAESKey = encryptor.encrypt(CryptoJS.enc.Base64.stringify(aesKey));
 
@@ -93,6 +94,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
 
     // 5️⃣ Decrypt backend response if encrypted
     const encryptedResponse = result?.data;
+    
     if (encryptedResponse) {
       const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
         iv: aesIv,
@@ -104,7 +106,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
       const decryptedJSON = JSON.parse(decryptedText);
       return decryptedJSON?.data || decryptedJSON;
     } else {
-      return result;
+      return result?.data || result;
     }
   } catch (error) {
     console.error("Admin API error:", error);

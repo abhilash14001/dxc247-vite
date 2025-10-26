@@ -79,12 +79,15 @@ function AdminLogin() {
       dispatch(setAuthLoading(false));
 
       try {
+        
         // Fetch public key if not already stored
         if (!serverPublicKey) {
           console.log("🔐 Fetching public key from server...");
           const keyResponse = await adminApi('/p-key-get', 'GET');
-          if (keyResponse && keyResponse.data && keyResponse.data.publicKey) {
-            dispatch(setServerPublicKey(keyResponse.data.publicKey));
+          
+          
+          if (keyResponse && keyResponse.publicKey) {
+            dispatch(setServerPublicKey(keyResponse.publicKey));
             console.log("✅ Public key fetched and stored in Redux");
           } else {
             console.warn("⚠️ Failed to fetch public key, will use fallback");

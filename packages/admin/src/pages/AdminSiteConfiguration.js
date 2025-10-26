@@ -40,7 +40,7 @@ const AdminSiteConfiguration = () => {
     try {
       setLoading(true);
       const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'GET');
-      
+      console.log('response is ', response)
       if (response.success) {
         const configData = response.data;
         
@@ -73,6 +73,7 @@ const AdminSiteConfiguration = () => {
         toast.error(response.message || 'Failed to load configuration');
       }
     } catch (error) {
+      
       console.error('Error loading configuration:', error);
       toast.error('Failed to load configuration');
     } finally {

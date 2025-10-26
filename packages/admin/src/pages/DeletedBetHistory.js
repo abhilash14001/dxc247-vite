@@ -44,7 +44,7 @@ const DeletedBetHistory = () => {
         "GET"
       );
 
-      if (response.success) {
+      if (response && response.clients) {
         setUserOptions(response.clients || []);
         setFilteredUsers(response.clients || []);
       } else {
@@ -128,8 +128,8 @@ const DeletedBetHistory = () => {
           params
         );
 
-        if (response.success) {
-          setBetData(response.data || []);
+        if (response) {
+          setBetData(response || []);
           setCurrentPage(response.pagination?.current_page || 1);
           setTotalPages(response.pagination?.total_pages || 1);
           setTotalRecords(response.pagination?.total_records || 0);
