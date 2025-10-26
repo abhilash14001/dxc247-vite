@@ -4,8 +4,11 @@ import { useSelector } from 'react-redux';
 
 import { Link, useNavigate } from "react-router-dom";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
-import useMultiSportsSocket from "@dxc247/shared/hooks/useMultiSportsSocket";
+import useSocketConnection from "@dxc247/shared/hooks/useSocketConnection";
 import { getCurrentToken } from "@dxc247/shared/utils/Constants";
+import { io } from "socket.io-client";
+import encryptHybrid from "@dxc247/shared/utils/encryptHybrid";
+import { decryptAndVerifyResponse } from "@dxc247/shared/utils/decryptAndVerifyResponse";
 import useSportsData from "@dxc247/shared/hooks/useSportsData";
 import useCommonData from "@dxc247/shared/hooks/useCommonData";
 
@@ -22,6 +25,13 @@ const NavTabs = lazy(() => import("@dxc247/shared/components/NavTabs"));
 function Home() {
 
   const sportsMap  ={"4": "cricket", "2": "tennis", "3": "soccer"}
+  
+  const SPORT_ARRAY = {
+    soccer: 1,
+    cricket: 4,
+    tennis: 2,
+    football: 1,
+  };
   
   const navigate = useNavigate();
   const { setShowLoader } = useContext(SportsContext);
@@ -46,50 +56,96 @@ function Home() {
   
  
 
-  // Multi-sports socket connection that fetches all sports data simultaneously
-  useMultiSportsSocket(
-    ["cricket", "tennis", "soccer"],
+  // Sequential data loading for all sports
+  useEffect(() => {
+    const loadAllSportsData = async () => {
+      const sports = ["cricket", "tennis", "soccer"];
+      
+      for (const sport of sports) {
+        try {
+          // Create a temporary socket for this sport
+          const tempSocket = io(import.meta.env.VITE_LIST_URL, {
+            transports: ["websocket", "polling"],
+            timeout: 10000,
+            reconnection: false,
+            forceNew: true,
+          });
+
+          // Set up one-time data listener
+          const dataPromise = new Promise((resolve) => {
+            const timeout = setTimeout(() => {
+              tempSocket.disconnect();
+              resolve(null);
+            }, 5000); // 5 second timeout
+
+            tempSocket.on("getListData", (userDatas) => {
+              clearTimeout(timeout);
+              tempSocket.disconnect();
+              resolve(userDatas);
+            });
+          });
+
+          // Set purpose for this sport
+          const payload = {
+            type: "list",
+            game: SPORT_ARRAY[sport],
+            match_ids: sport,
+          };
+          const encryptedPayload = encryptHybrid(payload);
+          tempSocket.emit("setPurposeFor", encryptedPayload);
+
+          // Wait for data or timeout
+          const userDatas = await dataPromise;
+          
+          if (userDatas) {
+            try {
+              const parsedData = decryptAndVerifyResponse(userDatas);
+              if (parsedData && Object.keys(parsedData).length > 0) {
+                console.log(`📊 ${sport} data loaded:`, parsedData.data);
+                
+                // Update the appropriate state
+                if (sport === "cricket") {
+                  setCricketData(parsedData.data);
+                } else if (sport === "tennis") {
+                  setTennisData(parsedData.data);
+                } else if (sport === "soccer") {
+                  setSoccerData(parsedData.data);
+                }
+              }
+            } catch (error) {
+              console.error(`Error parsing ${sport} data:`, error);
+            }
+          } else {
+            console.log(`⏰ ${sport} data timeout`);
+          }
+
+          // Small delay between sports to avoid overwhelming the server
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error) {
+          console.error(`Error loading ${sport} data:`, error);
+        }
+      }
+    };
+
+    loadAllSportsData();
+  }, []); // Only run once on mount
+
+  // Single socket connection for real-time updates of active sport
+  useSocketConnection(
+    activeTab.toLowerCase(),
+    (data) => {
+      console.log(`${activeTab} real-time data received:`, data);
+      // Update the appropriate state based on active tab
+      if (activeTab === "Cricket") {
+        setCricketData(data);
+      } else if (activeTab === "Tennis") {
+        setTennisData(data);
+      } else if (activeTab === "Football") {
+        setSoccerData(data);
+      } 
+    },
     import.meta.env.VITE_LIST_URL
   );
-
-  // Listen for sport-specific data events
-  useEffect(() => {
-    const handleCricketData = (event) => {
-      
-      setCricketData(event.detail);
-    };
-
-    const handleTennisData = (event) => {
-      
-      setTennisData(event.detail);
-    };
-
-    const handleSoccerData = (event) => {
-      
-      setSoccerData(event.detail);
-    };
-
-    // Add event listeners
-    window.addEventListener('sportData_cricket', handleCricketData);
-    window.addEventListener('sportData_tennis', handleTennisData);
-    window.addEventListener('sportData_soccer', handleSoccerData);
-
-    // Cleanup event listeners
-    return () => {
-      window.removeEventListener('sportData_cricket', handleCricketData);
-      window.removeEventListener('sportData_tennis', handleTennisData);
-      window.removeEventListener('sportData_soccer', handleSoccerData);
-    };
-  }, []);
-
-  // Log data changes for debugging
-  useEffect(() => {
-    console.log("📊 Data state updated:", {
-      cricket: Object.keys(cricketData).length > 0 ? "✅ Loaded" : "⏳ Loading",
-      tennis: Object.keys(tennisData).length > 0 ? "✅ Loaded" : "⏳ Loading", 
-      soccer: Object.keys(soccerData).length > 0 ? "✅ Loaded" : "⏳ Loading"
-    });
-  }, [cricketData, tennisData, soccerData]);
 
 
 

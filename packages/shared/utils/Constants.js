@@ -566,6 +566,36 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
     } else if (err?.code === "ERR_NETWORK") {
       return null;
     }
+    
+    // Try to decrypt error response if it's encrypted
+    if (err?.response?.data && aesKey && aesIv) {
+      try {
+        const encryptedErrorData = err.response.data?.data || err.response.data?.payload || err.response.data;
+        
+        if (encryptedErrorData && typeof encryptedErrorData === 'string') {
+          console.log("🔓 Attempting to decrypt error response...");
+          const decrypted = CryptoJS.AES.decrypt(encryptedErrorData, aesKey, {
+            iv: aesIv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7,
+          });
+          
+          const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+          
+          if (decryptedText) {
+            const decryptedErrorData = JSON.parse(decryptedText);
+            console.log("🔓 Decrypted error data:", decryptedErrorData);
+            
+            // Replace the error response data with decrypted data
+            err.response.data = decryptedErrorData?.data || decryptedErrorData;
+          }
+        }
+      } catch (decryptError) {
+        console.error("❌ Error decryption failed:", decryptError);
+        // Keep original error if decryption fails
+      }
+    }
+    
     throw err;
   }
 }

@@ -44,7 +44,7 @@ const SportsDataTable = ({
   // Update odds data in Redux when listData changes (with debouncing)
   useEffect(() => {
     if (listData && Object.keys(listData).length > 0) {
-      console.log(`SportsDataTable: Updating ${activeTab} with data:`, listData);
+      
       debouncedUpdateOddsData(listData);
     }
 

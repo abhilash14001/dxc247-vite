@@ -14,6 +14,7 @@ const SPORT_ARRAY = {
 const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
   const socketRefs = useRef({});
   const reconnectAttempts = useRef({});
+  const isInitialized = useRef(false);
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000; // 3 seconds
 
@@ -50,14 +51,17 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
     }
   };
 
-  // Create socket connections for each sport
+  // Create socket connections for each sport - only once on mount
   useEffect(() => {
-    if (!socketUrl || !sports || sports.length === 0) return;
+    if (!socketUrl || !sports || sports.length === 0 || isInitialized.current) return;
+
+    console.log("Initializing multi-sports socket connections...");
+    isInitialized.current = true;
 
     sports.forEach(sport => {
       // Only create socket if it doesn't exist
       if (!socketRefs.current[sport]) {
-        
+        console.log(`Creating socket connection for ${sport}`);
         
         const socket = io(socketUrl, {
           transports: ["websocket", "polling"],
@@ -78,7 +82,7 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
             const parsedData = decryptAndVerifyResponse(userDatas);
             
             if (parsedData && Object.keys(parsedData).length > 0) {
-              
+              console.log(`📊 ${sport} socket received data:`, parsedData.data);
               // Emit custom event for this sport
               window.dispatchEvent(new CustomEvent(`sportData_${sport}`, { 
                 detail: parsedData.data 
@@ -92,7 +96,7 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
 
         // Handle disconnections
         socket.on("disconnect", (reason) => {
-          
+          console.log(`${sport} socket disconnected:`, reason);
           if (reason === "io server disconnect") {
             handleReconnection(sport);
           }
@@ -112,15 +116,17 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
 
     // Cleanup on unmount
     return () => {
+      console.log("Cleaning up multi-sports socket connections...");
       Object.keys(socketRefs.current).forEach(sport => {
         if (socketRefs.current[sport]) {
-          
+          console.log(`Disconnecting ${sport} socket on component unmount`);
           socketRefs.current[sport].disconnect();
           socketRefs.current[sport] = null;
         }
       });
+      isInitialized.current = false;
     };
-  }, [socketUrl, sports.join(',')]); // Only run when socketUrl or sports list changes
+  }, [socketUrl]); // Only run when socketUrl changes, not when component re-renders
 
   return socketRefs.current;
 };

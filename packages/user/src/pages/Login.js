@@ -44,9 +44,7 @@ function Login() {
     })
       .then((res) => {
 
-     
         
-      
         dispatch(
           loginSuccess({
             token: res.data.token,
@@ -74,6 +72,7 @@ function Login() {
       })
       .catch((error) => {
         // Check if error response status is 422
+        
         if (error.response && error.response.status === 422) {
           const errors = error.response.data.errors;
 

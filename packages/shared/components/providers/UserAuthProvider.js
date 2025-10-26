@@ -69,6 +69,7 @@ export const UserAuthProvider = (props) => {
                         return res; // Return the response
                     })
                     .catch((error) => {
+                        console.log('get balance error ', error);
                         if (error.code === 'ERR_NETWORK' || error.response.status === 401) {
                             unAuthorizeHandle();
                             nav('/login');
