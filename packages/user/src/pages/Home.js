@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate } from "react-router-dom";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import useSocketConnection from "@dxc247/shared/hooks/useSocketConnection";
+import useMultiSportsSocket from "@dxc247/shared/hooks/useMultiSportsSocket";
 import { getCurrentToken } from "@dxc247/shared/utils/Constants";
 import useSportsData from "@dxc247/shared/hooks/useSportsData";
 import useCommonData from "@dxc247/shared/hooks/useCommonData";
@@ -46,22 +47,50 @@ function Home() {
   
  
 
-  // Single socket connection that handles all sports
-  useSocketConnection(
-    activeTab.toLowerCase(),
-    (data) => {
-      console.log(`${activeTab} socket received data:`, data);
-      // Update the appropriate state based on active tab
-      if (activeTab === "Cricket") {
-        setCricketData(data);
-      } else if (activeTab === "Tennis") {
-        setTennisData(data);
-      } else if (activeTab === "Football") {
-        setSoccerData(data);
-      } 
-    },
+  // Multi-sports socket connection that fetches all sports data simultaneously
+  useMultiSportsSocket(
+    ["cricket", "tennis", "soccer"],
     import.meta.env.VITE_LIST_URL
   );
+
+  // Listen for sport-specific data events
+  useEffect(() => {
+    const handleCricketData = (event) => {
+      console.log("🏏 Cricket data received:", event.detail);
+      setCricketData(event.detail);
+    };
+
+    const handleTennisData = (event) => {
+      console.log("🎾 Tennis data received:", event.detail);
+      setTennisData(event.detail);
+    };
+
+    const handleSoccerData = (event) => {
+      console.log("⚽ Soccer data received:", event.detail);
+      setSoccerData(event.detail);
+    };
+
+    // Add event listeners
+    window.addEventListener('sportData_cricket', handleCricketData);
+    window.addEventListener('sportData_tennis', handleTennisData);
+    window.addEventListener('sportData_soccer', handleSoccerData);
+
+    // Cleanup event listeners
+    return () => {
+      window.removeEventListener('sportData_cricket', handleCricketData);
+      window.removeEventListener('sportData_tennis', handleTennisData);
+      window.removeEventListener('sportData_soccer', handleSoccerData);
+    };
+  }, []);
+
+  // Log data changes for debugging
+  useEffect(() => {
+    console.log("📊 Data state updated:", {
+      cricket: Object.keys(cricketData).length > 0 ? "✅ Loaded" : "⏳ Loading",
+      tennis: Object.keys(tennisData).length > 0 ? "✅ Loaded" : "⏳ Loading", 
+      soccer: Object.keys(soccerData).length > 0 ? "✅ Loaded" : "⏳ Loading"
+    });
+  }, [cricketData, tennisData, soccerData]);
 
 
 
