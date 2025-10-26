@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 
 import { Link, useNavigate } from "react-router-dom";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
-import useSocketConnection from "@dxc247/shared/hooks/useSocketConnection";
 import useMultiSportsSocket from "@dxc247/shared/hooks/useMultiSportsSocket";
 import { getCurrentToken } from "@dxc247/shared/utils/Constants";
 import useSportsData from "@dxc247/shared/hooks/useSportsData";
@@ -56,17 +55,17 @@ function Home() {
   // Listen for sport-specific data events
   useEffect(() => {
     const handleCricketData = (event) => {
-      console.log("🏏 Cricket data received:", event.detail);
+      
       setCricketData(event.detail);
     };
 
     const handleTennisData = (event) => {
-      console.log("🎾 Tennis data received:", event.detail);
+      
       setTennisData(event.detail);
     };
 
     const handleSoccerData = (event) => {
-      console.log("⚽ Soccer data received:", event.detail);
+      
       setSoccerData(event.detail);
     };
 

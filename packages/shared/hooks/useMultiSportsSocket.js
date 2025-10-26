@@ -57,7 +57,7 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
     sports.forEach(sport => {
       // Only create socket if it doesn't exist
       if (!socketRefs.current[sport]) {
-        console.log(`Creating socket connection for ${sport}`);
+        
         
         const socket = io(socketUrl, {
           transports: ["websocket", "polling"],
@@ -78,7 +78,7 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
             const parsedData = decryptAndVerifyResponse(userDatas);
             
             if (parsedData && Object.keys(parsedData).length > 0) {
-              console.log(`📊 ${sport} socket received data:`, parsedData.data);
+              
               // Emit custom event for this sport
               window.dispatchEvent(new CustomEvent(`sportData_${sport}`, { 
                 detail: parsedData.data 
@@ -92,7 +92,7 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
 
         // Handle disconnections
         socket.on("disconnect", (reason) => {
-          console.log(`${sport} socket disconnected:`, reason);
+          
           if (reason === "io server disconnect") {
             handleReconnection(sport);
           }
@@ -114,7 +114,7 @@ const useMultiSportsSocket = (sports, socketUrl = API_ENDPOINTS.SOCKET_URL) => {
     return () => {
       Object.keys(socketRefs.current).forEach(sport => {
         if (socketRefs.current[sport]) {
-          console.log(`Disconnecting ${sport} socket on component unmount`);
+          
           socketRefs.current[sport].disconnect();
           socketRefs.current[sport] = null;
         }
