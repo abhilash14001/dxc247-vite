@@ -136,14 +136,7 @@ const CurrentBets = () => {
       dom: "rt", // Remove default controls, we'll use custom ones
       ajax: async function (dtParams, callback) {
         try {
-          console.log('🔍 CurrentBets - Fetching data with params:', {
-            endpoint: 'current_bets',
-            dtParams: dtParams,
-            filters: {
-              gtype: selectedGtype,
-              filter: selectedFilter,
-            }
-          });
+          
 
           const decryptedJSON = await secureDatatableFetch(
             "current_bets",
@@ -154,7 +147,7 @@ const CurrentBets = () => {
             }
           );
 
-          console.log('🔍 CurrentBets - Decrypted JSON:', decryptedJSON);
+          
 
           // Calculate total bet amount from data
           const calculateTotalBetAmount = (data) => {
@@ -166,8 +159,7 @@ const CurrentBets = () => {
           };
 
           const totalBetAmount = calculateTotalBetAmount(decryptedJSON?.data?.data || decryptedJSON?.data);
-          console.log('💰 CurrentBets - Calculated total bet amount:', totalBetAmount);
-          
+                   
           // Update your summary
           setTotalBets(decryptedJSON.recordsTotal || 0);
           setTotalAmount(totalBetAmount || decryptedJSON?.totalAmount || 0);
