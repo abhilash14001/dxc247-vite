@@ -7,7 +7,8 @@ import {  getExByTeamNameForCasino,
     getExBySingleTeamNameCasino,
   resetBetFields,
   placeCasinoBet,
-  getExByColor
+  getExByColor,
+  exposureCheck
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
@@ -33,8 +34,6 @@ const Teen42 = () => {
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   
-  // Get user data from Redux instead of AuthContext
-  const userBalance = useSelector(state => state.user.balance);
 
   const [hideLoading, setHideLoading] = useState(true);
 
