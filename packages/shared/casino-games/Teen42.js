@@ -42,8 +42,8 @@ const Teen42 = () => {
   const [data, setData] = useState([]);
   const [playerA, setPlayerA] = useState(0); // Example player A value
   const [playerStatuses, setPlayerStatuses] = useState({
-    "Player A": "suspended-row",
-    "Player B": "suspended-row",
+    "Player A": "suspended-box",
+    "Player B": "suspended-box",
     "Player B Under 21": "suspended-box",
     "Player B Over 21": "suspended-box",
   });
@@ -178,7 +178,7 @@ const Teen42 = () => {
     if (!playerData) return;
     let playerStatus = "";
     if (playerData.gstatus === "SUSPENDED") {
-      playerStatus = playerName === "Player B Under 21" || playerName === "Player B Over 21" ? "suspended-box" : "suspended-row";
+      playerStatus = playerName === "Player B Under 21" || playerName === "Player B Over 21" ? "suspended-box" : "suspended-box";
 
       
     }
@@ -427,14 +427,14 @@ const Teen42 = () => {
 }
     </style>
 
-<div className="rules-section">
-                                            <ul className="pl-4 pr-4 list-style">
+<div class="rules-section">
+                                            <ul class="pl-4 pr-4 list-style">
                                                 <li>Jack top teenpatti is a unique version of Indian origin game teenpatti (Flush).</li>
                                                 <li>This game is played with a regular 52 cards deck between player A and player B.</li>
                                                 <li>In Jack top open teenpatti all three cards of player A will be pre-defined for all the
                                                     games. These three cards will be permanently placed on the table.
                                                     <h6>3 pre-defined cards of player A</h6>
-                                                    <ul className="pl-4 pr-4 list-style">
+                                                    <ul class="pl-4 pr-4 list-style">
                                                         <li>Jack of clubs</li>
                                                         <li>10 of Spades</li>
                                                         <li>8 of Spades</li>
@@ -455,7 +455,7 @@ const Teen42 = () => {
                                                 <li>The objective of the game is to make the best three card hands as per the hand
                                                     rankings and therefor win.
                                                     <h6>Ranking of card hands from Highest to Lowest</h6>
-                                                    <ul className="pl-4 pr-4 list-style">
+                                                    <ul class="pl-4 pr-4 list-style">
                                                         <li>Straight Flush (Pure Sequence)</li>
                                                         <li>Trail (Three of a kind)</li>
                                                         <li>Straight (Sequence)</li>
@@ -467,20 +467,19 @@ const Teen42 = () => {
                                                     </ul>
                                                 </li>
                                             </ul>
-                                        </div></div>
-                                        <div><div className="rules-section">
+                                        </div></div><div><div class="rules-section">
                                             <div>
-                                                <h6 className="rules-highlight">Side bet:</h6>
+                                                <h6 class="rules-highlight">Side bet:</h6>
                                             </div>
                                             <p><b>Under 21- Over 21:</b> It is a total point value of all three cards of Player B.</p>
-                                            <ul className="pl-4 pr-4 list-style">
+                                            <ul class="pl-4 pr-4 list-style">
                                                 <li>Here you can bet whether the total point value of all the 3 cards of player B will be
                                                     under 21 or over 21.
                                                 </li>
                                                 <li><b>Point Values:</b></li>
                                             </ul>
                                             <div>
-                                                <table className="table">
+                                                <table class="table">
                                                     <tbody>
                                                         <tr>
                                                             <td>A = 1</td>
@@ -523,6 +522,7 @@ const Teen42 = () => {
 
   return (
     <CasinoLayout
+    raceClass="teenpatti2"
       ruleDescription={ruleDescription}
       hideLoading={hideLoading}
       isBack={backOrLay}
@@ -608,7 +608,7 @@ const PlayerTable = ({
       <div className="casino-odds-box lay">Lay</div>
     </div>
     <div className={`casino-table-body`}>
-      <div className={`casino-table-row ${playerStatus}`}>
+      <div className={`casino-table-row`}>
         <div className="casino-nation-detail">
           <div className="casino-nation-name">Main</div>
           <p className="m-b-0">
@@ -622,13 +622,13 @@ const PlayerTable = ({
           </p>
         </div>
         <div
-          className="casino-odds-box back"
+          className={`casino-odds-box back ${playerStatus}`}
           onClick={() => openPopup("back", playerName, playerBack)}
         >
           <span className="casino-odds">{playerBack}</span>
         </div>
         <div
-          className="casino-odds-box lay"
+          className={`casino-odds-box lay ${playerStatus}`}
           onClick={() => openPopup("lay", playerName, playerLay)}
         >
           <span className="casino-odds">{playerLay}</span>

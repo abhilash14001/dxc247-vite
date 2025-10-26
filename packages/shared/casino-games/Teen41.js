@@ -503,6 +503,7 @@ const Teen41 = () => {
       submitButtonDisable={submitButtonDisable}
       data={data}
       roundId={roundId}
+      raceClass="teenpatti2"
       setRoundId={setRoundId}
       sportList={sportList}
       setSportList={setSportList}
