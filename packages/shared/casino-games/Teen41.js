@@ -183,7 +183,7 @@ const Teen41 = () => {
     if (!playerData) return;
     let playerStatus = "";
     if (playerData.gstatus === "SUSPENDED") {
-      playerStatus = playerName === "Player B Under 21" || playerName === "Player B Over 21" ? "suspended-box" : "suspended-row";
+      playerStatus = playerName === "Player B Under 21" || playerName === "Player B Over 21" ? "suspended-box" : "suspended-box";
 
       
     }
