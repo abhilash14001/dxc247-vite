@@ -69,6 +69,7 @@ const ClientProfitLoss = lazy(() => import("./pages/ClientProfitLoss"));
 const SportsProfitLoss = lazy(() => import("./pages/SportsProfitLoss"));
 const ProfitLossReports = lazy(() => import("./pages/ProfitLossReports"));
 const MatchPL = lazy(() => import("./pages/MatchPL"));
+const AccountStatement = lazy(() => import("./pages/AccountStatement"));
 
 const Cricket = lazy(() => import("@dxc247/shared/components/sports/Cricket"));
 const Tennis = lazy(() => import("@dxc247/shared/components/sports/Tennis"));
@@ -334,6 +335,16 @@ root.render(
                   <AdminRouteGuard requiredPermission="match-pl">
                     <AdminLayout>
                       <MatchPL />
+                    </AdminLayout>
+                  </AdminRouteGuard>
+                } 
+              />
+              <Route 
+                path="/reports/account-statement" 
+                element={
+                  <AdminRouteGuard requiredPermission="account-statement">
+                    <AdminLayout>
+                      <AccountStatement />
                     </AdminLayout>
                   </AdminRouteGuard>
                 } 
