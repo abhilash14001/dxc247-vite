@@ -573,7 +573,7 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
         const encryptedErrorData = err.response.data?.data || err.response.data?.payload || err.response.data;
         
         if (encryptedErrorData && typeof encryptedErrorData === 'string') {
-          console.log("🔓 Attempting to decrypt error response...");
+          
           const decrypted = CryptoJS.AES.decrypt(encryptedErrorData, aesKey, {
             iv: aesIv,
             mode: CryptoJS.mode.CBC,
@@ -584,14 +584,13 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
           
           if (decryptedText) {
             const decryptedErrorData = JSON.parse(decryptedText);
-            console.log("🔓 Decrypted error data:", decryptedErrorData);
             
             // Replace the error response data with decrypted data
             err.response.data = decryptedErrorData?.data || decryptedErrorData;
           }
         }
       } catch (decryptError) {
-        console.error("❌ Error decryption failed:", decryptError);
+        
         // Keep original error if decryption fails
       }
     }
