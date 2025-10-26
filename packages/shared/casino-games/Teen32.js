@@ -37,7 +37,6 @@ const Teen32 = () => {
 
     } = useContext(SportsContext)
     // Get user data from Redux instead of AuthContext
-    const userBalance = useSelector(state => state.user.balance);
     const {mybetModel} = useContext(CasinoContext)
 
     const [hideLoading, setHideLoading] = useState(true)

@@ -1,6 +1,5 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 
@@ -54,7 +53,6 @@ const Cmeter = () => {
     const { mybetModel } = useContext(CasinoContext);
     
     // Get user data from Redux instead of AuthContext
-    const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const ruleDescription = `<div><style type="text/css">

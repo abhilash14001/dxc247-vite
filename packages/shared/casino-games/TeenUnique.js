@@ -147,7 +147,6 @@ const TeenUnique = () => {
     setAvailableTeenUniqueCards,
   } = useContext(CasinoContext);
   // Get user data from Redux instead of AuthContext
-  const userBalance = useSelector(state => state.user.balance);
   const [hideLoading, setHideLoading] = useState(true);
 
   const teamNames = useRef(["Player A", "Player B"]);

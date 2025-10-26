@@ -53,7 +53,6 @@ const Baccarat2 = () => {
     } = useContext(SportsContext)
     
     // Get user data from Redux instead of AuthContext
-    const userBalance = useSelector(state => state.user.balance);
 
     const [hideLoading, setHideLoading] = useState(true)
 
