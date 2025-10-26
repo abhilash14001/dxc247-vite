@@ -70,6 +70,35 @@ const Teen41 = () => {
   const profit = useRef(0);
   const profitData = useRef(0);
 
+
+  const updatePlayerStats = (
+    playerData,
+    setPlayerBack,
+    setPlayerLay,
+    playerName,
+    teamsession
+  ) => {
+    if (!playerData) return;
+    let playerStatus = "";
+    if (playerData.gstatus === "SUSPENDED") {
+      playerStatus = playerName === "Player B Under 21" || playerName === "Player B Over 21" ? "suspended-box" : "suspended-box";
+
+      
+    }
+    setPlayerStatuses((prev) => ({ ...prev, [playerName]: playerStatus }));
+
+    if (playerData.b) {
+      setPlayerBack(playerData.b);
+    } else {
+      setPlayerBack(0);
+    }
+    if (playerData.l) {
+      setPlayerLay(playerData.l);
+    } else {
+      setPlayerLay(0);
+    }
+  };
+  
   useEffect(() => {
     
     let isMounted = true; // this flag denotes whether the component is still mounted
@@ -171,33 +200,7 @@ const Teen41 = () => {
     };
   }, [exposure, sportLength, roundId, mybetModel.length]);
 
-  const updatePlayerStats = (
-    playerData,
-    setPlayerBack,
-    setPlayerLay,
-    playerName,
-    teamsession
-  ) => {
-    if (!playerData) return;
-    let playerStatus = "";
-    if (playerData.gstatus === "SUSPENDED") {
-      playerStatus = playerName === "Player B Under 21" || playerName === "Player B Over 21" ? "suspended-box" : "suspended-box";
 
-      
-    }
-    setPlayerStatuses((prev) => ({ ...prev, [playerName]: playerStatus }));
-
-    if (playerData.b) {
-      setPlayerBack(playerData.b);
-    } else {
-      setPlayerBack(0);
-    }
-    if (playerData.l) {
-      setPlayerLay(playerData.l);
-    } else {
-      setPlayerLay(0);
-    }
-  };
   const openPopup = (isBakOrLay, teamnam, oddvalue) => {
 
 
