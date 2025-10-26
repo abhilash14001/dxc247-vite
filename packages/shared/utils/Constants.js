@@ -2650,3 +2650,82 @@ export const useDeleteMatchedBet = () => {
   
   return { deleteBet, undoBet };
 };
+
+
+export async function secureDatatableFetch(url, dtParams = {}, extraParams = {}) {
+  const token = getCurrentToken();
+  const publicKey = store.getState().commonData.serverPublicKey;
+
+  // 1️⃣ Merge DataTables and extra params
+  const requestPayload = { ...dtParams, ...extraParams };
+  
+ 
+  // 2️⃣ Generate AES key & IV
+  const aesKey = CryptoJS.lib.WordArray.random(32);
+  const aesIv = CryptoJS.lib.WordArray.random(16);
+
+  // 3️⃣ Encrypt payload using AES
+  const encryptedPayload = CryptoJS.AES.encrypt(
+    JSON.stringify(requestPayload),
+    aesKey,
+    {
+      iv: aesIv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    }
+  ).toString();
+
+  // 4️⃣ Encrypt AES key using RSA public key
+  const encryptor = new JSEncrypt();
+  encryptor.setPublicKey(publicKey);
+  const encryptedAESKey = encryptor.encrypt(
+    CryptoJS.enc.Base64.stringify(aesKey)
+  );
+
+  try {
+    // 5️⃣ Send encrypted request
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/${url}`,
+      { payload: encryptedPayload },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Encrypted-Key": encryptedAESKey,
+          "X-IV": CryptoJS.enc.Base64.stringify(aesIv),
+        },
+      }
+    );
+
+    // 6️⃣ Decrypt response
+    const encryptedResponse = response.data?.data;
+    let decryptedJSON = {};
+
+    if (encryptedResponse) {
+      const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
+        iv: aesIv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      decryptedJSON = JSON.parse(decryptedText);
+   
+    } else {
+      decryptedJSON = response.data;
+      
+    }
+
+    // ✅ Return decrypted JSON ready for DataTables
+    return decryptedJSON;
+  } catch (error) {
+    
+    return {
+      draw: dtParams.draw,
+      recordsTotal: 0,
+      recordsFiltered: 0,
+      data: [],
+    };
+  }
+}
