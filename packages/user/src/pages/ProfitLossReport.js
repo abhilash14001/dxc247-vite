@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from 'react';
 import $ from 'jquery';
 import Header from "@dxc247/shared/components/layouts/Header";
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
-import {gameNames, getCurrentToken} from "@dxc247/shared/utils/Constants";
+import {gameNames, getCurrentToken, secureDatatableFetch} from "@dxc247/shared/utils/Constants";
 import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 
 
@@ -32,14 +32,30 @@ const ProfileLossReport = () => {
             pageLength: 25,
             processing: true,
             serverSide: true,
-            ajax: {
-                url: `${import.meta.env.VITE_API_URL}/reports/profit-loss-data`,
-                type: 'post',
-                data: data,
-                async: false,
-                headers: {
-                    'Authorization': `Bearer ${currentToken}`
-                },
+            ajax: async function (dtParams, callback) {
+                try {
+                    const decryptedJSON = await secureDatatableFetch(
+                        "reports/profit-loss-data",
+                        dtParams,
+                        data
+                    );
+
+                    // Send data back to DataTable
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: decryptedJSON.recordsTotal,
+                        recordsFiltered: decryptedJSON.recordsFiltered,
+                        data: decryptedJSON?.data || [],
+                    });
+                } catch (e) {
+                    console.error("DataTable AJAX error:", e);
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: 0,
+                        recordsFiltered: 0,
+                        data: [],
+                    });
+                }
             },
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },

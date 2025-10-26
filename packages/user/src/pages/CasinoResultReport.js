@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {gameNames, getCurrentToken} from "@dxc247/shared/utils/Constants";
+import {gameNames, getCurrentToken, secureDatatableFetch} from "@dxc247/shared/utils/Constants";
 import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 import $ from 'jquery'
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
@@ -30,15 +30,30 @@ const CasinoResultReport = () => {
             pageLength: 25,
             processing: true,
             serverSide: true,
+            ajax: async function (dtParams, callback) {
+                try {
+                    const decryptedJSON = await secureDatatableFetch(
+                        "casino-game-result",
+                        dtParams,
+                        data
+                    );
 
-            ajax: {
-                url:import.meta.env.VITE_API_URL +"casino-game-result",
-                type: 'post',
-                data: data,
-                async: false,
-                headers: {
-                    'Authorization': `Bearer ${currentToken}`
-                },
+                    // Send data back to DataTable
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: decryptedJSON.recordsTotal,
+                        recordsFiltered: decryptedJSON.recordsFiltered,
+                        data: decryptedJSON?.data || [],
+                    });
+                } catch (e) {
+                    console.error("DataTable AJAX error:", e);
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: 0,
+                        recordsFiltered: 0,
+                        data: [],
+                    });
+                }
             },
             columns: columns,
             header: 'false',
@@ -65,18 +80,32 @@ const CasinoResultReport = () => {
         };
         $('#casino_game_result_list').DataTable({
             pagingType: 'full_numbers',
-
             processing: true,
             serverSide: true,
+            ajax: async function (dtParams, callback) {
+                try {
+                    const decryptedJSON = await secureDatatableFetch(
+                        "casino-game-result",
+                        dtParams,
+                        data
+                    );
 
-            ajax: {
-                url:import.meta.env.VITE_API_URL +"casino-game-result",
-                type: 'post',
-                data: data,
-                async: false,
-                headers: {
-                    'Authorization': `Bearer ${currentToken}`
-                },
+                    // Send data back to DataTable
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: decryptedJSON.recordsTotal,
+                        recordsFiltered: decryptedJSON.recordsFiltered,
+                        data: decryptedJSON?.data || [],
+                    });
+                } catch (e) {
+                    console.error("DataTable AJAX error:", e);
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: 0,
+                        recordsFiltered: 0,
+                        data: [],
+                    });
+                }
             },
             columns: columns,
             header: 'false',

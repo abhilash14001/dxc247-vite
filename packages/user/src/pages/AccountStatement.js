@@ -6,7 +6,7 @@ import '../css/mobile/datatable.css';
 import {AuthContext} from "@dxc247/shared/contexts/AuthContext";
 import CommonLayout from "@dxc247/shared/components/layouts/CommonLayout";
 import axios from 'axios';
-import axiosFetch, { getCurrentToken } from '@dxc247/shared/utils/Constants';
+import axiosFetch, { getCurrentToken, secureDatatableFetch } from '@dxc247/shared/utils/Constants';
 import {Modal, ModalDialog} from "react-bootstrap";
 import CasinoGameResultsFinal from '@dxc247/shared/components/casino/CasinoGameResultsFinal';
 import SportsResultContent from '@dxc247/shared/components/ui/SportsResultContent';
@@ -228,14 +228,30 @@ const AccountStatement = () => {
             orderable: false,
             sortable: false,
             dom: 'rt', // Remove default controls, we'll use custom ones
-            ajax: {
-                url: `${import.meta.env.VITE_API_URL}/account_statement`,
-                type: 'post',
-                data: data,
-                async: false,
-                headers: {
-                    'Authorization': `Bearer ${currentToken}`
-                },
+            ajax: async function (dtParams, callback) {
+                try {
+                    const decryptedJSON = await secureDatatableFetch(
+                        "account_statement",
+                        dtParams,
+                        data
+                    );
+
+                    // Send data back to DataTable
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: decryptedJSON.recordsTotal,
+                        recordsFiltered: decryptedJSON.recordsFiltered,
+                        data: decryptedJSON?.data || [],
+                    });
+                } catch (e) {
+                    console.error("DataTable AJAX error:", e);
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: 0,
+                        recordsFiltered: 0,
+                        data: [],
+                    });
+                }
             },
             columns: columns,
             header: 'false',

@@ -5,7 +5,7 @@ import $ from 'jquery';
 import 'datatables.net-bs4';
 import '../css/mobile/datatable.css';
 import axios from 'axios';
-import { getCurrentToken } from '@dxc247/shared/utils/Constants';
+import { getCurrentToken, secureDatatableFetch } from '@dxc247/shared/utils/Constants';
 
 const BetHistories = () => {
     const [selectedGtype, setSelectedGtype] = useState("");
@@ -63,24 +63,38 @@ const BetHistories = () => {
                 emptyTable: '',
                 zeroRecords: ''
             },
-            ajax: {
-                url: `${import.meta.env.VITE_API_URL}/reports/bet-history-data`,
-                type: 'post',
-                data: function(d){
-                    return Object.assign({}, d, ajaxExtras());
-                },
-                async: false,
-                headers: {
-                    'Authorization': `Bearer ${currentToken}`
-                },
-                dataSrc: function(json) {
-                    const data = json.data || [];
-                    const recordsTotal = json.recordsTotal || data.length || 0;
+            ajax: async function (dtParams, callback) {
+                try {
+                    const extraParams = ajaxExtras();
+                    const decryptedJSON = await secureDatatableFetch(
+                        "reports/bet-history-data",
+                        dtParams,
+                        extraParams
+                    );
+
+                    // Update summary data
+                    const data = decryptedJSON?.data || [];
+                    const recordsTotal = decryptedJSON.recordsTotal || data.length || 0;
                     setTotalRecords(recordsTotal);
                     setTotalBets(recordsTotal);
-                    const computedTotalAmount = Array.isArray(data) ? data.reduce((acc, r) => acc + (parseFloat(r.amount || 0) || 0), 0) : 0;
-                    setTotalAmount(json.totalAmount || computedTotalAmount);
-                    return data;
+                    const computedTotalAmount = Array.isArray(data) ? data.reduce((acc, r) => acc + (parseFloat(r.bet_amount || r.amount || 0) || 0), 0) : 0;
+                    setTotalAmount(decryptedJSON.totalAmount || computedTotalAmount);
+
+                    // Send data back to DataTable
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: decryptedJSON.recordsTotal,
+                        recordsFiltered: decryptedJSON.recordsFiltered,
+                        data: data,
+                    });
+                } catch (e) {
+                    console.error("DataTable AJAX error:", e);
+                    callback({
+                        draw: dtParams.draw,
+                        recordsTotal: 0,
+                        recordsFiltered: 0,
+                        data: [],
+                    });
                 }
             },
             columns: columns,
