@@ -6,7 +6,7 @@ import { ADMIN_BASE_PATH } from "./Constants";
 import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
 
-export const adminApi = async (url, method = "GET", data = null) => {
+export const adminApi = async (url, method = "GET", data = null, get_without_data = false) => {
   // Get token from Redux store if not provided
   const authToken = store.getState().admin.token;
   
@@ -95,7 +95,7 @@ export const adminApi = async (url, method = "GET", data = null) => {
     // 5️⃣ Decrypt backend response if encrypted
     const encryptedResponse = result?.data;
     
-    if (encryptedResponse) {
+    if (encryptedResponse && typeof encryptedResponse === 'string') {
       const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
         iv: aesIv,
         mode: CryptoJS.mode.CBC,
@@ -104,9 +104,9 @@ export const adminApi = async (url, method = "GET", data = null) => {
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
       const decryptedJSON = JSON.parse(decryptedText);
-      return decryptedJSON?.data || decryptedJSON;
+      return get_without_data ? decryptedJSON : decryptedJSON?.data || decryptedJSON;
     } else {
-      return result?.data || result;
+      return get_without_data ? result : result?.data || result;
     }
   } catch (error) {
     console.error("Admin API error:", error);

@@ -28,7 +28,7 @@ export const useGameNames = (gameType = 'all') => {
       
       // Add game type parameter to the API call only if specified and not null
       const params = currentGameType !== 'all' ? { game_type: currentGameType } : {};
-      const response = await adminApi(`${ADMIN_BASE_PATH}/active-games`, 'POST', params);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/active-games`, 'POST', params, true);
       
       if (response && response.success) {
         // Transform the API response to the expected format

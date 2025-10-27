@@ -541,7 +541,7 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
     // 5️⃣ Decrypt backend response if encrypted
     const encryptedResponse = response.data?.data;
     
-    if (encryptedResponse) {
+    if (encryptedResponse && typeof encryptedResponse === 'string' && encryptedResponse !== 'undefined') {
       const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
         iv: aesIv,
         mode: CryptoJS.mode.CBC,
@@ -2702,7 +2702,7 @@ export async function secureDatatableFetch(url, dtParams = {}, extraParams = {})
     const encryptedResponse = response.data?.data;
     let decryptedJSON = {};
 
-    if (encryptedResponse) {
+    if (encryptedResponse && typeof encryptedResponse === 'string' && encryptedResponse !== 'undefined') {
       const decrypted = CryptoJS.AES.decrypt(encryptedResponse, aesKey, {
         iv: aesIv,
         mode: CryptoJS.mode.CBC,

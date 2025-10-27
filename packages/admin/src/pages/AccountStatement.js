@@ -7,6 +7,33 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "@dxc247/shared/components/common/Pagination";
 
+// Helper function to extract numeric value from HTML string or plain number
+const extractNumericValue = (value) => {
+  if (!value && value !== 0) return 0;
+  
+  // If it's already a number, return it
+  if (typeof value === 'number') return value;
+  
+  // Remove HTML tags and extract number
+  const cleanValue = value.toString().replace(/<[^>]*>/g, '').trim();
+  const numericValue = parseFloat(cleanValue);
+  
+  return isNaN(numericValue) ? 0 : numericValue;
+};
+
+// Helper function to parse and format date from API format
+const formatDate = (dateString) => {
+  if (!dateString) return '-';
+  
+  // Parse date in format "24-10-2025 10:01:38 am"
+  const date = new Date(dateString);
+  
+  // If parsing fails, return original string
+  if (isNaN(date.getTime())) return dateString;
+  
+  return date.toLocaleString();
+};
+
 const AccountStatement = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -43,6 +70,7 @@ const AccountStatement = () => {
     try {
       setLoadingUsers(true);
       const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
+      console.log('res match-pl-dropdowns', res);
       if (res && res.clients) {
         setUserOptions(res.clients || []);
       } else {
@@ -71,13 +99,26 @@ const AccountStatement = () => {
           per_page: entriesPerPage,
         };
 
-        const res = await adminApi(`${ADMIN_BASE_PATH}/admin-account-statement`, "POST", params);
+        const res = await adminApi(`${ADMIN_BASE_PATH}/admin-account-statement`, "POST", params, true);
         
-        if (res && res.success) {
-          setData(res.data || []);
-          setCurrentPage(res.pagination?.current_page || 1);
-          setTotalPages(res.pagination?.last_page || 1);
-          setTotalRecords(res.pagination?.total || 0);
+        if (res && res.data && Array.isArray(res.data)) {
+          // Transform the data to match the expected format
+          const transformedData = res.data.map(row => ({
+            ...row,
+            // Extract numeric values from HTML strings
+            cr: extractNumericValue(row.credit),
+            dr: extractNumericValue(row.debit),
+            balance: extractNumericValue(row.balance),
+            from_to: row['From-To'] || row.from_to,
+          }));
+          
+          setData(transformedData);
+          setCurrentPage(page);
+          
+          // Calculate total pages and records from DataTables format
+          const total = res.recordsFiltered || res.recordsTotal || 0;
+          setTotalRecords(total);
+          setTotalPages(Math.ceil(total / entriesPerPage) || 1);
         } else {
           console.error("Failed to load account statement data:", res?.message);
           setData([]);
@@ -192,54 +233,7 @@ const AccountStatement = () => {
             
             <div className="">
               <form onSubmit={handleSubmit} className="row g-3 mb-4">
-                <div className="col-md-12">
-                  <div className="select_account">
-                    <div className="radio pull-left">
-                      <input
-                        id="radio-1"
-                        type="radio"
-                        name="fltrselct"
-                        value="0"
-                        checked={filterType === "0"}
-                        onChange={(e) => setFilterType(e.target.value)}
-                      />
-                      <label htmlFor="radio-1" className="radio-label">All</label>
-                    </div>
-                    <div className="radio pull-left">
-                      <input
-                        id="radio-2"
-                        type="radio"
-                        name="fltrselct"
-                        value="1"
-                        checked={filterType === "1"}
-                        onChange={(e) => setFilterType(e.target.value)}
-                      />
-                      <label htmlFor="radio-2" className="radio-label">Free Chips</label>
-                    </div>
-                    <div className="radio">
-                      <input
-                        id="radio-3"
-                        type="radio"
-                        name="fltrselct"
-                        value="2"
-                        checked={filterType === "2"}
-                        onChange={(e) => setFilterType(e.target.value)}
-                      />
-                      <label htmlFor="radio-3" className="radio-label">Settlement</label>
-                    </div>
-                    <div className="radio">
-                      <input
-                        id="radio-4"
-                        type="radio"
-                        name="fltrselct"
-                        value="3"
-                        checked={filterType === "3"}
-                        onChange={(e) => setFilterType(e.target.value)}
-                      />
-                      <label htmlFor="radio-4" className="radio-label">Game Report</label>
-                    </div>
-                  </div>
-                </div>
+              
                 
                 <div className="col-md-2">
                   <label className="form-label">From Date</label>
@@ -339,13 +333,15 @@ const AccountStatement = () => {
                 <table className="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>S.No</th>
+                      
                       <th>Date</th>
-                      <th>Description</th>
+                      <th>Sr No</th>
+                      
                       <th>Credit</th>
                       <th>Debit</th>
+                      <th>Description</th>
                       <th>Balance</th>
-                      <th>Type</th>
+                      <th>From-To</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -358,17 +354,8 @@ const AccountStatement = () => {
                     ) : data.length > 0 ? (
                       data.map((row, index) => (
                         <tr key={row.id || index}>
+                          <td>{formatDate(row.created_at)}</td>
                           <td>{((currentPage - 1) * entriesPerPage) + index + 1}</td>
-                          <td>{row.created_at ? new Date(row.created_at).toLocaleString() : '-'}</td>
-                          <td>
-                            {row.description && row.description.includes('ROUND ID') ? (
-                              <a href="javascript:void(0)" className="description-clickable">
-                                {row.description}
-                              </a>
-                            ) : (
-                              row.description || '-'
-                            )}
-                          </td>
                           <td>
                             {row.cr > 0 ? (
                               <span className="text-success fw-bold">{formatCurrency(row.cr)}</span>
@@ -384,11 +371,19 @@ const AccountStatement = () => {
                             )}
                           </td>
                           <td>
+                            {row.description ? (
+                              <div dangerouslySetInnerHTML={{ __html: row.description }} />
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                       
+                          <td>
                             <span className={row.balance < 0 ? "text-danger fw-bold" : "text-success fw-bold"}>
                               {formatCurrency(row.balance)}
                             </span>
                           </td>
-                          <td>{row.type || '-'}</td>
+                          <td>{row.from_to || '-'}</td>
                         </tr>
                       ))
                     ) : (
