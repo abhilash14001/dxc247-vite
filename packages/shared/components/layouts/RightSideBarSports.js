@@ -200,6 +200,7 @@ const RightSideBarSports = ({
         placingBets
       );
 
+      console.log("updatedBets is ", updatedBets);
 
       // Use the utility function to update state
       updatePlacingBetsState(setPlacingBets, betType, updatedBets);
@@ -491,9 +492,7 @@ const RightSideBarSports = ({
     }
 
     const submit = () => {
-        "DEBUG: teamNames?.current?.[betType]:",
-        teamNames?.current?.[betType]
-      );
+      
 
       let allTeamNames = teamNames?.current?.[betType] || [];
 
@@ -503,16 +502,21 @@ const RightSideBarSports = ({
         typeof allTeamNames === "object" &&
         !Array.isArray(allTeamNames)
       ) {
+        console.log(
           "DEBUG: Converting object to array. Original:",
           allTeamNames
         );
+        console.log("DEBUG: Object.keys():", Object.keys(allTeamNames));
+        console.log("DEBUG: Object.values():", Object.values(allTeamNames));
 
         // Try different approaches to get the values
         const values = Object.values(allTeamNames);
         // Filter out any undefined values and ensure we have strings
         allTeamNames = values.filter((val) => val && typeof val === "string");
+        console.log("DEBUG: After filtering:", allTeamNames);
       }
 
+      console.log("DEBUG: allTeamNames initial:", allTeamNames);
 
       // Handle different bet types - map to correct teamNames keys
       if (!allTeamNames || allTeamNames.length === 0) {

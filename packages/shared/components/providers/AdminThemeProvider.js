@@ -46,12 +46,7 @@ export const AdminThemeProvider = ({ children }) => {
     root.style.setProperty('--bg-primary', themeData.primary, 'important');
     root.style.setProperty('--theme-gradient-from', themeData.gradient?.from || themeData.primary, 'important');
     root.style.setProperty('--theme-gradient-to', themeData.gradient?.to || themeData.secondary, 'important');
-    
-      '--theme1-bg': themeData.primary,
-      '--theme2-bg': themeData.secondary,
-      '--bg-primary': themeData.primary
-    });
-    
+        
     themeAppliedRef.current = true;
   };
 

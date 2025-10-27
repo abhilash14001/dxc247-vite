@@ -54,7 +54,8 @@ export const SportsProvider = (props) => {
       const betTypeToDataKey = {
         ODDS: "match_odds",
         BOOKMAKER: "bookmaker",
-        BOOKMAKER2: "bookmaker 2",
+        BOOKMAKER2: "bookmaker2",
+        // BOOKMAKER2: "bookmaker 2",
         cup: "cup",
         TIED_MATCH: "tied match",
       };
@@ -83,6 +84,8 @@ export const SportsProvider = (props) => {
 
         case "BOOKMAKER2":
           if (Object.keys(arrayjson).length > 0) {
+
+            
             setBookmaker2TeamData(arrayjson);
           }
 

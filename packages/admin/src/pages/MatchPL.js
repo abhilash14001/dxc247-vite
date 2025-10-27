@@ -68,11 +68,7 @@ function MatchPL() {
           }
         });
         setAccountStatementData(transformed);
-          sport: response.sport_details?.match_name,
-          user_id: response.user_id,
-          sport_id: response.sport_id,
-          data_count: transformed.length,
-        });
+        
       } else {
         setAccountStatementData([]);
         console.error("Failed to load match PL data:", response.message);

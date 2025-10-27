@@ -298,6 +298,7 @@ function Bookmaker2({
                                 teamNames.current['BOOKMAKER2'].push(teamName);
                             }
 
+                            
                             const teamEx = bookmakerTeamData?.[teamName] ?? 0;
                             if (!allTeamName.current['BOOKMAKER2']) {
                                 allTeamName.current['BOOKMAKER2'] = [];
@@ -315,6 +316,7 @@ function Bookmaker2({
                                 teamNameCurrentBets.current['BOOKMAKER2'][teamName] = ''
                             }
 
+                            
                             teamNameCurrentBets.current['BOOKMAKER2'][teamName] = teamEx;
 
                             return (
@@ -322,6 +324,8 @@ function Bookmaker2({
                                     <div className="market-nation-detail">
                                         <span className="market-nation-name">{teamName}</span>
                                         <div className="market-nation-book">
+                                        {getExByColor(teamEx, true)}
+
                                             {placingBets['BOOKMAKER2']?.[teamName] && (
                                                 <span className={placingBets['BOOKMAKER2']?.[teamName] < 0 ? 'red-color' : 'green-color'}>
                                                     {(placingBets['BOOKMAKER2'][teamName] % 1 !== 0 && placingBets['BOOKMAKER2'][teamName].toString().split('.')[1]?.length > 2) 
