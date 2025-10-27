@@ -399,7 +399,6 @@ function AdminNotifications() {
         <div className="header-right">
           <button 
             className="btn btn-outline"
-            onClick={() => console.log('Export notifications')}
           >
             <FontAwesomeIcon icon={faDownload} />
             Export

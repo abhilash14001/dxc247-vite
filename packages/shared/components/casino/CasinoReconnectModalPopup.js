@@ -26,7 +26,6 @@ function CasinoReconnectModalPopup({
       const handleConnect = () => {
         setTriggerSocket({ ...triggerSocket, casino: true });
 
-        console.log("Casino socket reconnected successfully");
         casino_socket.off("connect", handleConnect);
         casino_socket.off("connect_error", handleConnectError);
       };
@@ -43,13 +42,11 @@ function CasinoReconnectModalPopup({
       if (casino_socket.disconnected) {
         // If socket is disconnected, try to reconnect
         casino_socket.connect();
-        console.log("Attempting to reconnect casino socket...");
       } else {
         // If socket is still connected, disconnect first then reconnect
         casino_socket.disconnect();
         setTimeout(() => {
           casino_socket.connect();
-          console.log("Reconnecting casino socket after disconnect...");
         }, 100);
       }
     } else {

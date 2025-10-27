@@ -34,13 +34,11 @@ export const AdminThemeProvider = ({ children }) => {
   // Apply theme to document CSS variables
   const applyThemeToDocument = (themeData, force = false) => {
     if (!force && themeAppliedRef.current) {
-      console.log('Admin theme already applied, skipping');
       return;
     }
     
     const root = document.documentElement;
     
-    console.log('Applying admin theme:', { themeData, force });
     
     // Admin theme variables - use !important to override existing styles
     root.style.setProperty('--theme1-bg', themeData.primary, 'important');
@@ -49,7 +47,6 @@ export const AdminThemeProvider = ({ children }) => {
     root.style.setProperty('--theme-gradient-from', themeData.gradient?.from || themeData.primary, 'important');
     root.style.setProperty('--theme-gradient-to', themeData.gradient?.to || themeData.secondary, 'important');
     
-    console.log('Admin theme applied:', {
       '--theme1-bg': themeData.primary,
       '--theme2-bg': themeData.secondary,
       '--bg-primary': themeData.primary
@@ -60,14 +57,12 @@ export const AdminThemeProvider = ({ children }) => {
 
   // Load theme from liveModeData
   useEffect(() => {
-    console.log('AdminThemeProvider useEffect triggered:', { liveModeData, theme });
     
     // Reset theme applied flag when liveModeData changes
     themeAppliedRef.current = false;
     
     if (!liveModeData) {
       // Apply default theme if no liveModeData
-      console.log('No liveModeData, applying default admin theme');
       applyThemeToDocument(theme, true);
       return;
     }

@@ -204,7 +204,6 @@ const War = () => {
 
             remark.current = data.remark || 'Welcome';
         }
-        // console.log(data)
     }, [data?.sub]);
 
     const exposure = exposureCheck();
@@ -328,7 +327,6 @@ const War = () => {
 
 
     useEffect(() => {
-        console.log(playerStatuses)
     }, [playerStatuses])
 
     const placeBet = async () => {

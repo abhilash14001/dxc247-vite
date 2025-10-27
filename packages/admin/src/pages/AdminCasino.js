@@ -54,7 +54,6 @@ function AdminCasino() {
       
       if (response) {
         setGames(response || []);
-        console.log("Casino list data:", response);
       } else {
         console.error("Failed to load casino list:", response);
         setGames([]);

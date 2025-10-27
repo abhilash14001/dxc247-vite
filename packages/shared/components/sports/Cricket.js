@@ -119,7 +119,6 @@ const Cricket = () => {
 
       // sports_socket.emit('setPurposeFor', 'tv', 'cricket', '', '', gammmmee)
 
-      // Handle the successful response here, e.g., console.log(response.data)
     } catch (error) {
       // Handle specific error scenarios
       if (error.response) {
@@ -484,7 +483,6 @@ const Cricket = () => {
   useEffect(() => {
     return () => {
       if (sportsSocketScoreboard) {
-        console.log("Disconnecting scoreboard socket on component unmount");
         sportsSocketScoreboard.disconnect();
         setTriggerSocketScoreboard(false);
       }

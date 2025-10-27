@@ -85,7 +85,6 @@ export const handleCashoutLogic = async (params) => {
             defaultBetType = 'ODDS'
         } = params;
         
-        console.log('=== Starting Cashout Logic ===');
 
         // Validation checks
         if (!currentMarketData?.length) {
@@ -109,7 +108,6 @@ export const handleCashoutLogic = async (params) => {
         }
 
         // Get active bets for the match
-        console.log(`Fetching active bets for match ${matchId}, type ${betType}`);
         const activeBets = await getActiveBets(matchId, betType);
 
         const { totalBetAmount } = calculatePnLs(activeBets)
@@ -122,7 +120,6 @@ export const handleCashoutLogic = async (params) => {
         
         
         if (bestHedge) {
-            console.log('Best Hedge Selected:', bestHedge);
 
             // Set up the hedge bet pa
             // rameters
@@ -138,7 +135,6 @@ export const handleCashoutLogic = async (params) => {
             setPopupDisplay(true);
             return true;
         } else {
-            console.log('No suitable hedge option found');
             Notify('No suitable hedge option available for cashout', null, null, 'warning');
             return false;
         }
@@ -328,7 +324,6 @@ function layAndBackBetCalculation(layBet, backBet, teamNames, teamNameCurrentBet
         
        
     }
-    console.log('teamResults', teamResults);
     debugger    
 
    
@@ -351,7 +346,6 @@ function calculateHedgeFromActiveBets(activeBets, teamNames, teamNameCurrentBets
         }
     }
 
-    console.log('teamResults from active bets:', teamResults);
     return pickEqualBet(teamResults);
 }
 
@@ -364,7 +358,6 @@ function calculateHedgeFromActiveBetsNew(activeBets, teamNameCurrentBets, curren
     selections.forEach(sel => { 
         exposure[sel] = 0; 
     });
-    console.log('currentMarketData', currentMarketData);
     debugger
     
     // Calculate exposure for each selection based on active bets
@@ -403,14 +396,12 @@ function calculateHedgeFromActiveBetsNew(activeBets, teamNameCurrentBets, curren
         });
     }
     
-    console.log('Current exposures per selection:', exposure);
     
     // Step 3: Find the best hedge option
     // We need to find which selection to hedge and what odds to use
     let bestHedge = null;
     let minImbalance = Infinity;
 
-    console.log('hedgeSelections', selections);
     debugger
     
     // For each selection, calculate potential hedge scenarios
@@ -475,7 +466,6 @@ function calculateHedgeFromActiveBetsNew(activeBets, teamNameCurrentBets, curren
         }
     }
     
-    console.log('Best hedge option:', bestHedge);
     
     if (bestHedge) {
         return {
@@ -531,7 +521,6 @@ export const resetCashoutState = (stakeValue, cashoutTeam) => {
 
 // Function to automatically calculate optimal hedge based on current positions
 function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds, hedgeType, hedgeTeam) {
-    console.log('=== CALCULATING OPTIMAL HEDGE AUTOMATICALLY ===');
     
     // Step 1: Calculate current exposure after applying all bets
     let currentExposure = { ...basePnL };
@@ -558,7 +547,6 @@ function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds,
         });
     });
     
-    console.log('Current exposure after bets:', currentExposure);
     
     // Step 2: Automatically determine optimal target PnL
     const currentValues = Object.values(currentExposure);
@@ -570,10 +558,6 @@ function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds,
     // This will minimize the difference between outcomes
     const optimalTargetPnL = (bestCase + worstCase) / 2;
     
-    console.log('Current worst case:', worstCase);
-    console.log('Current best case:', bestCase);
-    console.log('Current imbalance:', currentImbalance);
-    console.log('Optimal target PnL:', optimalTargetPnL);
     
     // Step 3: Calculate required hedge stake to achieve optimal balance
     let hedgeStake = 0;
@@ -591,16 +575,11 @@ function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds,
         const stakeFromHedgeTeam = (hedgeTeamCurrent - optimalTargetPnL) / (hedgeOdds - 1);
         const stakeFromOtherTeam = optimalTargetPnL - otherTeamCurrent;
         
-        console.log('Stake from hedge team equation:', stakeFromHedgeTeam);
-        console.log('Stake from other team equation:', stakeFromOtherTeam);
         
         // Both should be equal for consistency
         if (Math.abs(stakeFromHedgeTeam - stakeFromOtherTeam) < 0.01) {
             hedgeStake = stakeFromHedgeTeam;
-            console.log('Stakes match! Using:', hedgeStake);
         } else {
-            console.log('WARNING: Stakes do not match!');
-            console.log('Difference:', Math.abs(stakeFromHedgeTeam - stakeFromOtherTeam));
             hedgeStake = stakeFromHedgeTeam; // Use hedge team equation as primary
         }
         
@@ -615,15 +594,10 @@ function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds,
         const stakeFromHedgeTeam = (optimalTargetPnL - hedgeTeamCurrent) / (hedgeOdds - 1);
         const stakeFromOtherTeam = otherTeamCurrent - optimalTargetPnL;
         
-        console.log('Stake from hedge team equation:', stakeFromHedgeTeam);
-        console.log('Stake from other team equation:', stakeFromOtherTeam);
         
         if (Math.abs(stakeFromHedgeTeam - stakeFromOtherTeam) < 0.01) {
             hedgeStake = stakeFromHedgeTeam;
-            console.log('Stakes match! Using:', hedgeStake);
         } else {
-            console.log('WARNING: Stakes do not match!');
-            console.log('Difference:', Math.abs(stakeFromHedgeTeam - stakeFromOtherTeam));
             hedgeStake = stakeFromHedgeTeam;
         }
     }
@@ -639,8 +613,6 @@ function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds,
         finalExposure[otherTeam] -= hedgeStake;
     }
     
-    console.log('=== FINAL VERIFICATION ===');
-    console.log('Final exposure:', finalExposure);
     
     // Check final balance
     const finalValues = Object.values(finalExposure);
@@ -648,10 +620,6 @@ function calculateOptimalHedgeAutomatically(bets, teamNames, basePnL, hedgeOdds,
     const finalBestCase = Math.max(...finalValues);
     const finalImbalance = finalBestCase - finalWorstCase;
     
-    console.log('Final worst case:', finalWorstCase);
-    console.log('Final best case:', finalBestCase);
-    console.log('Final imbalance:', finalImbalance);
-    console.log('Balance improvement:', currentImbalance - finalImbalance);
     
     return {
         hedgeStake: parseFloat(hedgeStake.toFixed(2)),

@@ -68,7 +68,6 @@ function MatchPL() {
           }
         });
         setAccountStatementData(transformed);
-        console.log("Match PL data loaded:", {
           sport: response.sport_details?.match_name,
           user_id: response.user_id,
           sport_id: response.sport_id,

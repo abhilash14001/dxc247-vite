@@ -100,7 +100,6 @@ function Bookmaker2({
         if (!success) {
             console.error('Cashout operation failed');
         } else {
-            console.log('Cashout successful, betType after:', betType);
         }
     };
 
@@ -294,6 +293,7 @@ function Bookmaker2({
                             }
 
                             const teamName = oddsArr.nat.trim() || '';
+                            
                             if (!teamNames.current['BOOKMAKER2'].includes(teamName)) {
                                 teamNames.current['BOOKMAKER2'].push(teamName);
                             }

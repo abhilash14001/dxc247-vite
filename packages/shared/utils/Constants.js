@@ -911,6 +911,7 @@ export async function getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNames) {
     return activeGetExRequests.get(cacheKey);
   }
   
+  
   const request = (async () => {
     try {
       
@@ -1028,14 +1029,27 @@ export async function getExByTeamNameForAllBetTypes(
   const betTypes = Object.keys(setFunctions);
   const allTeamNames = new Set();
   
+
+
+  
+  // Transform 'bookmaker 2' key to 'bookmaker2'
+  if (data && data['bookmaker 2']) {
+    data.bookmaker2 = data['bookmaker 2'];
+    delete data['bookmaker 2'];
+  }
+  
   // Collect all team names from all bet types in the data
   betTypes.forEach(betType => {
     if (data[betType]?.section) {
       data[betType].section.forEach(oddsArr => {
+        console.log('oddsArr is ', oddsArr)
+        console.log('oddsArr.nat is ', oddsArr.nat)
+        console.log('oddsArr.nat.trim() is ', oddsArr.nat.trim())
         allTeamNames.add(oddsArr.nat.trim());
       });
     }
   });
+  
   
   const teamNamesArray = Array.from(allTeamNames);
   

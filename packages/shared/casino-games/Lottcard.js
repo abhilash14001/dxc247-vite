@@ -225,7 +225,6 @@ const Lottcard = () => {
                     const blob = await response.blob();
                     // In a real implementation, you would save this to your local storage
                     // For now, we just use the external URL
-                    console.log(`Downloaded image for card: ${cardName}`);
                 }
             } catch (error) {
                 console.error(`Failed to download image for card: ${cardName}`, error);
@@ -333,7 +332,6 @@ const Lottcard = () => {
     // Repeat last selection
     const repeatSelection = () => {
         // Implementation for repeating last selection
-        console.log('Repeat selection');
     };
 
     // Remove last selection

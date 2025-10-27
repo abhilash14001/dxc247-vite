@@ -138,7 +138,6 @@ export const useCasinoAutoBet = (config) => {
             if (success) {
                 setBetsPlaced(prev => prev + 1);
                 onBetPlaced(betInfo);
-                console.log(`Auto bet placed: ${betInfo.teamName} @ ${betInfo.odds} for ${stakeAmount}`);
                 return true;
             }
             
@@ -164,11 +163,9 @@ export const useCasinoAutoBet = (config) => {
             const availableBets = findAvailableBets();
             
             if (availableBets.length === 0) {
-                console.log('No available bets found (all suspended)');
                 return;
             }
             
-            console.log(`Found ${availableBets.length} available bets`);
             
             // Place bets with delay between them
             for (const betInfo of availableBets) {

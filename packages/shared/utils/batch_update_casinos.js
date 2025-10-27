@@ -948,9 +948,6 @@ const mobileCasinoUpdates = {
 // Combine all updates
 const allUpdates = { ...casinoUpdates, ...mobileCasinoUpdates };
 
-console.log(`Total casino files to update: ${Object.keys(allUpdates).length}`);
-console.log('Desktop Casinos:', Object.keys(casinoUpdates).length);
-console.log('Mobile Casinos:', Object.keys(mobileCasinoUpdates).length);
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {

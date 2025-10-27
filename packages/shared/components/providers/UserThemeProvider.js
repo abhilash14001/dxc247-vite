@@ -37,7 +37,6 @@ export const UserThemeProvider = ({ children }) => {
   // Apply theme to document CSS variables
   const applyThemeToDocument = (themeData, force = false) => {
     if (!force && themeAppliedRef.current) {
-      console.log('User theme already applied, skipping');
       return;
     }
     

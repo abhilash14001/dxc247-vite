@@ -46,7 +46,6 @@ function AdminProfile() {
     try {
       setLoading(true);
       // Mock profile load - replace with API call
-      console.log('Loading profile data...');
     } catch (error) {
       console.error('Error loading profile:', error);
     } finally {

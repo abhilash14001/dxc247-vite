@@ -231,7 +231,6 @@ const ThreecardJ = () => {
             resetCardSelection();
         }
 
-        console.log(`Selected ${cardValue} for ${betType}. Count will be: ${getSelectedCardCount(betType) + 1}`);
     }
 
     // Helper function to find data in data.sub for ThreecardJ

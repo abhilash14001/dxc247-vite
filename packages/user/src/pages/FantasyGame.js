@@ -126,14 +126,12 @@ const FantasyGame = () => {
 
   const handleGameClick = (gameName) => {
     // Handle game click - you can add navigation or game launch logic here
-    console.log(`Clicked on game: ${gameName}`);
     // Example: navigate to game or open game modal
   };
 
   const handleInfoClick = (gameName, e) => {
     e.stopPropagation();
     // Handle info click - you can add game info modal here
-    console.log(`Info clicked for game: ${gameName}`);
   };
 
   return (

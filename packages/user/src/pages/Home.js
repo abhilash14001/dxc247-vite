@@ -101,7 +101,6 @@ function Home() {
             try {
               const parsedData = decryptAndVerifyResponse(userDatas);
               if (parsedData && Object.keys(parsedData).length > 0) {
-                console.log(`📊 ${sport} data loaded:`, parsedData.data);
                 
                 // Update the appropriate state
                 if (sport === "cricket") {
@@ -116,7 +115,6 @@ function Home() {
               console.error(`Error parsing ${sport} data:`, error);
             }
           } else {
-            console.log(`⏰ ${sport} data timeout`);
           }
 
           // Small delay between sports to avoid overwhelming the server
@@ -134,7 +132,6 @@ function Home() {
   useSocketConnection(
     activeTab.toLowerCase(),
     (data) => {
-      console.log(`${activeTab} real-time data received:`, data);
       // Update the appropriate state based on active tab
       if (activeTab === "Cricket") {
         setCricketData(data);

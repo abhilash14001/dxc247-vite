@@ -134,7 +134,6 @@ function AdminUsers() {
       // Add UUID to the URL if provided
       const url = uuid ? `${ADMIN_BASE_PATH}/client/list/${uuid}?${params}` : `${ADMIN_BASE_PATH}/client/list?${params}`;
       const response = await adminApi(url, 'GET');
-      console.log('response is ', response)
       if (response.users) {
         setUsers(response.users);
         setPagination(response.pagination);

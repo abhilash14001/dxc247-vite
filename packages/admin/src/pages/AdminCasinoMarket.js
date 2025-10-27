@@ -292,12 +292,10 @@ function AdminCasinoMarket() {
   };
 
   const handleSetVideoURL = (casinoId, currentVideoURL) => {
-    console.log(`Setting video URL for casino ${casinoId}`, currentVideoURL);
     // Implement video URL setting logic
   };
 
   const handleSetBetLimit = (casinoId) => {
-    console.log(`Setting bet limit for casino ${casinoId}`);
     // Implement bet limit setting logic
   };
 
@@ -435,7 +433,6 @@ function AdminCasinoMarket() {
       });
 
       if (response.success) {
-        console.log('Casino positions updated successfully');
       } else {
         throw new Error(response.message || 'Failed to update positions');
       }

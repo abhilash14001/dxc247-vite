@@ -70,7 +70,6 @@ const AccountStatement = () => {
     try {
       setLoadingUsers(true);
       const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
-      console.log('res match-pl-dropdowns', res);
       if (res && res.clients) {
         setUserOptions(res.clients || []);
       } else {

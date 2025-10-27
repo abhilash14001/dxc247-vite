@@ -44,7 +44,6 @@ export const useGameNames = (gameType = 'all') => {
           }
         });
         
-        console.log(`Game names loaded from API (${currentGameType}):`, gameNamesObject);
         dispatch(setGameNames({ gameType: currentGameType, gameNames: gameNamesObject }));
         return Promise.resolve();
       } else {

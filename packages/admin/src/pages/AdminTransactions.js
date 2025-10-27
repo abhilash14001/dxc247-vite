@@ -126,18 +126,15 @@ function AdminTransactions() {
 
   const handleApproveTransaction = (transactionId) => {
     if (window.confirm('Are you sure you want to approve this transaction?')) {
-      console.log('Approving transaction:', transactionId);
     }
   };
 
   const handleRejectTransaction = (transactionId) => {
     if (window.confirm('Are you sure you want to reject this transaction?')) {
-      console.log('Rejecting transaction:', transactionId);
     }
   };
 
   const handleExport = () => {
-    console.log('Exporting transactions...');
   };
 
   const columns = [

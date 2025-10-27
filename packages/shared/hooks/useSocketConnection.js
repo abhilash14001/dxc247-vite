@@ -29,10 +29,8 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
     
     if (reconnectAttempts.current < maxReconnectAttempts) {
       reconnectAttempts.current += 1;
-      console.log(`Attempting to reconnect... (${reconnectAttempts.current}/${maxReconnectAttempts})`);
 
       if (!isOnline()) {
-        console.log("Waiting for network connection...");
         const isBackOnline = await waitForOnline(30000); // Wait up to 30 seconds
         if (!isBackOnline) {
           console.error("Network still unavailable after 30 seconds");
@@ -102,7 +100,6 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
 
       // Handle disconnections
       socket.on("disconnect", (reason) => {
-        console.log("Socket disconnected:", reason);
         if (reason === "io server disconnect") {
           handleReconnection();
         }
@@ -112,7 +109,6 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
     // Cleanup on unmount
     return () => {
       if (socketRef.current) {
-        console.log("Disconnecting socket on component unmount");
         socketRef.current.disconnect();
         socketRef.current = null;
       }

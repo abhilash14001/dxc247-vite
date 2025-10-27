@@ -101,7 +101,6 @@ function ProfitLossReports() {
   const handleSubmit = () => loadProfitLossData(1, searchTerm);
 
   const showBetDetails = (id) => {
-    console.log("Show bet details for:", id);
   };
 
   return (

@@ -856,4 +856,3 @@ root.render(
   </React.StrictMode>
 );
 
-console.log("✅ Admin rendered - Go to /login");

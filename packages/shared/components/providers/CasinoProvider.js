@@ -128,11 +128,9 @@ export const CasinoProvider = ({ isAdmin = false, ...props }) => {
 
         // Add connection event listeners
         newSocket.on('connect', () => {
-          console.log('Casino socket connected successfully');
         });
 
         newSocket.on('disconnect', (reason) => {
-          console.log('Casino socket disconnected:', reason);
         });
 
         newSocket.on('connect_error', (error) => {
@@ -146,14 +144,12 @@ export const CasinoProvider = ({ isAdmin = false, ...props }) => {
       if (casinoSocket) {
         casinoSocket.disconnect();
         setCasinoSocket(null);
-        console.log("Casino socket disconnected");
       }
     }
 
     if(!triggerSocket.casino && casinoSocket){
       casinoSocket.disconnect();
       setCasinoSocket(null);
-      console.log("Casino socket disconnected");
     }
   }, [loginStatus, triggerSocket.casino, casinoSocket]);
 
@@ -176,11 +172,9 @@ export const CasinoProvider = ({ isAdmin = false, ...props }) => {
 
         // Add connection event listeners
         newScoreboardSocket.on('connect', () => {
-          console.log('Casino scoreboard socket connected successfully');
         });
 
         newScoreboardSocket.on('disconnect', (reason) => {
-          console.log('Casino scoreboard socket disconnected:', reason);
         });
 
         newScoreboardSocket.on('connect_error', (error) => {
@@ -195,7 +189,6 @@ export const CasinoProvider = ({ isAdmin = false, ...props }) => {
       if (casinoSocketScoreboard) {
         casinoSocketScoreboard.disconnect();
         setCasinoSocketScoreboard(null);
-        console.log("Scoreboard socket disconnected");
       }
     }
   }, [
@@ -211,12 +204,10 @@ export const CasinoProvider = ({ isAdmin = false, ...props }) => {
       if (casinoSocket) {
         casinoSocket.disconnect();
         setCasinoSocket(null);
-        console.log('Casino socket disconnected due to 401 error');
       }
       if (casinoSocketScoreboard) {
         casinoSocketScoreboard.disconnect();
         setCasinoSocketScoreboard(null);
-        console.log('Casino scoreboard socket disconnected due to 401 error');
       }
     };
 

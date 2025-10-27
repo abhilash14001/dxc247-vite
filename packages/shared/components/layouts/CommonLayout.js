@@ -19,7 +19,6 @@ const CommonLayout = ({
 
   // CSS loading function with useCallback
   const loadAdminCSS = useCallback(() => {
-    console.log('Loading CSS for admin sports route');
 
     // Load main style.css
     // if (!document.getElementById("admin-sports-style")) {
@@ -27,7 +26,6 @@ const CommonLayout = ({
     //   styleLink.rel = "stylesheet";
     //   styleLink.href = "/assets/css/style.css";
     //   styleLink.id = "admin-sports-style";
-    //   styleLink.onload = () => console.log('admin-sports-style CSS loaded successfully');
     //   styleLink.onerror = () => console.error('Failed to load admin-sports-style CSS');
     //   document.head.appendChild(styleLink);
       
@@ -39,10 +37,8 @@ const CommonLayout = ({
       responsiveLink.rel = "stylesheet";
       responsiveLink.href = "/assets/css/responsive.css";
       responsiveLink.id = "admin-sports-responsive";
-      responsiveLink.onload = () => console.log('admin-sports-responsive CSS loaded successfully');
       responsiveLink.onerror = () => console.error('Failed to load admin-sports-responsive CSS');
       document.head.appendChild(responsiveLink);
-      console.log('Added admin-sports-responsive CSS');
     }
   }, []);
 

@@ -337,7 +337,6 @@ function AdminSports() {
         <div className="header-right">
           <button 
             className="btn btn-outline"
-            onClick={() => console.log('Export sports')}
           >
             <FontAwesomeIcon icon={faDownload} />
             Export

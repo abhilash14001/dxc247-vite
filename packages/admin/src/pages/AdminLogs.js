@@ -377,7 +377,6 @@ function AdminLogs() {
         <div className="header-right">
           <button 
             className="btn btn-outline"
-            onClick={() => console.log('Export logs')}
           >
             <FontAwesomeIcon icon={faDownload} />
             Export

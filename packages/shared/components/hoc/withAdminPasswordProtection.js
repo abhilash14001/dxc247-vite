@@ -92,7 +92,6 @@ const withAdminPasswordProtection = (WrappedComponent) => {
               onSubmit={handlePasswordSubmit}
               onClose={closeModal}
               onClearError={() => {
-                console.log('clearError called from HOC');
                 dispatch(clearError());
               }}
             />
@@ -112,7 +111,6 @@ const withAdminPasswordProtection = (WrappedComponent) => {
               onSubmit={handlePasswordSubmit}
               onClose={closeModal}
               onClearError={() => {
-                console.log('clearError called from HOC');
                 dispatch(clearError());
               }}
             />

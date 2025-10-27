@@ -62,9 +62,7 @@ const AdminPasswordModal = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => {
-                    console.log('Input focused, error:', error, 'onClearError:', !!onClearError);
                     if (error && onClearError) {
-                      console.log('Clearing error...');
                       onClearError();
                     }
                   }}

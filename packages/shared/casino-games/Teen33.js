@@ -247,7 +247,6 @@ const [playerA_Back, setPlayerA_Back] = useState(0);
     const updatePlayerStats = (playerData, setPlayerBack, setPlayerLay, playerName, teamsession) => {
         if (!playerData) return;
         let playerStatus = '';
-        // console.log('player status is ', playerData.gstatus);
         if (playerData.gstatus === "SUSPENDED") {
             playerStatus = "suspended-row";
 

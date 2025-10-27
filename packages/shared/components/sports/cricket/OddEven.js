@@ -65,7 +65,6 @@ const OddEven = ({
     if (typeof promises !== "undefined") {
       Promise.all(promises)
         .then((results) => {
-          console.log('results is ', results)
           results.forEach((result, index) => {
             const teamName = gameData["oddeven"]?.section[index].nat;
             betEvenCalculation.current[teamName] = result.data;

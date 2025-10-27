@@ -89,7 +89,6 @@ const useAdminPasswordMiddleware = () => {
     checkDirectAccess,
     closeModal,
     clearError: () => {
-      console.log('clearError called from middleware');
       dispatch(clearError());
     }
   };

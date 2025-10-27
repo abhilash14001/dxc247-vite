@@ -60,7 +60,6 @@ const LiveModeGuard = ({ children }) => {
           }
         }
       });
-      console.log(element);
       console.clear();
     };
 

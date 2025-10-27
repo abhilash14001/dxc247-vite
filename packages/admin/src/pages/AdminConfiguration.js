@@ -161,7 +161,6 @@ function AdminConfiguration() {
             </button>
             <button 
               className="btn btn-outline"
-              onClick={() => console.log('Export config')}
             >
               <FontAwesomeIcon icon={faDownload} />
               Export

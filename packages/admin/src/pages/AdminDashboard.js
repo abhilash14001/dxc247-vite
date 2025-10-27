@@ -67,7 +67,6 @@ function AdminDashboard() {
       // Load more when scrolled to bottom (with 200px buffer)
       if (scrollTop + clientHeight >= scrollHeight - 200) {
         if (hasMore && !loading) {
-          console.log('Loading more data, current page:', currentPage);
           setCurrentPage(prev => prev + 1);
         }
       }
@@ -80,7 +79,6 @@ function AdminDashboard() {
   const loadMarketAnalysisData = async () => {
     try {
       setLoading(true);
-      console.log('Loading data for page:', currentPage, 'search:', searchTerm);
       
       // Load market analysis data using GET request with query parameters
       const params = new URLSearchParams({
@@ -125,7 +123,6 @@ function AdminDashboard() {
         });
         const hasMoreData = currentPage < (marketResponse.pagination?.last_page || 1);
         setHasMore(hasMoreData);
-        console.log('Has more data:', hasMoreData);
       } else {
         console.error('API Error:', marketResponse.message);
         setAllData([]);

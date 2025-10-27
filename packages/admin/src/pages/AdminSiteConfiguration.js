@@ -40,7 +40,6 @@ const AdminSiteConfiguration = () => {
     try {
       setLoading(true);
       const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'GET');
-      console.log('response is ', response)
       if (response.success) {
         const configData = response.data;
         
@@ -91,7 +90,6 @@ const AdminSiteConfiguration = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    console.log('File selected:', file);
     
     if (!file) {
       setFormData(prev => ({

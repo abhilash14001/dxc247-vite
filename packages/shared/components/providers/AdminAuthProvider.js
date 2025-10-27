@@ -23,7 +23,6 @@ export const AdminAuthProvider = (props) => {
             // Dispatch a custom event to disconnect all sockets
             const disconnectEvent = new CustomEvent('disconnectAllSockets');
             window.dispatchEvent(disconnectEvent);
-            console.log('Disconnect all sockets event dispatched for 401 error');
         } catch (error) {
             console.error('Error disconnecting sockets:', error);
         }

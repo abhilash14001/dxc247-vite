@@ -97,7 +97,6 @@ const TiedMatch = ({
         if (!success) {
             console.error('Cashout operation failed');
         } else {
-            console.log('Cashout successful, betType after:', betType);
         }
     };
 

@@ -221,7 +221,6 @@ export const SportsProvider = (props) => {
             }
           } catch (error) {
             console.error("❌ Error in bulk bet check:", error);
-            console.log("🔄 Falling back to individual bet_check calls...");
             // Fallback to individual calls
             const betStatuses = await Promise.all(
               sections.map(async (oddsArr) => {
@@ -281,12 +280,10 @@ export const SportsProvider = (props) => {
       if (sportsSocketRef) {
         sportsSocketRef.disconnect();
         setSportsSocketRef(null);
-        console.log("Sports socket disconnected due to 401 error");
       }
       if (sportsSocketScoreboard) {
         sportsSocketScoreboard.disconnect();
         setSportsSocketScoreboard(null);
-        console.log("Sports scoreboard socket disconnected due to 401 error");
       }
     };
 

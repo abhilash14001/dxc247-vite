@@ -237,7 +237,6 @@ const Tennis = ({ isAdmin = false }) => {
             }, 3000);
 
             sports_socket.on('disconnect', () => {
-                // Handle the successful response here, e.g., console.log(response.data)
             });
 
             return () => {

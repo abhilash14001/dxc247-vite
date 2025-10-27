@@ -82,18 +82,15 @@ function AdminLogin() {
         
         // Fetch public key if not already stored
         if (!serverPublicKey) {
-          console.log("🔐 Fetching public key from server...");
           const keyResponse = await adminApi('/p-key-get', 'GET');
           
           
           if (keyResponse && keyResponse.publicKey) {
             dispatch(setServerPublicKey(keyResponse.publicKey));
-            console.log("✅ Public key fetched and stored in Redux");
           } else {
             console.warn("⚠️ Failed to fetch public key, will use fallback");
           }
         } else {
-          console.log("🔐 Using cached public key from Redux");
         }
 
         // Fetch live mode data
@@ -124,7 +121,6 @@ function AdminLogin() {
         return;
       } else {
         // Token expired - dispatch logout to clear state
-        console.log('Token expired, logging out user');
         dispatch(logout());
       }
     }

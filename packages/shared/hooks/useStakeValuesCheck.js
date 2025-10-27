@@ -19,10 +19,8 @@ const useStakeValuesCheck = () => {
       // If we have common data with stake values, dispatch them
       if (commonData && commonData.stake_values) {
         dispatch(updateStakeValues(commonData.stake_values));
-        console.log('Stake values dispatched from common data:', commonData.stake_values);
       } else {
         // If no common data, try to refresh stake values
-        console.log('No stake values found, attempting to refresh...');
         refreshStakeValues();
       }
     }

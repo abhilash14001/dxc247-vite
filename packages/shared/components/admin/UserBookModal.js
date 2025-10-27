@@ -237,7 +237,6 @@ const UserBookModal = ({
                         <td>
                           <a 
                             href="javascript:void(0);" 
-                            onClick={() => console.log('User book popup:', sportId, bookType, user.user_id)}
                           >
                             {user.username}
                           </a>

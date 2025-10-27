@@ -107,14 +107,12 @@ function AdminBets() {
   const handleSettleBet = (betId) => {
     if (window.confirm('Are you sure you want to settle this bet?')) {
       // Implement settle logic
-      console.log('Settling bet:', betId);
     }
   };
 
   const handleCancelBet = (betId) => {
     if (window.confirm('Are you sure you want to cancel this bet?')) {
       // Implement cancel logic
-      console.log('Cancelling bet:', betId);
     }
   };
 
