@@ -39,7 +39,7 @@ const AdminSiteConfiguration = () => {
   const loadConfiguration = async () => {
     try {
       setLoading(true);
-      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'GET', {}, true);
       if (response.success) {
         const configData = response.data;
         

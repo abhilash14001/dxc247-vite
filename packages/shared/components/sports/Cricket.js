@@ -220,13 +220,13 @@ const Cricket = () => {
     sports_socket.on(socket_game, handleSportData);
 
     // Timeout for empty data
-    // emptyCheckTimeout.current = setTimeout(() => {
-    //   if (Object.values(trackData.current).length === 0) {
-    //     sports_socket.off(socket_game, handleSportData);
+    emptyCheckTimeout.current = setTimeout(() => {
+      if (Object.values(trackData.current).length === 0) {
+        sports_socket.off(socket_game, handleSportData);
 
-    //     nav(isAdminRoute() ? "/admin" : "/");
-    //   }
-    // }, 10000);
+        nav(isAdminRoute() ? "/admin" : "/");
+      }
+    }, 10000);
 
     // Handle disconnect/reconnect
     const handleDisconnect = () => {
