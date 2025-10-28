@@ -69,7 +69,7 @@ const AccountStatement = () => {
   const loadUserDropdown = useCallback(async () => {
     try {
       setLoadingUsers(true);
-      const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
+      const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET", {}, true);
       if (res && res.clients) {
         setUserOptions(res.clients || []);
       } else {

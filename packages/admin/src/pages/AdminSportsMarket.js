@@ -75,7 +75,7 @@ function AdminSportsMarket() {
 
   const handleAddSport = async () => {
     try {
-      const response = await adminApi('/sports-market', 'POST', newSport);
+      const response = await adminApi('/sports-market', 'POST', newSport, true);
       if (response.data) {
         setSports([...sports, response.data]);
         setShowAddModal(false);
@@ -88,7 +88,7 @@ function AdminSportsMarket() {
 
   const handleSetLimit = async () => {
     try {
-      const response = await adminApi(`/sports-market/${selectedSport.id}/limits`, 'POST', limitData);
+      const response = await adminApi(`/sports-market/${selectedSport.id}/limits`, 'POST', limitData, true);
       if (response.data) {
         setShowLimitModal(false);
         setSelectedSport(null);

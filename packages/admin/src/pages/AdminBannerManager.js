@@ -27,7 +27,8 @@ const AdminBannerManager = () => {
     try {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/banner/list?page=${currentPage}&per_page=${perPage}&search=${encodeURIComponent(searchTerm)}`,
-        'GET'
+        'GET',
+        {}, true
       );
 
       if (response.success) {
@@ -65,7 +66,7 @@ const AdminBannerManager = () => {
       const response = await adminApi(`${ADMIN_BASE_PATH}/banner/status`, 'POST', {
         id,
         status: isActive ? 1 : 0,
-      });
+      }, true);
 
       if (response.success) {
         toast.success(`Banner ${isActive ? 'activated' : 'deactivated'} successfully`);
@@ -88,7 +89,7 @@ const AdminBannerManager = () => {
       type: 'danger',
       onConfirm: async () => {
         try {
-          const response = await adminApi(`${ADMIN_BASE_PATH}/banner/${bannerId}`, 'DELETE');
+          const response = await adminApi(`${ADMIN_BASE_PATH}/banner/${bannerId}`, 'DELETE', {}, true);
           if (response.success) {
             toast.success('Banner deleted successfully');
             loadBanners();
@@ -154,7 +155,7 @@ const AdminBannerManager = () => {
     try {
       const response = await adminApi(`${ADMIN_BASE_PATH}/banner/update-positions`, 'POST', {
         positions: updatedBanners.map((b) => ({ id: b.id, order_by: b.order_by })),
-      });
+      }, true);
 
       if (response.success) toast.success('Banner positions updated successfully');
       else {

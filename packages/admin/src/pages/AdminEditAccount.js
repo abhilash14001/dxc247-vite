@@ -119,7 +119,7 @@
     const fetchUserData = async () => {
       setInitialLoading(true);
       try {
-        const response = await adminApi(`${ADMIN_BASE_PATH}/user/details/${userId}`, 'GET');
+        const response = await adminApi(`${ADMIN_BASE_PATH}/user/details/${userId}`, 'GET', {}, true);
         if (response.success && response.data) {
           const userData = response.data;
           setFormData(prev => ({
@@ -297,7 +297,7 @@
           ? `${ADMIN_BASE_PATH}/user/update/${userId}`
           : `${ADMIN_BASE_PATH}/user/create`;
           
-        const response = await adminApi(endpoint, 'POST', payload);
+        const response = await adminApi(endpoint, 'POST', payload, true);
         
         if (response.success) {
           Notify(

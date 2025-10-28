@@ -158,7 +158,7 @@ function AdminLogin() {
     
 
     try {
-         const data = await adminApi(`${ADMIN_BASE_PATH}/login`, "POST", formData);
+         const data = await adminApi(`${ADMIN_BASE_PATH}/login`, "POST", formData, true);
 
       
 

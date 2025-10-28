@@ -77,7 +77,7 @@ function AdminSportsList() {
       };
 
       // Make API call with query parameters
-      const response = await adminApi(`${ADMIN_BASE_PATH}/games-list`, 'POST', queryParams);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/games-list`, 'POST', queryParams, true);
 
       if (response.success) {
         // Transform API data to match component expectations
@@ -190,7 +190,7 @@ function AdminSportsList() {
       const response = await adminApi(`${ADMIN_BASE_PATH}/update-match-favourite`, 'POST', {
         sport_id: matchId,
         is_favourite: isFavourite ? 1 : 0
-      });
+      }, true);
 
       if (response.success) {
         // Update local state

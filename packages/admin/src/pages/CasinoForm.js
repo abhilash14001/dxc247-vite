@@ -55,7 +55,7 @@ function CasinoForm({ casinoId = null, onSuccess, onCancel }) {
   const loadCasinoData = async () => {
     try {
       setLoading(true);
-      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino/${casinoId}`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino/${casinoId}`, 'GET', {}, true);
       if (response.success) {
         const casino = response.data;
         setFormData({
@@ -189,7 +189,7 @@ function CasinoForm({ casinoId = null, onSuccess, onCancel }) {
       const endpoint = isEdit ? `${ADMIN_BASE_PATH}/update-casino/${casinoId}` : `${ADMIN_BASE_PATH}/create-casino`;
       const method = 'POST';
 
-      const response = await adminApi(endpoint, method, submitData);
+      const response = await adminApi(endpoint, method, submitData, true);
 
       if (response.success) {
         toast.success(`Casino ${isEdit ? 'updated' : 'created'} successfully!`, { position: "top-right", autoClose: 3000 });

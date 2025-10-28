@@ -134,7 +134,7 @@ const AdminChangePassword = () => {
     setLoading(true);
     
     try {
-      const response = await adminApi(`${ADMIN_BASE_PATH}/change-password`, 'POST', formData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/change-password`, 'POST', formData, true);
 
       if (response.success) {
         // Password changed successfully

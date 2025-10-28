@@ -50,7 +50,7 @@ const AdminDeletedUsers = () => {
       });
       if (search.trim()) params.append('search', search.trim());
 
-      const response = await adminApi(`${ADMIN_BASE_PATH}/client/deleted?${params.toString()}`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/client/deleted?${params.toString()}`, 'GET', {}, true);
 
       if (response && response.success) {
         setDeletedUsers(response.data || []);
@@ -86,7 +86,7 @@ const AdminDeletedUsers = () => {
       onConfirm: async () => {
         try {
           setRestoring(prev => ({ ...prev, [userId]: true }));
-          const response = await adminApi(`${ADMIN_BASE_PATH}/client/restore/${userId}`, 'POST');
+          const response = await adminApi(`${ADMIN_BASE_PATH}/client/restore/${userId}`, 'POST', {}, true);
 
           if (response && response.success) {
             Notify(response.message || 'User restored successfully', null, null, 'success');

@@ -49,7 +49,7 @@ function ProfitLossReports() {
           search,
         };
 
-        const response = await adminApi(`${ADMIN_BASE_PATH}/profit-loss`, "POST", params);
+        const response = await adminApi(`${ADMIN_BASE_PATH}/profit-loss`, "POST", params, true);
         if (response && response.data) {
           const transformedData = (response.data || []).map((item, index) => ({
             id: item.id || index,

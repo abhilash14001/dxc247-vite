@@ -160,7 +160,7 @@ const AdminSiteConfiguration = () => {
         formDataToSend.append('files[FRONT_WELCOME_BANNER]', formData.FRONT_WELCOME_BANNER);
       }
 
-      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'POST', formDataToSend);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'POST', formDataToSend, true);
 
       if (response.success) {
         toast.success(response.message || 'Configuration updated successfully');

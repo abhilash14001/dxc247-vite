@@ -30,7 +30,7 @@ const AdminCreateBlockIp = () => {
   const loadIpData = async () => {
     setInitialLoading(true);
     try {
-      const response = await adminApi(`${ADMIN_BASE_PATH}/block-ip/${id}`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/block-ip/${id}`, 'GET', {}, true);
       if (response.success) {
         setFormData({
           ip: response.data.ip || "",
@@ -82,7 +82,8 @@ const AdminCreateBlockIp = () => {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/${endpoint}`,
         method,
-        submitData
+        submitData,
+        true
       );
 
       if (response.success) {

@@ -39,7 +39,7 @@ const CasinoResult = () => {
         sort_order: "desc",
       };
 
-      const response = await adminApi(`${ADMIN_BASE_PATH}/clickhouse-data`, "POST", params);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/clickhouse-data`, "POST", params, true);
 
       if (response.success) {
         setCasinoData(response.data || []);
@@ -63,7 +63,7 @@ const CasinoResult = () => {
     try {
       setGamesLoading(true);
       setGamesError(null);
-      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list`, "GET");
+      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list`, "GET", {}, true);
       if (response.success) setCasinoGames(response.data || []);
       else setGamesError("Failed to load casino games");
     } catch {

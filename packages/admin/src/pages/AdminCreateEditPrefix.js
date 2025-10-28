@@ -52,7 +52,7 @@ const AdminCreateEditPrefix = () => {
     try {
       const response = await adminApi(`${ADMIN_BASE_PATH}/prefix/details`, 'POST', {
         id: id
-      });
+      }, true);
 
       if (response.success) {
         const data = response.data;
@@ -162,7 +162,7 @@ const AdminCreateEditPrefix = () => {
       }
 
       const endpoint = isEdit ? 'prefix/update' : 'prefix/create';
-      const response = await adminApi(`${ADMIN_BASE_PATH}/${endpoint}`, 'POST', submitData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/${endpoint}`, 'POST', submitData, true);
 
       if (response.success) {
         toast.success(isEdit ? 'Prefix updated successfully!' : 'Prefix created successfully!');

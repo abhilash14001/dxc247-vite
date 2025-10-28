@@ -43,7 +43,7 @@ const CurrentBet = () => {
   const loadUserDropdown = useCallback(async () => {
     try {
       setLoadingUsers(true);
-      const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
+      const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET", {}, true);
       if (res.success) {
         setUserOptions(res.clients || []);
       } else {

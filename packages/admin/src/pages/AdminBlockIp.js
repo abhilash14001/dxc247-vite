@@ -83,7 +83,8 @@ const AdminBlockIp = () => {
     try {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/block-ip/list?page=${currentPage}&per_page=${perPage}&search=${encodeURIComponent(searchTerm)}`,
-        'GET'
+        'GET',
+        {}, true
       );
 
       if (response.success) {
@@ -122,7 +123,7 @@ const AdminBlockIp = () => {
       const response = await adminApi(`${ADMIN_BASE_PATH}/block-ip/status`, 'POST', {
         id: id,
         status: isActive ? 1 : 0,
-      });
+      }, true);
 
       if (response.success) {
         toast.success(`IP ${isActive ? 'activated' : 'deactivated'} successfully`);

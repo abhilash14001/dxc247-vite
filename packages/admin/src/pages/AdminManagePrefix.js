@@ -22,7 +22,7 @@ const AdminManagePrefix = () => {
   const loadPrefixes = async () => {
     setLoading(true);
     try {
-      const response = await adminApi(`${ADMIN_BASE_PATH}/prefix/list?page=${currentPage}&per_page=${perPage}&search=${encodeURIComponent(searchTerm)}`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/prefix/list?page=${currentPage}&per_page=${perPage}&search=${encodeURIComponent(searchTerm)}`, 'GET', {}, true);
 
       if (response.success) {
         setPrefixes(response.data || []);

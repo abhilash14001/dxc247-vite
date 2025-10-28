@@ -27,7 +27,7 @@ const AdminCreateEditBanner = () => {
   const loadBannerData = async () => {
     setInitialLoading(true);
     try {
-      const response = await adminApi(`${ADMIN_BASE_PATH}/banner/${id}`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/banner/${id}`, 'GET', {}, true);
       if (response.success) {
         const data = response.data;
         setFormData({
@@ -102,7 +102,7 @@ const AdminCreateEditBanner = () => {
 
       const endpoint = isEdit ? `banner/${id}` : 'banner/create';
       const method = 'POST';
-      const response = await adminApi(`${ADMIN_BASE_PATH}/${endpoint}`, method, submitData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/${endpoint}`, method, submitData, true);
 
       // Handle successful response
       if (response && response.success) {

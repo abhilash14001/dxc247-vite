@@ -57,7 +57,7 @@ const AdminManageFancy = () => {
           search: searchTerm || ''
         };
 
-        const response = await adminApi(`${ADMIN_BASE_PATH}/sports-fancy-list`, 'POST', params);
+        const response = await adminApi(`${ADMIN_BASE_PATH}/sports-fancy-list`, 'POST', params, true);
 
         if (response.success) {
           setFancyData(response.data || []);

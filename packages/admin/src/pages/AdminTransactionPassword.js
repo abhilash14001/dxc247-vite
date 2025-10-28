@@ -88,7 +88,7 @@ const AdminTransactionPassword = () => {
     setLoading(true);
     
     try {
-      const response = await adminApi(`${ADMIN_BASE_PATH}/user/update-transaction-password`, 'POST');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/user/update-transaction-password`, 'POST', {}, true);
 
       if (response.success) {
         // Update Redux state

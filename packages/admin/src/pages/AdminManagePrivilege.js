@@ -36,7 +36,7 @@ const AdminManagePrivilege = () => {
         search: searchTerm || ''
       };
 
-      const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/list`, 'GET', params);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/list`, 'GET', params, true);
 
       if (response.success) {
         setPrivileges(response.data || []);

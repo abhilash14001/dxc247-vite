@@ -57,7 +57,7 @@ const AdminFancyHistory = () => {
           search: searchTerm || ''
         };
 
-        const response = await adminApi(`${ADMIN_BASE_PATH}/cricket-fancy-history`, 'POST', params);
+        const response = await adminApi(`${ADMIN_BASE_PATH}/cricket-fancy-history`, 'POST', params, true);
 
         if (response.success) {
           setFancyData(response.data || []);

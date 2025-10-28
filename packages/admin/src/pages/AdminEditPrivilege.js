@@ -155,7 +155,7 @@ const AdminEditPrivilege = () => {
     const loadPrivilegeDetails = async () => {
       try {
         setInitialLoading(true);
-        const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/details`, 'POST', { user_id: id });
+        const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/details`, 'POST', { user_id: id }, true);
         if (response.success) {
           const data = response.data;
           setFormData({
@@ -257,7 +257,7 @@ const AdminEditPrivilege = () => {
       const apiData = { user_id: id, name: formData.name, username: formData.username, role: formData.role, permissions: formData.permissions };
       if (formData.password) apiData.password = formData.password;
 
-      const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/update`, 'POST', apiData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/privilege/update`, 'POST', apiData, true);
       if (response.success) {
         toast.success('Privilege user updated successfully');
         navigate('/settings/multi-login');

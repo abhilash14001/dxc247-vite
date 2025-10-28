@@ -85,7 +85,7 @@ function AdminConfiguration() {
   const loadConfiguration = async () => {
     try {
       setLoading(true);
-      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'GET');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration`, 'GET', {}, true);
       if (response.success && response.data) {
         setConfig(response.data);
       }
@@ -99,7 +99,7 @@ function AdminConfiguration() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration/update`, 'POST', config);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/configuration/update`, 'POST', config, true);
       if (response.success) {
         alert('Configuration saved successfully!');
       }

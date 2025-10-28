@@ -158,7 +158,7 @@ const AdminCreateAccount = () => {
     setErrors({});
     
     try {
-      const response = await adminApi(`${ADMIN_BASE_PATH}/client/store`, 'POST', formData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/client/store`, 'POST', formData, true);
       
       if (response && response.success) {
         Notify(response.message || 'Account created successfully', null, null, 'success');

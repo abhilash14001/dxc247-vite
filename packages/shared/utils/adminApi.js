@@ -133,95 +133,95 @@ export const adminApiMethods = {
 
   // Password verification API function
   verifySettingsPassword: async (password) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/verify-settings-password`, "POST", { password });
+    return await adminApi(`${ADMIN_BASE_PATH}/verify-settings-password`, "POST", { password }, true);
   },
 
   // Theme API functions
   themeApi: {
     // Get current theme
     getTheme: async () => {
-      return await adminApi(`${ADMIN_BASE_PATH}/theme`, "GET");
+      return await adminApi(`${ADMIN_BASE_PATH}/theme`, "GET", {}, true);
     },
 
     // Update theme
     updateTheme: async (themeData) => {
-      return await adminApi(`${ADMIN_BASE_PATH}/theme`, "POST", themeData);
+      return await adminApi(`${ADMIN_BASE_PATH}/theme`, "POST", themeData, true);
     },
 
     // Reset theme to default
     resetTheme: async () => {
-      return await adminApi(`${ADMIN_BASE_PATH}/theme/reset`, "POST");
+      return await adminApi(`${ADMIN_BASE_PATH}/theme/reset`, "POST", {}, true);
     },
 
     // Get available theme presets
     getThemePresets: async () => {
-      return await adminApi(`${ADMIN_BASE_PATH}/theme/presets`, "GET");
+      return await adminApi(`${ADMIN_BASE_PATH}/theme/presets`, "GET", {}, true);
     },
   },
 
   // Block Market APIs
   getBlockMarketList: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return await adminApi(`${ADMIN_BASE_PATH}/block-market/list?${queryString}`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/block-market/list?${queryString}`, "GET", {}, true);
   },
 
   getBlockMarketItems: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return await adminApi(`${ADMIN_BASE_PATH}/block-market/items?${queryString}`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/block-market/items?${queryString}`, "GET", {}, true);
   },
 
   toggleBlockMarket: async (data) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/block-market/toggle`, "POST", data);
+    return await adminApi(`${ADMIN_BASE_PATH}/block-market/toggle`, "POST", data, true);
   },
 
   getBlockMarketStatus: async (type, id) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/block-market/status/${type}/${id}`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/block-market/status/${type}/${id}`, "GET", {}, true);
   },
 
   // User Book API function
   getUserBook: async (params) => {
     const queryString = new URLSearchParams(params).toString();
-    return await adminApi(`${ADMIN_BASE_PATH}/user-book?${queryString}`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/user-book?${queryString}`, "GET", {}, true);
   },
 
   // Match Lock Users API function
   getMatchLockUsers: async (params) => {
     const queryString = new URLSearchParams(params).toString();
-    return await adminApi(`${ADMIN_BASE_PATH}/match-lock-users?${queryString}`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/match-lock-users?${queryString}`, "GET", {}, true);
   },
 
   // Match Lock Selected Users API function
   matchLockSelectedUsers: async (data) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/match-lock-selected-users`, "POST", data);
+    return await adminApi(`${ADMIN_BASE_PATH}/match-lock-selected-users`, "POST", data, true);
   },
 
   // Match Lock API function
   matchLock: async (data) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/match-lock`, "POST", data);
+    return await adminApi(`${ADMIN_BASE_PATH}/match-lock`, "POST", data, true);
   },
 
   // Transactions API function
   getTransactions: async () => {
-    return await adminApi(`${ADMIN_BASE_PATH}/transactions`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/transactions`, "GET", {}, true);
   },
 
   // Settings API functions
   getSettings: async () => {
-    return await adminApi(`${ADMIN_BASE_PATH}/settings`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/settings`, "GET", {}, true);
   },
 
   updateSettings: async (data) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/settings`, "POST", data);
+    return await adminApi(`${ADMIN_BASE_PATH}/settings`, "POST", data, true);
   },
 
   // Bets API function
   getBets: async () => {
-    return await adminApi(`${ADMIN_BASE_PATH}/bets`, "GET");
+    return await adminApi(`${ADMIN_BASE_PATH}/bets`, "GET", {}, true);
   },
 
   // Profile API functions
   changePassword: async (data) => {
-    return await adminApi(`${ADMIN_BASE_PATH}/change-password`, "POST", data);
+    return await adminApi(`${ADMIN_BASE_PATH}/change-password`, "POST", data, true);
   },
 };
 

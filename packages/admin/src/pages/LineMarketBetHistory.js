@@ -34,7 +34,7 @@ const LineMarketBetHistory = () => {
   const loadUserDropdown = useCallback(async () => {
     try {
       setLoadingUsers(true);
-      const response = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
+      const response = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET", {}, true);
       if (response.success) {
         setUserOptions(response.clients || []);
         setFilteredUsers(response.clients || []);
@@ -106,7 +106,7 @@ const LineMarketBetHistory = () => {
         page: page,
         per_page: entriesPerPage,
       };
-      const response = await adminApi(`${ADMIN_BASE_PATH}/admin-line-market-bet-history`, "POST", params);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/admin-line-market-bet-history`, "POST", params, true);
       if (response.success) {
         setBetData(response.data || []);
         setCurrentPage(response.pagination?.current_page || 1);

@@ -51,7 +51,7 @@ function AdminCasinoMarket() {
       setLoading(true);
       
       // Call the admin/get-casino-list API with ?all=1 query parameter
-      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list?all=1`, "GET");
+      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list?all=1`, "GET", {}, true);
       
       if (response.success) {
         // Filter casinos based on active tab (main or virtual)
@@ -123,7 +123,7 @@ function AdminCasinoMarket() {
       const response = await adminApi(`${ADMIN_BASE_PATH}/update-casino-status`, 'POST', {
         casino_id: casinoId,
         status: newStatus
-      });
+      }, true);
       
       if (response.success) {
         // Update the casino status in the local state
@@ -254,7 +254,7 @@ function AdminCasinoMarket() {
         }));
       }, 200);
 
-      const response = await adminApi(`${ADMIN_BASE_PATH}/upload-casino-image`, 'POST', formData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/upload-casino-image`, 'POST', formData, true);
 
       clearInterval(progressInterval);
       setImageModal(prev => ({ ...prev, uploadProgress: 100 }));
@@ -316,7 +316,7 @@ function AdminCasinoMarket() {
     try {
       setUpdatingStatus(prev => ({ ...prev, [casinoId]: true }));
       
-      const response = await adminApi(`${ADMIN_BASE_PATH}/delete-casino/${casinoId}`, 'DELETE');
+      const response = await adminApi(`${ADMIN_BASE_PATH}/delete-casino/${casinoId}`, 'DELETE', {}, true);
       
       if (response.success) {
         // Remove the casino from the local state
@@ -430,7 +430,7 @@ function AdminCasinoMarket() {
       const response = await adminApi(`${ADMIN_BASE_PATH}/update-casino-positions`, 'PUT', {
         positions: positionUpdates,
         casino_type: activeTab // Include the current tab to update the correct casino type
-      });
+      }, true);
 
       if (response.success) {
       } else {

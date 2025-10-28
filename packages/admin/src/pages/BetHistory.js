@@ -42,7 +42,7 @@ const BetHistory = () => {
   const loadUserDropdown = useCallback(async () => {
     try {
       setLoadingUsers(true);
-      const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET");
+      const res = await adminApi(`${ADMIN_BASE_PATH}/match-pl-dropdowns`, "GET", {}, true);
       if (res && res.clients) {
         setUserOptions(res.clients || []);
       } else {
@@ -73,7 +73,7 @@ const BetHistory = () => {
           per_page: entriesPerPage,
         };
 
-        const res = await adminApi(`${ADMIN_BASE_PATH}/admin-bet-history`, "POST", params);
+        const res = await adminApi(`${ADMIN_BASE_PATH}/admin-bet-history`, "POST", params, true);
 
         if (res && res) {
           setBetData(res || []);

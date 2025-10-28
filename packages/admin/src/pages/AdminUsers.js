@@ -94,7 +94,7 @@ function AdminUsers() {
       const response = await adminApi(`${ADMIN_BASE_PATH}/update-admin-amount`, 'POST', {
         amount: parseFloat(data.amount),
         credit_reference: parseFloat(data.creditReference)
-      });
+      }, true);
       
       if (response.success) {
         toast.success('Chips added successfully!');
@@ -228,7 +228,7 @@ function AdminUsers() {
         user_id: userId,
         field: field,
         value: newValue
-      });
+      }, true);
 
       if (response.success) {
         // Update the user in the local state
@@ -270,7 +270,7 @@ function AdminUsers() {
         try {
           const response = await adminApi(`${ADMIN_BASE_PATH}/user/logout`, 'POST', {
             user_id: userId
-          });
+          }, true);
 
           if (response.success) {
             toast.success(response.message);
@@ -297,7 +297,7 @@ function AdminUsers() {
         try {
           const response = await adminApi(`${ADMIN_BASE_PATH}/user/delete`, 'POST', {
             user_id: userId
-          });
+          }, true);
 
           if (response.success) {
             toast.success(response.message);
