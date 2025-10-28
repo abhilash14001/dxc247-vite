@@ -177,7 +177,7 @@ function Home() {
   );
 
     
-  const [commonData] = useCommonData(token, setShowLoader);
+  const [commonData] = useCommonData(token, setShowLoader, null, true);
 
   // Filter sports tabs based on blocked sports with safety checks
   const filteredSportsTabs = React.useMemo(() => {

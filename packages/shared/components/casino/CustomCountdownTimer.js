@@ -5,7 +5,8 @@ import '../../css/custom-countdown.css';
 
 function CustomCountdownTimer({ data }) {
     const [timeLeft, setTimeLeft] = useState(0);
-    const [digits, setDigits] = useState(['0', '0']); // [tens of minutes, minutes, tens of seconds, seconds]
+    const [digits, setDigits] = useState(['0', '0']); // [tens of seconds, seconds]
+    const [prevDigits, setPrevDigits] = useState(['0', '0']); // Previous digits for flip animation
 
     useEffect(() => {
         const t1lt = data?.t1?.lt || 0;
@@ -40,30 +41,33 @@ function CustomCountdownTimer({ data }) {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         
-        const tensOfMinutes = Math.floor(minutes / 10);
-        const onesOfMinutes = minutes % 10;
         const tensOfSeconds = Math.floor(seconds / 10);
         const onesOfSeconds = seconds % 10;
         
-        setDigits([
-            
+        const newDigits = [
             tensOfSeconds.toString(),
             onesOfSeconds.toString()
-        ]);
+        ];
+        
+        // Only update if digits actually changed
+        if (JSON.stringify(newDigits) !== JSON.stringify(digits)) {
+            setPrevDigits(digits);
+            setDigits(newDigits);
+        }
     }, [timeLeft]);
 
-    const renderDigit = (currentDigit, nextDigit, index) => {
+    const renderDigit = (currentDigit, prevDigit, index) => {
         return (
-            <ul key={index} className="flip play">
+            <ul key={`${index}-${currentDigit}`} className="flip play">
                 <li className="flip-clock-before">
                     <a href="#">
                         <div className="up">
                             <div className="shadow"></div>
-                            <div className="inn">{nextDigit}</div>
+                            <div className="inn">{prevDigit}</div>
                         </div>
                         <div className="down">
                             <div className="shadow"></div>
-                            <div className="inn">{nextDigit}</div>
+                            <div className="inn">{prevDigit}</div>
                         </div>
                     </a>
                 </li>
@@ -89,8 +93,7 @@ function CustomCountdownTimer({ data }) {
             
         >
             {digits.map((digit, index) => {
-                const nextDigit = digit === '9' ? '0' : (parseInt(digit) + 1).toString();
-                return renderDigit(digit, nextDigit, index);
+                return renderDigit(digit, prevDigits[index], index);
             })}
         </div>
     );
