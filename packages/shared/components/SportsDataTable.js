@@ -250,7 +250,7 @@ const SportsDataTable = ({
                   <div className="bet-nation-name">
                     <Link
                       className="bet-nation-game-name"
-                      to={`/${getSportRoute(activeTab)}/${sport.match_id}`}
+                      to={`/${getSportRoute(activeTab)}/${sport.gmid}`}
                     >
                       <span>{sport.ename}</span>
                       <span className="d-none d-md-inline-block">
