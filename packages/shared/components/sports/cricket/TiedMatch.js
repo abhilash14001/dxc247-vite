@@ -170,6 +170,9 @@ const TiedMatch = ({
                             const n_key = model.match_id + "-" + key + "-" + (oddsArr['back']?.length - 1);
 
 
+
+                            console.log(tiedMatchData, teamName);
+
                             const teamEx = tiedMatchData?.[teamName];
 
                             if (!teamNameCurrentBets.current['TIED_MATCH']) {
