@@ -5,7 +5,6 @@ import {CommonContext} from "@dxc247/shared/contexts/CommonContext";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
 import useSocketConnection from "@dxc247/shared/hooks/useSocketConnection";
-import useSportsData from "@dxc247/shared/hooks/useSportsData";
 import { BackAndLayForSports } from "@dxc247/shared/utils/sportsUtils";
 import Loader from "@dxc247/shared/components/Loader";
 
@@ -38,15 +37,6 @@ function HomeTabPages() {
     
     useSocketConnection(match, setListData, 'wss://react.dxc247.com:4005');
 
-    // Socket connection for real-time data
-
-    const { tennisList, soccerList, cricketList } = useSportsData(token, unAuthorizeHandle, navigate, true);
-
-    const lists = {
-        cricket: cricketList,
-        tennis: tennisList,
-        soccer: soccerList
-    };
 
     const { formatDateTime } = useContext(CommonContext);
 
@@ -77,7 +67,6 @@ function HomeTabPages() {
                                     <div className="coupon-card coupon-card-first">
                                         <SportsDataTable
                                             activeTab={formatBasedOnHyphen(match)}
-                                            sportList={lists[match] || []}
                                             listData={listData}
                                             BackAndLayForSports={BackAndLayForSports}
                                             isHomeTabPages={true}

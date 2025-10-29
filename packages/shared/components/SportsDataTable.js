@@ -5,7 +5,6 @@ import { setOddsData, selectMatchOdds } from "../store/slices/oddsDataSlice";
 
 const SportsDataTable = ({
   activeTab,
-  sportList,
   listData,
   BackAndLayForSports,
   isHomeTabPages = false,
@@ -204,7 +203,7 @@ const SportsDataTable = ({
   );
 
   const renderSportData = () => {
-    if (!sportList || sportList.length === 0) {
+    if (Object.keys(listData).length == 0) {
       return <div className="norecords">No real-time records found</div>;
     }
 
@@ -225,38 +224,50 @@ const SportsDataTable = ({
           </div>
         </div>
         <div className="bet-table-body">
-          {sportList.map((sport, index) => {
-            const oddsData = getOddsDataForMatch(sport.match_id);
-
-
-            if(Object.keys(oddsData).length == 0){
-                return;
-            }
-
-            
-            return (
-              <div key={index} className="bet-table-row">
-                <div className="bet-nation-name">
-                  <Link
-                    className="bet-nation-game-name"
-                    to={`/${getSportRoute(activeTab)}/${sport.match_id}`}
-                  >
-                    <span>{sport.match_name}</span>
-                    <span className="d-none d-md-inline-block">
-                      &nbsp;/&nbsp;
-                    </span>
-                    <span>
-                      {isHomeTabPages && formatDateTime
-                        ? formatDateTime(new Date(sport.match_date_time))
-                        : sport.match_date}
-                    </span>
-                  </Link>
-                  {renderGameIcons(oddsData)}
+          {Object.entries(listData)
+            ?.map(([index, sport]) => {
+              const oddsData = getOddsDataForMatch(sport.gmid);
+              return { index, sport, oddsData };
+            })
+            ?.filter(({ oddsData }) => Object.keys(oddsData).length > 0)
+            ?.sort((a, b) => {
+              // First priority: iplay = true comes first
+              const aIplay = a.oddsData?.iplay === true ? 1 : 0;
+              const bIplay = b.oddsData?.iplay === true ? 1 : 0;
+              
+              if (aIplay !== bIplay) {
+                return bIplay - aIplay; // true comes first (1 - 0 = 1, so b comes before a)
+              }
+              
+              // Second priority: sort by date and time (stime)
+              const aTime = new Date(a.sport.stime).getTime();
+              const bTime = new Date(b.sport.stime).getTime();
+              return aTime - bTime; // Earlier dates first
+            })
+            ?.map(({ index, sport, oddsData }) => {
+              return (
+                <div key={index} className="bet-table-row">
+                  <div className="bet-nation-name">
+                    <Link
+                      className="bet-nation-game-name"
+                      to={`/${getSportRoute(activeTab)}/${sport.match_id}`}
+                    >
+                      <span>{sport.ename}</span>
+                      <span className="d-none d-md-inline-block">
+                        &nbsp;/&nbsp;
+                      </span>
+                      <span>
+                        {isHomeTabPages && formatDateTime
+                          ? formatDateTime(new Date(sport.stime))
+                          : sport.stime}
+                      </span>
+                    </Link>
+                    {renderGameIcons(oddsData)}
+                  </div>
+                  {renderOddsButtons(oddsData, sport.gmid, activeTab, sport)}
                 </div>
-                {renderOddsButtons(oddsData, sport.match_id, activeTab, sport)}
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     );

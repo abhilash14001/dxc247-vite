@@ -9,7 +9,6 @@ import { getCurrentToken } from "@dxc247/shared/utils/Constants";
 import { io } from "socket.io-client";
 import encryptHybrid from "@dxc247/shared/utils/encryptHybrid";
 import { decryptAndVerifyResponse } from "@dxc247/shared/utils/decryptAndVerifyResponse";
-import useSportsData from "@dxc247/shared/hooks/useSportsData";
 import useCommonData from "@dxc247/shared/hooks/useCommonData";
 
 import { BackAndLayForSports } from "@dxc247/shared/utils/sportsUtils";
@@ -104,6 +103,7 @@ function Home() {
                 
                 // Update the appropriate state
                 if (sport === "cricket") {
+              
                   setCricketData(parsedData.data);
                 } else if (sport === "tennis") {
                   setTennisData(parsedData.data);
@@ -168,13 +168,6 @@ function Home() {
     
     
   ];
-
-  const { tennisList, soccerList, cricketList } = useSportsData(
-    token,
-    unAuthorizeHandle,
-    navigate,
-    true
-  );
 
     
   const [commonData] = useCommonData(token, setShowLoader, null, true);
@@ -289,15 +282,7 @@ function Home() {
                 
                   <SportsDataTable
                     activeTab={activeTab}
-                    sportList={
-                      activeTab === "Cricket"
-                        ? cricketList
-                        : activeTab === "Tennis"
-                        ? tennisList
-                        : activeTab === "Football"
-                        ? soccerList
-                        : []
-                    }
+               
                     listData={
                       activeTab === "Cricket"
                         ? cricketData
