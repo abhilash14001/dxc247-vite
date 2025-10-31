@@ -280,7 +280,7 @@ function AdminSportsList() {
     try {
       const response = await adminApi(`${ADMIN_BASE_PATH}/get-team-names`, 'POST', {
         sport_id: sportId
-      });
+      }, true);
 
       if (response.success) {
         setTeamNames(response.data.teams || []);
