@@ -33,6 +33,7 @@ const Teen42 = () => {
   const { match_id } = useParams();
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
+  const { getBalance } = useContext(AuthContext);
   
 
   const [hideLoading, setHideLoading] = useState(true);

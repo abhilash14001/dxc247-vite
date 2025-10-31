@@ -196,6 +196,7 @@ Payout&nbsp;:&nbsp;10.0</p>
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   const { mybetModel } = useContext(CasinoContext);
+  const { getBalance } = useContext(AuthContext);
   
   // Get user data from Redux instead of AuthContext
   const [hideLoading, setHideLoading] = useState(true);

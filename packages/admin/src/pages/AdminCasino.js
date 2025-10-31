@@ -50,7 +50,7 @@ function AdminCasino() {
       
       
       // Use the new admin/get-casino-list API
-      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list`, "GET", {}, true);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/get-casino-list`, "GET");
       
       if (response) {
         setGames(response || []);

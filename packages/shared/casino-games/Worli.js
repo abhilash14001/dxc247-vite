@@ -85,6 +85,7 @@ const Worli = () => {
     } = useContext(SportsContext)
     // Get user data from Redux instead of AuthContext
     const {mybetModel} = useContext(CasinoContext)
+    const { getBalance } = useContext(AuthContext);
 
     const [hideLoading, setHideLoading] = useState(true)
 

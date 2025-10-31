@@ -11,6 +11,7 @@ import {
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { CasinoContext } from "../contexts/CasinoContext";
 import encryptHybrid from "../utils/encryptHybrid";
 import { decryptAndVerifyResponse } from "../utils/decryptAndVerifyResponse";
@@ -39,6 +40,7 @@ const Cricketv3 = () => {
     useContext(SportsContext);
   const { casino_socket_scoreboard, scoreBoardData } =
     useContext(CasinoContext);
+  const { getBalance } = useContext(AuthContext);
     
   // Get user data from Redux instead of AuthContext
   const [hideLoading, setHideLoading] = useState(true);

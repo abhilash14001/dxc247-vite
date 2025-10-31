@@ -44,6 +44,7 @@ const Queen = () => {
   const { match_id } = useParams();
   const { betType, setBetType, setPopupDisplayForDesktop } = useContext(SportsContext);
   const { getCardTotalCard32, mybetModel } = useContext(CasinoContext);
+  const { getBalance } = useContext(AuthContext);
   
   // Get user data from Redux instead of AuthContext
 

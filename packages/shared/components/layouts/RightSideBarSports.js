@@ -513,10 +513,9 @@ const RightSideBarSports = ({
         const values = Object.values(allTeamNames);
         // Filter out any undefined values and ensure we have strings
         allTeamNames = values.filter((val) => val && typeof val === "string");
-        console.log("DEBUG: After filtering:", allTeamNames);
+        
       }
 
-      console.log("DEBUG: allTeamNames initial:", allTeamNames);
 
       // Handle different bet types - map to correct teamNames keys
       if (!allTeamNames || allTeamNames.length === 0) {

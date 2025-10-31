@@ -147,6 +147,7 @@ const Teen6 = () => {
   const { setBetType, betType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   const {mybetModel} = useContext(CasinoContext);
+  const { getBalance } = useContext(AuthContext);
   
   // Get user data from Redux instead of AuthContext
 

@@ -51,6 +51,7 @@ const Baccarat2 = () => {
         setPopupDisplayForDesktop,
 
     } = useContext(SportsContext)
+    const { getBalance } = useContext(AuthContext);
     
     // Get user data from Redux instead of AuthContext
 

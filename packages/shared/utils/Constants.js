@@ -1042,9 +1042,7 @@ export async function getExByTeamNameForAllBetTypes(
   betTypes.forEach(betType => {
     if (data[betType]?.section) {
       data[betType].section.forEach(oddsArr => {
-        console.log('oddsArr is ', oddsArr)
-        console.log('oddsArr.nat is ', oddsArr.nat)
-        console.log('oddsArr.nat.trim() is ', oddsArr.nat.trim())
+        
         allTeamNames.add(oddsArr.nat.trim());
       });
     }

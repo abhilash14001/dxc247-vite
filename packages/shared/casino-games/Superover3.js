@@ -12,6 +12,7 @@ import {
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 import Notify from "../utils/Notify";
 import { CasinoContext } from "../contexts/CasinoContext";
@@ -45,6 +46,7 @@ const Superover3 = () => {
   const { betType, setBetType, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   const { mybetModel } = useContext(CasinoContext);
+  const { getBalance } = useContext(AuthContext);
 
   // Get user data from Redux instead of AuthContext
   const [hideLoading, setHideLoading] = useState(true);

@@ -10,7 +10,7 @@ import {
   getExByTeamNameForCricket,
   getExByTeamNameForAllBetTypes,
   showCricketSessionBook,
-  
+  isAdminRoute,
   exposureCheck,
 } from "@dxc247/shared/utils/Constants";
 import { decryptAndVerifyResponse } from "../../utils/decryptAndVerifyResponse";
@@ -231,14 +231,16 @@ const Cricket = () => {
     // Handle disconnect/reconnect
     const handleDisconnect = () => {
       const connectInterval = setInterval(() => {
-        sports_socket.emit(
-          "setPurposeFor",
-          "sports",
-          "cricket",
-          "",
-          "",
-          match_id
-        );
+        const payload = {
+          type: "sports",
+          game: "cricket",
+          match_id: match_id,
+        };
+    
+        const encryptedPayload = encryptHybrid(payload);
+    
+        // Emit purpose
+        sports_socket.emit("setPurposeFor", encryptedPayload);
         clearInterval(connectInterval);
       }, 1000);
     };
