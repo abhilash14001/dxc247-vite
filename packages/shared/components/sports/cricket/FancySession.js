@@ -191,6 +191,9 @@ const FancySession = ({
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {oddsArr.rem !== '' && oddsArr.rem !== null && (
+                                                    <div className="market-row"><marquee className="market-remark">{oddsArr.rem}</marquee></div>
+                                                )}
                                             </div>
                                         </div>
                                     );
