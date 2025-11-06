@@ -82,15 +82,15 @@ const CurrentBets = () => {
     }
   };
 
-  const showBetDetails = (data) => {
-    setModalData(data);
-    setShowModal(true);
-  };
+  // const showBetDetails = (data) => {
+  //   setModalData(data);
+  //   setShowModal(true);
+  // };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setModalData(null);
-  };
+  // const closeModal = () => {
+  //   setShowModal(false);
+  //   setModalData(null);
+  // };
 
   const initDatatable = () => {
     const columns = [
@@ -213,9 +213,7 @@ const CurrentBets = () => {
     $("#current_bets_list tbody").on("click", "td", function (e) {
       if (!$(e.target).is('input[type="checkbox"]')) {
         const data = table.row($(this).parents("tr")).data();
-        if (data) {
-          showBetDetails(data);
-        }
+        
       }
     });
 

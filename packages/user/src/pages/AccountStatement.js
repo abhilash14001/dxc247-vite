@@ -27,7 +27,7 @@ const AccountStatement = () => {
                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                String(date.getDate()).padStart(2, '0');
     });
-    const currentToken = getCurrentToken();
+    
     
 
     // Modal state
@@ -236,6 +236,8 @@ const AccountStatement = () => {
                         data
                     );
 
+                    console.log('data is ', decryptedJSON);
+
                     // Send data back to DataTable
                     callback({
                         draw: dtParams.draw,
@@ -354,8 +356,7 @@ const AccountStatement = () => {
     };
     
     useEffect(() => {
-        const table = initDatatable();
-        
+        initDatatable();
         //eslint-disable-next-line
     }, []);
     
@@ -365,7 +366,7 @@ const AccountStatement = () => {
             // Destroy and recreate table with new parameters
             $('#account_statement_list tbody').off('click', '.description-clickable');
             dataTable.destroy();
-            const table = initDatatable();
+            initDatatable();
         }
         //eslint-disable-next-line
     }, [fromDate, toDate, selectedFilter]);
@@ -390,7 +391,7 @@ const AccountStatement = () => {
             dataTable.destroy();
         }
         
-        const table = initDatatable();
+        initDatatable();
     };
 
     return (
