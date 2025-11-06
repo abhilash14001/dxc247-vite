@@ -138,7 +138,7 @@ const BallByBall = ({
                         layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, n_key_lay, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', lay, layk);
 
                         const betPlaceCheck = betPlaceStatus?.current?.[teamName];
-                        const fancyListValues = Object.values(betPlaceCheck?.fancy_list || []);
+                        
 
                         const get_fancy_session_value = betPlaceCheck?.fancy_list ? (
                             <span className="market-book float-end  text-danger"> {betPlaceCheck?.fancy_list?.[teamName] ? - + " " +   betPlaceCheck?.fancy_list?.[teamName] : ''}</span>
