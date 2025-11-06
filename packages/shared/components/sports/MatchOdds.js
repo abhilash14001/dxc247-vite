@@ -196,14 +196,14 @@ setBetOddValue(0);
 
             <div
                 className={`market-body ${
-                    ((mainValue.status === 'SUSPENDED' && !hasAnyActiveSection) ||
+                    ((mainValue.status === 'SUSPENDED') ||
                         sportList.match_suspend_odd === 1 ||
                         sportList.match_suspend === 1)
                         ? 'suspended-table'
                         : ''
                 }`}
                 data-title={
-                    ((mainValue.status === 'SUSPENDED' && !hasAnyActiveSection) ||
+                    ((mainValue.status === 'SUSPENDED') ||
                         sportList.match_suspend_odd === 1 ||
                         sportList.match_suspend === 1)
                         ? 'SUSPENDED'

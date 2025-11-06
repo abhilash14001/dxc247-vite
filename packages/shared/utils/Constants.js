@@ -815,7 +815,8 @@ export const generateBackAndLayFunction = (
 export const checkBetPlace = async (teamname, id) => {
   const datas = { teamname: teamname, id: id };
   const d =  await axiosFetch("bet_check", "post", null, datas);
-  return d.data;
+  
+  return d;
 };
 
 export const showCricketSessionBook = async (
@@ -896,43 +897,24 @@ const activeGetExRequests = new Map();
  * @returns {Promise<Object>} - Object with bet types as keys, containing team names and exposure values
  */
 export async function getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNames) {
-  const cacheKey = `getExByTeamName_${id}_${betTypes.sort().join(',')}_${teamNames.sort().join(',')}`;
-  
-  // Check cache first
-  const cached = getExByTeamNameCache.get(cacheKey);
-  if (cached && (Date.now() - cached.timestamp) < 5000) {
-    
-    return cached.data;
-  }
-  
-  // Check if request is already in progress
-  if (activeGetExRequests.has(cacheKey)) {
-    
-    return activeGetExRequests.get(cacheKey);
-  }
   
   
   const request = (async () => {
     try {
       
       
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/getExByTeamNameBulk`,
+      const response = await axiosFetch(
+        'getExByTeamNameBulk',
+        'POST',
+        null,
         { 
           id: id, 
           bet_types: betTypes,  // Array of bet types
           teamnames: teamNames 
-        },
-        { headers: { Authorization: `Bearer ${getCurrentToken()}` } }
+        }
       );
       
-      const result = response.data;
-      
-      // Cache the result
-      getExByTeamNameCache.set(cacheKey, {
-        data: result,
-        timestamp: Date.now()
-      });
+      const result = response.data || response;
       
       
       return result;
@@ -941,11 +923,11 @@ export async function getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNames) {
       console.error('Error in bulk getExByTeamName:', error);
       throw error;
     } finally {
-      activeGetExRequests.delete(cacheKey);
+      
     }
   })();
   
-  activeGetExRequests.set(cacheKey, request);
+  
   return request;
 }
 
@@ -1080,10 +1062,34 @@ export async function getExByTeamNameForAllBetTypes(
     // Make single bulk API call for all .then and bet types
     const response = await getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNamesArray);
     
+    
     // Process the response
     if (response && response.data) {
       betTypes.forEach(betType => {
         const betTypeData = response.data[betType];
+        if (betTypeData) {
+          betTypeData.forEach(item => {
+            const teamName = item.nat?.trim();
+            const result = item.result;
+            
+            if (teamName) {
+              // Only update if we have a valid result, otherwise preserve existing data
+              if (result !== null && result !== undefined && result !== "") {
+                arr[betType][teamName] = result;
+              }
+              // If result is 0 or negative, still update (as these are valid exposure values)
+              else if (result === 0 || result < 0) {
+                arr[betType][teamName] = result;
+              }
+            }
+          });
+        }
+      });
+    }
+    else if(response){
+      betTypes.forEach(betType => {
+        const betTypeData = response[betType];
+        
         if (betTypeData) {
           betTypeData.forEach(item => {
             const teamName = item.nat?.trim();
@@ -1124,6 +1130,7 @@ export async function getExByTeamNameForAllBetTypes(
       }
     });
 
+    
     return arr;
   } catch (error) {
     console.error('Error in getExByTeamNameForAllBetTypes:', error);

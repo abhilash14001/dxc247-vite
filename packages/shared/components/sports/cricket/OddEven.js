@@ -52,26 +52,53 @@ const OddEven = ({
   }, [maxValue]);
 
   const calculateBetevEn = () => {
-    
-    const promises = gameData?.["oddeven"]?.section.map((oddsArr, mainKey) => {
-      const teamName = `${oddsArr.nat}`;
-      return axiosFetch("calculate_bet_odd_even", "post", null, {
-        sport_id: model.id,
-        match_id: model.match_id,
-        teamname: teamName + " - ODD",
-      });
-    });
+    const section = gameData?.["oddeven"]?.section;
+    if (!section || section.length === 0) return;
 
-    if (typeof promises !== "undefined") {
-      Promise.all(promises)
-        .then((results) => {
-          results.forEach((result, index) => {
-            const teamName = gameData["oddeven"]?.section[index].nat;
-            betEvenCalculation.current[teamName] = result.data;
+    // Map through section to collect all teamnames with " - ODD" suffix
+    const teamnames = section.map((oddsArr) => `${oddsArr.nat} - ODD`);
+
+    // Send single API request with all teamnames
+    axiosFetch("calculate_bet_odd_even", "post", null, {
+      sport_id: model.id,
+      match_id: model.match_id,
+      teamnames: teamnames,
+    })
+      .then((result) => {
+        
+        // Process the response and populate betEvenCalculation.current
+        if (result && result?.data?.data) {
+          section.forEach((oddsArr, index) => {
+            const teamName = oddsArr.nat;
+            // Handle different response structures:
+            // 1. Object keyed by base teamname (e.g., "Team A")
+            // 2. Object keyed by full teamname with suffix (e.g., "Team A - ODD")
+            // 3. Array in same order as request
+            const teamData = result.data.data[teamName] || result.data.data[teamName + " - ODD"] || result.data.data[index];
+            if (teamData) {
+              
+              betEvenCalculation.current[teamName] = teamData;
+            }
           });
-        })
-        .catch((error) => {});
-    }
+        }
+        else if (result && result.data) {
+          section.forEach((oddsArr, index) => {
+            const teamName = oddsArr.nat;
+            // Handle different response structures:
+            // 1. Object keyed by base teamname (e.g., "Team A")
+            // 2. Object keyed by full teamname with suffix (e.g., "Team A - ODD")
+            // 3. Array in same order as request
+            const teamData = result.data[teamName] || result.data[teamName + " - ODD"] || result.data[index];
+            if (teamData) {
+              
+              betEvenCalculation.current[teamName] = teamData;
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error calculating bet odd/even:", error);
+      });
   };
 
   useEffect(() => {

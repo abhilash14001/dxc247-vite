@@ -178,10 +178,12 @@ export const SportsProvider = (props) => {
             sections.push(...data["over by over"].section);
           }
           // Handle other potential section types
-          if (data.ball_by_ball !== undefined && data.ball_by_ball.section) {
-            sections.push(...data.ball_by_ball.section);
+          if (data['ball by ball'] !== undefined && data['ball by ball'].section) {
+            sections.push(...data['ball by ball'].section);
           }
 
+
+          
           // if (data.meter !== undefined && data.meter.section) {
           //     sections.push(...data.meter.section);
           // }
@@ -205,9 +207,10 @@ export const SportsProvider = (props) => {
             
             if (bulkBetPlace && bulkBetPlace.data) {
               // Backend returns data directly in response.data
-              betPlaceStatus.current = bulkBetPlace.data;
+              betPlaceStatus.current = bulkBetPlace?.data?.data?.data || bulkBetPlace?.data?.data || bulkBetPlace?.data || bulkBetPlace || {};
               
             } else {
+              
               
               // Fallback to individual calls if bulk API fails
               const betStatuses = await Promise.all(

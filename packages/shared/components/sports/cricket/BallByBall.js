@@ -4,7 +4,7 @@ import {
 
     generateBackAndLayFunction,
     getSize,
-    handleShowRules, useFancyHideStatus
+    exposureCheck, useFancyHideStatus
 } from "@dxc247/shared/utils/Constants";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
 import FancyBetPopup from "./FancyBetPopup";
@@ -33,7 +33,10 @@ const BallByBall = ({
     const mainValue = data?.['ball by ball'];
     const ar_sectionData = mainValue?.section || [];
     const maxValue = useMemo(() => mainValue?.max || sportList.fancy_max_limit, [mainValue, sportList.fancy_max_limit]);
+ 
+
     
+
     useEffect(() => {
         if (setMaxValue !== null) {
             setMaxValue((prevState) => {
@@ -137,11 +140,11 @@ const BallByBall = ({
                         const betPlaceCheck = betPlaceStatus?.current?.[teamName];
                         const fancyListValues = Object.values(betPlaceCheck?.fancy_list || []);
 
-                        const min_value = fancyListValues.length > 0 ? Math.min(...fancyListValues) : null;
-
                         const get_fancy_session_value = betPlaceCheck?.fancy_list ? (
-                            <span className="span_fancy_session_value color-font-red">{min_value}</span>
+                            <span className="market-book float-end  text-danger"> {betPlaceCheck?.fancy_list?.[teamName] ? - + " " +   betPlaceCheck?.fancy_list?.[teamName] : ''}</span>
                         ) : null;
+                        
+
 
                         return (
                             <div key={key} className="col-md-6">
@@ -158,6 +161,8 @@ const BallByBall = ({
                                                     teamName
                                                 )}
                                             </span>
+                                            {get_fancy_session_value}
+
                                         </div>
                                         <div className="market-odd-box lay" onClick={layFunctionSes[0]}>
                                             <span className="market-odd">{lay > 0 ? lay : '-'}</span>

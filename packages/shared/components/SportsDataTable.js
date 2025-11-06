@@ -229,6 +229,7 @@ const SportsDataTable = ({
               const oddsData = getOddsDataForMatch(sport.gmid);
               return { index, sport, oddsData };
             })
+            ?.filter(({ sport }) => sport.iscc == 0 && sport.cname !== 'testing')
             ?.filter(({ oddsData }) => Object.keys(oddsData).length > 0)
             ?.sort((a, b) => {
               // First priority: iplay = true comes first

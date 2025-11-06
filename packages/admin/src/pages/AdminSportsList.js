@@ -350,7 +350,7 @@ function AdminSportsList() {
       const response = await adminApi(`${ADMIN_BASE_PATH}${apiEndpoint}`, 'POST', {
         sport_id: selectedMatch.id,
         result: selectedWinner
-      });
+      }, true);
 
       if (response.success) {
         // Remove match from the list after successful result declaration
