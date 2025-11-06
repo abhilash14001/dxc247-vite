@@ -199,6 +199,7 @@ function AdminDashboard() {
               {/* Card-based layout similar to the reference design */}
               <div className="row">
                 {displayData.map((item, index) => (
+                  
                   <div key={item.id || index} className="col-md-6 col-lg-4 mb-4">
                     <div className="card shadow-sm" style={{ border: 'none' }}>
                       {/* Match Header */}
@@ -209,7 +210,7 @@ function AdminDashboard() {
                           </h6>
                         </div>
                         <div style={{ fontSize: '12px', opacity: '0.8' }}>
-                          {new Date(item.created_at).toLocaleDateString('en-GB')} {new Date(item.created_at).toLocaleTimeString('en-GB', { hour12: false })}
+                          {new Date(item.match_date_time).toLocaleDateString('en-GB')} {new Date(item.match_date_time).toLocaleTimeString('en-GB', { hour12: false })}
                         </div>
                       </div>
                       

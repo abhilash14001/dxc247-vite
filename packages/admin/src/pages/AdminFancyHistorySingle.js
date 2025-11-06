@@ -44,7 +44,8 @@ const AdminFancyHistorySingle = () => {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/cricket-fancy-history-single`,
         "POST",
-        { sport_id: matchId }
+          { sport_id: matchId },
+        true
       );
 
       if (response.success) {
@@ -102,7 +103,8 @@ const AdminFancyHistorySingle = () => {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/rollback-fancy-result`,
         "POST",
-        { fancy_id: fancy.id }
+        { fancy_id: fancy.id },
+        true
       );
 
       if (response.success) {

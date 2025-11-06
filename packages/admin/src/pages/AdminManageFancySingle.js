@@ -8,12 +8,23 @@ import { toast } from "react-toastify";
 import { useConfirmModal } from "@dxc247/shared/components/ui/useConfirmModal";
 import ConfirmModal from "@dxc247/shared/components/ui/ConfirmModal";
 import FancyResultModal from "./FancyResultModal";
+import Pagination from "@dxc247/shared/components/common/Pagination";
 
 const AdminManageFancySingle = () => {
   const { matchId } = useParams();
   const [loading, setLoading] = useState(true);
   const [fancyData, setFancyData] = useState([]);
   const [matchInfo, setMatchInfo] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+    from: 0,
+    to: 0,
+  });
 
   // Confirmation modal
   const { modal: confirmModal, showConfirm, hideModal } = useConfirmModal();
@@ -24,7 +35,7 @@ const AdminManageFancySingle = () => {
     fancy: null,
   });
 
-  const loadFancyData = useCallback(async (disable_loader = false) => {
+  const loadFancyData = useCallback(async (disable_loader = false, page = currentPage) => {
     try {
       
       if (!disable_loader) setLoading(true);
@@ -32,7 +43,13 @@ const AdminManageFancySingle = () => {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/sports-fancy-single`,
         "POST",
-        { sport_id: matchId }
+        { 
+          sport_id: matchId,
+          page: page,
+          per_page: pagination.per_page,
+          search: searchTerm || ''
+        },
+        true
       );
 
       if (response.success) {
@@ -42,25 +59,52 @@ const AdminManageFancySingle = () => {
           match_name: response.match_info.match_name,
           match_date: response.match_info.match_date_formatted,
         });
+        if (response.pagination) {
+          setPagination(response.pagination);
+        }
       } else {
         setFancyData([]);
         setMatchInfo(null);
+        setPagination({
+          current_page: 1,
+          last_page: 1,
+          per_page: 50,
+          total: 0,
+          from: 0,
+          to: 0,
+        });
       }
     } catch (error) {
       console.error("Error loading fancy data:", error);
       setFancyData([]);
       setMatchInfo(null);
+      setPagination({
+        current_page: 1,
+        last_page: 1,
+        per_page: 50,
+        total: 0,
+        from: 0,
+        to: 0,
+      });
     } finally {
       setLoading(false);
     }
-  }, [matchId]);
+  }, [matchId, currentPage, pagination.per_page, searchTerm]);
 
   useEffect(() => {
-    loadFancyData();
-    
-    const interval = setInterval(() => loadFancyData(true), 10000);
+    const timeoutId = setTimeout(() => {
+      loadFancyData(false, currentPage);
+    }, searchTerm ? 500 : 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, matchId, searchTerm, loadFancyData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadFancyData(true, currentPage);
+    }, 10000);
     return () => clearInterval(interval);
-  }, [loadFancyData]);
+  }, [currentPage, matchId, searchTerm, loadFancyData]);
 
   const openResultModal = (fancy) => {
     setResultModal({ isOpen: true, fancy });
@@ -70,7 +114,16 @@ const AdminManageFancySingle = () => {
     setResultModal({ isOpen: false, fancy: null });
   };
 
-  const handleModalSuccess = () => loadFancyData();
+  const handleModalSuccess = () => loadFancyData(false, currentPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
 
   const handleFancyCancel = async (fancy) => {
     const confirmed = await showConfirm({
@@ -93,7 +146,7 @@ const AdminManageFancySingle = () => {
           team_name: fancy.team_name,
           bet_type: "FANCY_SESSION",
           action: "cancel",
-        }
+        }, true
       );
 
       if (response.success) {
@@ -122,8 +175,6 @@ const AdminManageFancySingle = () => {
     });
   };
 
-  if (loading) return <LoadingSpinner centered height="400px" />;
-
   return (
     <div className="row">
       <div className="col-md-12 main-container">
@@ -135,19 +186,41 @@ const AdminManageFancySingle = () => {
             </h2>
           </div>
 
+          <div className="row form-horizontal mb-3">
+            <div className="col-md-3">
+              <input
+                type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                className="form-control"
+                placeholder="Search fancy names..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
+          </div>
+
           <div className="card">
             <div className="card-body">
-              <div className="table-responsive data-table">
+              <div className="table-responsive">
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th>Sr.No</th>
+                      <th>SR. NO.</th>
                       <th>Name</th>
                       <th className="text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {fancyData.length === 0 ? (
+                    {loading ? (
+                      <tr>
+                        <td colSpan="3" className="text-center">
+                          <LoadingSpinner size="sm" />
+                        </td>
+                      </tr>
+                    ) : fancyData.length === 0 ? (
                       <tr>
                         <td colSpan="3" className="text-center">
                           There are no results to display for this query.
@@ -156,7 +229,7 @@ const AdminManageFancySingle = () => {
                     ) : (
                       fancyData.map((fancy, index) => (
                         <tr key={fancy.id}>
-                          <td>{fancy.sr_no || index + 1}</td>
+                          <td>{fancy.sr_no || (currentPage - 1) * pagination.per_page + index + 1}</td>
                           <td>{fancy.team_name || "-"}</td>
                           <td className="text-right">
                             <button
@@ -182,6 +255,16 @@ const AdminManageFancySingle = () => {
               </div>
             </div>
           </div>
+
+          {pagination.total > 0 && (
+            <Pagination
+              currentPage={pagination.current_page}
+              totalPages={pagination.last_page}
+              onPageChange={handlePageChange}
+              maxVisiblePages={5}
+              showPreviousNext={true}
+            />
+          )}
         </div>
 
         {/* Confirmation Modal */}

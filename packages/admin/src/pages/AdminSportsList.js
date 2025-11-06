@@ -408,7 +408,7 @@ function AdminSportsList() {
       const response = await adminApi(`${ADMIN_BASE_PATH}${apiEndpoint}`, 'POST', {
         sport_id: selectedMatch.id,
         result: selectedWinner
-      });
+      }, true);
 
       if (response.success) {
         // Update local state to mark toss result as declared
@@ -458,7 +458,7 @@ function AdminSportsList() {
       const apiEndpoint = getTossRollbackApiEndpoint(sportType);
       const response = await adminApi(`${ADMIN_BASE_PATH}${apiEndpoint}`, 'POST', {
         sport_id: matchId
-      });
+      }, true);
 
       if (response.success) {
         // Remove match from the list after successful toss rollback
@@ -515,7 +515,7 @@ function AdminSportsList() {
       const response = await adminApi(`${ADMIN_BASE_PATH}/update-match-status`, 'POST', {
         sport_id: matchId,
         match_status: newStatus
-      });
+      }, true);
 
       if (response.success) {
         // Update local state
@@ -570,7 +570,7 @@ function AdminSportsList() {
       const response = await adminApi(`${ADMIN_BASE_PATH}/update-match-status`, 'POST', {
         sport_id: matchId,
         isPlay: newPlayStatus
-      });
+      }, true);
 
       if (response.success) {
         // Update local state

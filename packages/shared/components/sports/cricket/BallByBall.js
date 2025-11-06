@@ -195,6 +195,9 @@ const BallByBall = ({
                                             </div>
                                         </div>
                                     </div>
+                                    {oddsArr.rem && (
+                                        <div class="market-row"><marquee class="market-remark">{oddsArr.rem}</marquee></div>
+                                    )}
                                 </div>
                             </div>
                         );

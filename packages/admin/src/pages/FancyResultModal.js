@@ -48,7 +48,7 @@ const FancyResultModal = ({ modal, onClose, onSuccess }) => {
         bet_type: 'FANCY_SESSION',
         action: 'result',
         run: formData.run
-      });
+      }, true);
 
       if (response.success) {
         toast.success(response.message || 'Fancy result set successfully!', {
@@ -76,7 +76,13 @@ const FancyResultModal = ({ modal, onClose, onSuccess }) => {
   };
 
   return (
-    <Modal show={modal.isOpen} onHide={onClose}>
+    <Modal 
+      show={modal.isOpen} 
+      onHide={onClose}
+      centered
+      size="sm"
+      dialogClassName="modal-dialog-centered modal-sm"
+    >
       <Modal.Header style={{ backgroundColor: 'var(--theme1-bg)', color: 'white' }}>
         <Modal.Title>
           Fancy Result: <span className="fancyName">{modal.fancy?.team_name}</span>
@@ -86,6 +92,7 @@ const FancyResultModal = ({ modal, onClose, onSuccess }) => {
           data-dismiss="modal" 
           aria-label="Close"
           onClick={onClose}
+          style={{ color: 'white' }}
         >
           ×
         </button>
@@ -96,7 +103,6 @@ const FancyResultModal = ({ modal, onClose, onSuccess }) => {
             <label>Result Declare</label>
             <input 
               type="number" 
-               
               className="form-control run" 
               id="run" 
               name="run" 
