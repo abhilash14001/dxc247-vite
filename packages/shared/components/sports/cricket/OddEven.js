@@ -18,6 +18,7 @@ const OddEven = ({
   setbackOrLay,
   setMaxValue,
   setMinValue,
+  oddsChange,
 }) => {
   const fancyHideStatus = useFancyHideStatus(model, gameData);
   const {
@@ -272,6 +273,23 @@ const OddEven = ({
                         backk = layk;
                       }
 
+                      // Initialize and update oddsChange for blink functionality
+                      if (oddsChange?.current) {
+                        // Initialize back odds change tracking
+                        if (oddsChange.current[`oddevenback${key}`] === undefined) {
+                          oddsChange.current[`oddevenback${key}`] = back;
+                        } else if (oddsChange.current[`oddevenback${key}`] !== back) {
+                          oddsChange.current[`oddevenback${key}`] = back;
+                        }
+                        
+                        // Initialize lay odds change tracking
+                        if (oddsChange.current[`oddevenlay${key}`] === undefined) {
+                          oddsChange.current[`oddevenlay${key}`] = lay;
+                        } else if (oddsChange.current[`oddevenlay${key}`] !== lay) {
+                          oddsChange.current[`oddevenlay${key}`] = lay;
+                        }
+                      }
+
                       let getFancySessionValue =
                         betEvenCalculation.current?.[teamName] != 0 ? 
                           (typeof betEvenCalculation.current?.[teamName] === 'object' ? 
@@ -305,7 +323,7 @@ const OddEven = ({
                                 </div>
                               </div>
                               <div
-                                className="market-odd-box back"
+                                className={`market-odd-box back ${total !== 0 && oddsChange?.current && oddsChange.current[`oddevenback${key}`] !== back && oddsChange.current[`oddevenback${key}`] !== undefined ? 'blink' : ''}`}
                                 onClick={
                                   total > 0 && backFunctionSes
                                     ? Array.isArray(backFunctionSes)
@@ -320,7 +338,7 @@ const OddEven = ({
                                 </span>
                               </div>
                               <div
-                                className="market-odd-box back"
+                                className={`market-odd-box back ${total !== 0 && oddsChange?.current && oddsChange.current[`oddevenlay${key}`] !== lay && oddsChange.current[`oddevenlay${key}`] !== undefined ? 'blink' : ''}`}
                                 onClick={
                                   total > 0 && layFunctionSes
                                     ? Array.isArray(layFunctionSes)

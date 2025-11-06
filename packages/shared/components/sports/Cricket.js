@@ -685,7 +685,6 @@ const Cricket = () => {
               setbackOrLay={setbackOrLay}
               setBetOddValue={setBetOddValue}
               data={ar_sectionData}
-              RDF
               showCricketSessionBook={showCricketSessionBook}
             />
 
@@ -758,6 +757,7 @@ const Cricket = () => {
               model={sportList}
               gameData={ar_sectionData}
               setPopupDisplay={setPopupDisplay}
+              oddsChange={oddsChange}
             />
             {/* <Meter betPlaceStatus={betPlaceStatus} setDefaultTeamName={defaultTeamName}
                                setPopupDisplay={setPopupDisplay} sportList={sportList}

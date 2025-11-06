@@ -22,7 +22,8 @@ const FancySession = ({
                           teamNames,
                           setMaxValue,
                           setMinValue,
-                          setPopupDisplay
+                          setPopupDisplay,
+                          oddsChange
                       }) => {
     const fancyHideStatus = useFancyHideStatus(sportList, data);
     const {runnerRowDefault, oddsk, rootClassDefault, setBetType, setBetTypeFromArray} = useContext(SportsContext);
@@ -149,6 +150,23 @@ const FancySession = ({
 
                                     const layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', lay, layk);
 
+                                    // Initialize and update oddsChange for blink functionality
+                                    if (oddsChange?.current) {
+                                        // Initialize back odds change tracking
+                                        if (oddsChange.current[`fancysessionback${key}`] === undefined) {
+                                            oddsChange.current[`fancysessionback${key}`] = back;
+                                        } else if (oddsChange.current[`fancysessionback${key}`] !== back) {
+                                            oddsChange.current[`fancysessionback${key}`] = back;
+                                        }
+                                        
+                                        // Initialize lay odds change tracking
+                                        if (oddsChange.current[`fancysessionlay${key}`] === undefined) {
+                                            oddsChange.current[`fancysessionlay${key}`] = lay;
+                                        } else if (oddsChange.current[`fancysessionlay${key}`] !== lay) {
+                                            oddsChange.current[`fancysessionlay${key}`] = lay;
+                                        }
+                                    }
+
                                     const betPlaceCheck = betPlaceStatus?.current?.[teamName];
                                     
                                     const get_fancy_session_value = betPlaceCheck?.fancy_list ? (
@@ -174,12 +192,12 @@ const FancySession = ({
                                                         
                                                         {get_fancy_session_value}
                                                     </div>
-                                                    <div className="market-odd-box lay"
+                                                    <div className={`market-odd-box lay ${totalOdds !== 0 && oddsChange?.current && oddsChange.current[`fancysessionlay${key}`] !== lay && oddsChange.current[`fancysessionlay${key}`] !== undefined ? 'blink' : ''}`}
                                                          onClick={totalOdds > 0 && layFunctionSes ? (Array.isArray(layFunctionSes) ? layFunctionSes[0] : layFunctionSes) : null}>
                                                         <span className="market-odd">{lay > 0 ? lay : '-'}</span>
                                                         <span className="market-volume">{layk}</span>
                                                     </div>
-                                                    <div className="market-odd-box back"
+                                                    <div className={`market-odd-box back ${totalOdds !== 0 && oddsChange?.current && oddsChange.current[`fancysessionback${key}`] !== back && oddsChange.current[`fancysessionback${key}`] !== undefined ? 'blink' : ''}`}
                                                          onClick={totalOdds > 0 && backFunctionSes ? (Array.isArray(backFunctionSes) ? backFunctionSes[0] : backFunctionSes) : null}>
                                                         <span className="market-odd">{back > 0 ? back : '-'}</span>
                                                         <span className="market-volume">{backk}</span>

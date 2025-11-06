@@ -1631,14 +1631,44 @@ export const race17calculation = (round_id, team_name) => {
 };
 
 export const chunkArray = (arr, size, debug = false) => {
-  // Group by odd and even indices instead of sequential chunks
-  const evenChunk = arr.filter((item, index) => index % 2 === 0);
-  const oddChunk = arr.filter((item, index) => index % 2 === 1);
+  if (!arr || arr.length === 0) {
+    return [];
+  }
 
-  if (oddChunk.length > 0) {
-    return [evenChunk, oddChunk];
-  } else {
+  // Group items by sno (section number) to keep related items together
+  const groupedBySno = {};
+  arr.forEach((item) => {
+    const sno = item.sno || 0;
+    if (!groupedBySno[sno]) {
+      groupedBySno[sno] = [];
+    }
+    groupedBySno[sno].push(item);
+  });
+
+  // Split groups into two columns based on odd/even sno values
+  const oddChunk = []; // Items with odd sno values
+  const evenChunk = []; // Items with even sno values
+
+  Object.keys(groupedBySno).forEach((snoKey) => {
+    const sno = parseInt(snoKey, 10);
+    const group = groupedBySno[sno];
+    if (sno % 2 === 1) {
+      // Odd sno values go to oddChunk
+      oddChunk.push(...group);
+    } else {
+      // Even sno values go to evenChunk
+      evenChunk.push(...group);
+    }
+  });
+
+  if (oddChunk.length > 0 && evenChunk.length > 0) {
+    return [oddChunk, evenChunk];
+  } else if (oddChunk.length > 0) {
+    return [oddChunk];
+  } else if (evenChunk.length > 0) {
     return [evenChunk];
+  } else {
+    return [];
   }
 };
 export const dummyDataOdds = (array) => {

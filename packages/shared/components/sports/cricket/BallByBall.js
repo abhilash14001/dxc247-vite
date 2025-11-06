@@ -139,6 +139,22 @@ const BallByBall = ({
 
                         const betPlaceCheck = betPlaceStatus?.current?.[teamName];
                         
+                        // Initialize and update oddsChange for blink functionality
+                        if (oddsChange?.current) {
+                            // Initialize back odds change tracking
+                            if (oddsChange.current[`ballbyballback${key}`] === undefined) {
+                                oddsChange.current[`ballbyballback${key}`] = back;
+                            } else if (oddsChange.current[`ballbyballback${key}`] !== back) {
+                                oddsChange.current[`ballbyballback${key}`] = back;
+                            }
+                            
+                            // Initialize lay odds change tracking
+                            if (oddsChange.current[`ballbyballlay${key}`] === undefined) {
+                                oddsChange.current[`ballbyballlay${key}`] = lay;
+                            } else if (oddsChange.current[`ballbyballlay${key}`] !== lay) {
+                                oddsChange.current[`ballbyballlay${key}`] = lay;
+                            }
+                        }
 
                         const get_fancy_session_value = betPlaceCheck?.fancy_list ? (
                             <span className="market-book float-end  text-danger"> {betPlaceCheck?.fancy_list?.[teamName] ? - + " " +   betPlaceCheck?.fancy_list?.[teamName] : ''}</span>
@@ -164,11 +180,11 @@ const BallByBall = ({
                                             {get_fancy_session_value}
 
                                         </div>
-                                        <div className="market-odd-box lay" onClick={layFunctionSes[0]}>
+                                        <div className={`market-odd-box lay ${totalOdds !== 0 && oddsChange?.current && oddsChange.current[`ballbyballlay${key}`] !== lay && oddsChange.current[`ballbyballlay${key}`] !== undefined ? 'blink' : ''}`} onClick={layFunctionSes[0]}>
                                             <span className="market-odd">{lay > 0 ? lay : '-'}</span>
                                             {lay > 0 && <span className="market-volume">{getSize(layk, false)}</span>}
                                         </div>
-                                        <div className="market-odd-box back" onClick={backFunctionSes[0]}>
+                                        <div className={`market-odd-box back ${totalOdds !== 0 && oddsChange?.current && oddsChange.current[`ballbyballback${key}`] !== back && oddsChange.current[`ballbyballback${key}`] !== undefined ? 'blink' : ''}`} onClick={backFunctionSes[0]}>
                                             <span className="market-odd">{back > 0 ? back : '-'}</span>
                                             {back > 0 && <span className="market-volume">{getSize(backk, false)}</span>}
                                         </div>
