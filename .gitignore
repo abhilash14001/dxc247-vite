@@ -109,3 +109,5 @@ packages/shared/.cache
 # Lock files (keep package-lock.json but ignore others)
 yarn.lock
 packages/*/yarn.lock
+dxc247.sql
+.gitignore
