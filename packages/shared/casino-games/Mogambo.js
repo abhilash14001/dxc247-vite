@@ -318,12 +318,14 @@ const Mogambo = () => {
             "TOTAL"
           );
           
+
           
           if (response?.data) {
-            const exposureValue = response.data || '';
+            const exposureValue = response.data || 0;
             // Always set 3 Card Total exposure as negative
-            
+            if(exposureValue != 0){
             setThreeCardTotalExposure(exposureValue < 0 ? exposureValue : -Math.abs(exposureValue));
+            }
           }
           else{
             setThreeCardTotalExposure("");

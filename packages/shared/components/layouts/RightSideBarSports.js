@@ -379,24 +379,29 @@ const RightSideBarSports = ({
             section.nat?.trim() === currentTeamName
           );
         }
+        else if(betType === 'fancy1' && data['fancy1'] && data['fancy1'].section) {
+          currentSection = data['fancy1'].section.find(section => 
+            section.nat?.trim() === currentTeamName
+          );
+        }
         
         if (currentSection) {
           teamMaxValue = currentSection.max || sportList.fancy_max_limit;
           teamMinValue = currentSection.min || sportList.fancy_min_limit;
         }
       }
-      
+
       if (teamMaxValue && teamMaxValue < stakeValue.current.value) {
         setHideLoading(true);
 
-        Notify("Min Max Bet Limit Exceed", null, null, "danger");
+        Notify("Min Max Bet Limit Exceed2", null, null, "danger");
         resetAll();
 
         return false;
       } else if (teamMinValue && teamMinValue > stakeValue.current.value) {
         setHideLoading(true);
 
-        Notify("Min Max Bet Limit Exceed", null, null, "danger");
+        Notify("Min Max Bet Limit Exceed1", null, null, "danger");
         resetAll();
 
         return false;

@@ -236,7 +236,6 @@ const AccountStatement = () => {
                         data
                     );
 
-                    console.log('data is ', decryptedJSON);
 
                     // Send data back to DataTable
                     callback({

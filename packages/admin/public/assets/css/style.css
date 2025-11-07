@@ -1729,6 +1729,7 @@ a {
 
 .modal-dialog {
     margin: 1vh auto;
+    max-width: 560px;
 }
 
 .modal-content {
