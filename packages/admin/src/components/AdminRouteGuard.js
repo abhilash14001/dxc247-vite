@@ -9,14 +9,16 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
   const { isAuthenticated, token, loading, user } = useSelector(state => state.admin);
 
   useEffect(() => {
+    
     // Skip redirect if already on login page to prevent infinite loop
-    if (location.pathname === '/login') {
+    if (location.pathname.includes('/login')) {
+      console.log('AdminRouteGuard login page');
       return;
     }
   
     // Check if user is not authenticated
     if (!isAuthenticated || !token) {
-      // Redirect to login if not authenticated
+      
       navigate('/login', { replace: true });
       
       return;

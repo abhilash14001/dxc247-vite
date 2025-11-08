@@ -7,6 +7,11 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  // State for diff display values
+  const [depositFirstDiff, setDepositFirstDiff] = useState({ text: '', color: '' });
+  const [depositSecondDiff, setDepositSecondDiff] = useState({ text: '', color: '' });
+  const [withdrawFirstDiff, setWithdrawFirstDiff] = useState({ text: '', color: '' });
+  const [withdrawSecondDiff, setWithdrawSecondDiff] = useState({ text: '', color: '' });
 
   // Initialize form data based on modal type
   React.useEffect(() => {
@@ -27,10 +32,8 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             mpassword: ''
           });
           // Clear diff elements
-          const depositeFirstDiff = document.getElementById('deposite-first-diff');
-          const depositeSecondDiff = document.getElementById('deposite-second-diff');
-          if (depositeFirstDiff) depositeFirstDiff.textContent = '';
-          if (depositeSecondDiff) depositeSecondDiff.textContent = '';
+          setDepositFirstDiff({ text: '', color: '' });
+          setDepositSecondDiff({ text: '', color: '' });
           break;
         case 'freeChipsOut':
           setFormData({ 
@@ -39,10 +42,8 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             wmpassword: ''
           });
           // Clear diff elements
-          const withdrawFirstDiff = document.getElementById('withdraw-first-diff');
-          const withdrawSecondDiff = document.getElementById('withdraw-second-diff');
-          if (withdrawFirstDiff) withdrawFirstDiff.textContent = '';
-          if (withdrawSecondDiff) withdrawSecondDiff.textContent = '';
+          setWithdrawFirstDiff({ text: '', color: '' });
+          setWithdrawSecondDiff({ text: '', color: '' });
           break;
         case 'exposureLimit':
           setFormData({ 
@@ -70,14 +71,10 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
       }
     } else if (!modal.isOpen) {
       // Clear diff elements when modal closes
-      const depositeFirstDiff = document.getElementById('deposite-first-diff');
-      const depositeSecondDiff = document.getElementById('deposite-second-diff');
-      const withdrawFirstDiff = document.getElementById('withdraw-first-diff');
-      const withdrawSecondDiff = document.getElementById('withdraw-second-diff');
-      if (depositeFirstDiff) depositeFirstDiff.textContent = '';
-      if (depositeSecondDiff) depositeSecondDiff.textContent = '';
-      if (withdrawFirstDiff) withdrawFirstDiff.textContent = '';
-      if (withdrawSecondDiff) withdrawSecondDiff.textContent = '';
+      setDepositFirstDiff({ text: '', color: '' });
+      setDepositSecondDiff({ text: '', color: '' });
+      setWithdrawFirstDiff({ text: '', color: '' });
+      setWithdrawSecondDiff({ text: '', color: '' });
     }
   }, [modal]);
 
@@ -119,31 +116,19 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
           newParentBalance = 0;
         }
         
-        // Update diff elements
-        const firstDiffEl = document.getElementById('deposite-first-diff');
-        const secondDiffEl = document.getElementById('deposite-second-diff');
-        
-        if (firstDiffEl) {
-          if (amount > 0 && amount <= parentBalance) {
-            firstDiffEl.textContent = `${newParentBalance.toFixed(2)}`;
-            firstDiffEl.style.color = '';
-          } else if (amount > parentBalance) {
-            firstDiffEl.textContent = `(Insufficient)`;
-            firstDiffEl.style.color = 'red';
-          } else {
-            firstDiffEl.textContent = '';
-            firstDiffEl.style.color = '';
-          }
+        // Update diff elements using state
+        if (amount > 0 && amount <= parentBalance) {
+          setDepositFirstDiff({ text: `${newParentBalance.toFixed(2)}`, color: '' });
+        } else if (amount > parentBalance) {
+          setDepositFirstDiff({ text: `(Insufficient)`, color: 'red' });
+        } else {
+          setDepositFirstDiff({ text: '', color: '' });
         }
         
-        if (secondDiffEl) {
-          if (amount > 0) {
-            secondDiffEl.textContent = `${newUserBalance.toFixed(2)}`;
-            secondDiffEl.style.color = '';
-          } else {
-            secondDiffEl.textContent = '';
-            secondDiffEl.style.color = '';
-          }
+        if (amount > 0) {
+          setDepositSecondDiff({ text: `${newUserBalance.toFixed(2)}`, color: '' });
+        } else {
+          setDepositSecondDiff({ text: '', color: '' });
         }
       } else if (modal.type === 'freeChipsOut') {
         // Withdraw: parent balance increases, user balance decreases
@@ -159,31 +144,19 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
           newUserBalance = 0;
         }
         
-        // Update diff elements
-        const firstDiffEl = document.getElementById('withdraw-first-diff');
-        const secondDiffEl = document.getElementById('withdraw-second-diff');
-        
-        if (firstDiffEl) {
-          if (amount > 0) {
-            firstDiffEl.textContent = `${newParentBalance.toFixed(2)}`;
-            firstDiffEl.style.color = '';
-          } else {
-            firstDiffEl.textContent = '';
-            firstDiffEl.style.color = '';
-          }
+        // Update diff elements using state
+        if (amount > 0) {
+          setWithdrawFirstDiff({ text: `${newParentBalance.toFixed(2)}`, color: '' });
+        } else {
+          setWithdrawFirstDiff({ text: '', color: '' });
         }
         
-        if (secondDiffEl) {
-          if (amount > 0 && amount <= userBalance) {
-            secondDiffEl.textContent = `${newUserBalance.toFixed(2)}`;
-            secondDiffEl.style.color = '';
-          } else if (amount > userBalance) {
-            secondDiffEl.textContent = `(Insufficient)`;
-            secondDiffEl.style.color = 'red';
-          } else {
-            secondDiffEl.textContent = '';
-            secondDiffEl.style.color = '';
-          }
+        if (amount > 0 && amount <= userBalance) {
+          setWithdrawSecondDiff({ text: `${newUserBalance.toFixed(2)}`, color: '' });
+        } else if (amount > userBalance) {
+          setWithdrawSecondDiff({ text: `(Insufficient)`, color: 'red' });
+        } else {
+          setWithdrawSecondDiff({ text: '', color: '' });
         }
       }
     }
@@ -511,7 +484,9 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                 <span className="popup-box" id="deposite-first">
                   {modal.data.parentBalance || '0.00'}
                 </span>
-                <span className="popup-box" id="deposite-first-diff"></span>
+                <span className="popup-box" id="deposite-first-diff" style={{ color: depositFirstDiff.color }}>
+                  {depositFirstDiff.text}
+                </span>
               </div>
             </div>
             <div className="row m-b-20">
@@ -522,7 +497,9 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                 <span className="popup-box" id="deposite-second">
                   {modal.user?.balance || '0.00'}
                 </span>
-                <span className="popup-box" id="deposite-second-diff"></span>
+                <span className="popup-box" id="deposite-second-diff" style={{ color: depositSecondDiff.color }}>
+                  {depositSecondDiff.text}
+                </span>
               </div>
             </div>
             <div className="row m-b-20">
@@ -597,7 +574,9 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                 <span className="popup-box" id="withdraw-first">
                   {modal.data.parentBalance || '0.00'}
                 </span>
-                <span className="popup-box" id="withdraw-first-diff"></span>
+                <span className="popup-box" id="withdraw-first-diff" style={{ color: withdrawFirstDiff.color }}>
+                  {withdrawFirstDiff.text}
+                </span>
               </div>
             </div>
             <div className="row m-b-20">
@@ -608,7 +587,9 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                 <span className="popup-box" id="withdraw-second">
                   {modal.user?.balance || '0.00'}
                 </span>
-                <span className="popup-box" id="withdraw-second-diff"></span>
+                <span className="popup-box" id="withdraw-second-diff" style={{ color: withdrawSecondDiff.color }}>
+                  {withdrawSecondDiff.text}
+                </span>
               </div>
             </div>
             <div className="row m-b-20">

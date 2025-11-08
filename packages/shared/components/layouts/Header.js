@@ -18,6 +18,8 @@ import { createPopper } from "@popperjs/core";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowModal } from "../../store/slices/userSlice";
 import useCommonData from "../../hooks/useCommonData";
+import { useIsAdmin } from "../../hooks/useIsAdmin";
+import { useLocation } from "react-router-dom";
 
 // Lazy load CurrentBetModal for better performance
 const CurrentBetModal = lazy(() => import("../CurrentBetModal"));
@@ -210,10 +212,19 @@ function Header() {
   const [stakeModal, setStakeModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const isAdmin = useIsAdmin();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // Check if rules modal should be shown (when user.accept_terms == 0)
+  // Skip for admin users to prevent redirect issues
   useEffect(() => {
-    console.log('userData is ',userData)
+    // Don't show rules modal for admin users
+    if (isAdmin || isAdminRoute) {
+      setShowRulesModal(false);
+      return;
+    }
+
     if (userData && userData.accept_terms === 0 && isLoggedIn) {
       setShowRulesModal(true);
       // Don't show banner popup until rules are accepted
@@ -222,7 +233,7 @@ function Header() {
       // Rules already accepted, hide rules modal
       setShowRulesModal(false);
     }
-  }, [userData, isLoggedIn]);
+  }, [userData, isLoggedIn, isAdmin, isAdminRoute]);
 
   const handleRulesAccept = () => {
     setShowRulesModal(false);
