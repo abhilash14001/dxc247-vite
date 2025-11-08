@@ -52,13 +52,7 @@ const RulesAcceptModal = ({ show, onClose, onAccept }) => {
         // Update user in Redux state
         dispatch(setAcceptTerms());
         
-        // Show success notification
-        Notify(
-          responseData.message || 'Terms accepted successfully', 
-          null, 
-          null, 
-          'success'
-        );
+        
         
         // Call callbacks and close modal
         if (onAccept) {
