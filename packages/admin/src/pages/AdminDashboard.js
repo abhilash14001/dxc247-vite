@@ -30,6 +30,7 @@ function AdminDashboard() {
 
   // Authentication check
   useEffect(() => {
+    
     if(!isAuthenticated) {
       navigate('/login');
       return;

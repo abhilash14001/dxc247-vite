@@ -9,18 +9,22 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
   const { isAuthenticated, token, loading, user } = useSelector(state => state.admin);
 
   useEffect(() => {
+    // Skip all checks on public/auth pages to prevent infinite loops
+    const publicPaths = ['/login', '/change-password', '/transaction-password', '/unauthorized', '/404'];
+    const isPublicPath = publicPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
     
-    // Skip redirect if already on login page to prevent infinite loop
-    if (location.pathname.includes('/login')) {
-      console.log('AdminRouteGuard login page');
+    if (isPublicPath) {
+      return;
+    }
+
+    // Wait for loading to complete before making decisions
+    if (loading) {
       return;
     }
   
     // Check if user is not authenticated
     if (!isAuthenticated || !token) {
-      
       navigate('/login', { replace: true });
-      
       return;
     }
 
@@ -28,27 +32,53 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
     if (isAuthenticated && user && token) {
       // Check if password change is needed
       if (user.change_password === 1) {
-        navigate('/change-password', { replace: true });
+        // Only redirect if not already on change-password page
+        if (location.pathname !== '/change-password') {
+          navigate('/change-password', { replace: true });
+        }
         return;
       }
       // Check if transaction password change is needed (only after regular password is changed)
       else if (user.change_password === 0 && user.change_transaction_password === 1) {
-        navigate('/transaction-password', { replace: true });
+        // Only redirect if not already on transaction-password page
+        if (location.pathname !== '/transaction-password') {
+          navigate('/transaction-password', { replace: true });
+        }
         return;
       }
       // If both password changes are needed, prioritize regular password first
       else if (user.change_password === 1 && user.change_transaction_password === 1) {
-        navigate('/change-password', { replace: true });
+        // Only redirect if not already on change-password page
+        if (location.pathname !== '/change-password') {
+          navigate('/change-password', { replace: true });
+        }
         return;
       }
     }
   }, [isAuthenticated, token, loading, navigate, user, location.pathname]);
 
+  // Skip permission checks on public/auth pages
+  const publicPaths = ['/login', '/change-password', '/transaction-password', '/unauthorized', '/404'];
+  const isPublicPath = publicPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
   
+  if (isPublicPath) {
+    return children;
+  }
+
+  // Wait for loading to complete
+  if (loading) {
+    return null; // or a loading component
+  }
+
+  // If not authenticated, don't render children (redirect will happen in useEffect)
+  if (!isAuthenticated || !token) {
+    return null;
+  }
 
   if(!user){
     return children;
   }
+  
   // If no specific permission required, allow access
   if (!requiredPermission || user.role !== 6) {
     return children;

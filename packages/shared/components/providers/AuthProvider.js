@@ -12,6 +12,7 @@ export const AuthProvider = (props) => {
 
     // Conditionally render the appropriate provider based on the route
     if (isAdminRoute) {
+        
         return <AdminAuthProvider>{props.children}</AdminAuthProvider>;
     } else {
         return <UserAuthProvider>{props.children}</UserAuthProvider>;

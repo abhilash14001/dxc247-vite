@@ -39,6 +39,7 @@ const FantasyGames = lazy(() => import("./pages/FantasyGames"));
 const FantasyGame = lazy(() => import("./pages/FantasyGame"));
 const Rules = lazy(() => import("./pages/Rules"));
 const AviatorList = lazy(() => import("@dxc247/shared/components/AviatorList"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Wrap components with page loading
 const HomeWithLoading = withPageLoading(Home);
@@ -96,6 +97,8 @@ root.render(
                                 <Route path="/casino/:match_id" element={<CasinoMainWithLoading />} />
                                 <Route path="/soccer/:match_id" element={<SoccerWithLoading />} />
                                 <Route path="/cricket/:match_id" element={<CricketWithLoading />} />
+                                {/* 404 Not Found Route - Must be last */}
+                                <Route path="/*" element={<NotFound />} />
                               </Routes>
                             </ProtectedRoute>
                           } />

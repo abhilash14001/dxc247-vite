@@ -12,13 +12,13 @@ import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { loginSuccess, setAuthLoading, logout } from "@dxc247/shared/store/admin/adminSlice";
 import { setLiveModeData, setServerPublicKey } from "@dxc247/shared/store/slices/commonDataSlice";
 import { useGameNames } from "@dxc247/shared/store/admin/useGameNames";
-import AdminRouteGuard from "../components/AdminRouteGuard";
 import Notify from "@dxc247/shared/utils/Notify";
 
 function AdminLogin() {
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated, loading, token, tokenExpiresAt } = useSelector(state => state.admin);
+  const { isAuthenticated, loading, token, tokenExpiresAt, user } = useSelector(state => state.admin);
   const { liveModeData, serverPublicKey } = useSelector(state => state.commonData);
   const { fetchGameNames } = useGameNames();
   const [formData, setFormData] = useState({
@@ -27,9 +27,9 @@ function AdminLogin() {
     role: "1",
   });
   const [cssLoaded, setCssLoaded] = useState(false);
-  
 
   useEffect(() => {
+    
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = '/assets/css/AdminLogin.css';
@@ -73,7 +73,6 @@ function AdminLogin() {
   }, []);
 
   useEffect(() => {
-    
     // Simplified initialization - fetch public key and live mode data
     const initializePage = async () => {
       dispatch(setAuthLoading(false));
@@ -117,14 +116,27 @@ function AdminLogin() {
       
       // Check if token is still valid
       if (now < expiration) {
-        navigate('/');
+        // Check for password change requirements first
+        if (user?.change_password === 1) {
+          navigate('/change-password', { replace: true });
+          return;
+        }
+        
+        if (user?.change_password === 0 && user?.change_transaction_password === 1) {
+          navigate('/transaction-password', { replace: true });
+          return;
+        }
+        
+        // If no password changes needed, redirect to dashboard
+        navigate('/', { replace: true });
         return;
       } else {
         // Token expired - dispatch logout to clear state
         dispatch(logout());
       }
     }
-  }, [isAuthenticated, token, tokenExpiresAt]);
+    
+  }, [isAuthenticated, token, tokenExpiresAt, user, navigate, dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -240,8 +252,7 @@ function AdminLogin() {
   }
 
   return (
-    <AdminRouteGuard>
-      <div id="app">
+    <div id="app">
       {/* Loading Screen - Removed, show login immediately */}
       
       <div className="login" style={{ display: 'flex' }}>
@@ -338,8 +349,7 @@ function AdminLogin() {
           </div>
         </div>
       </div>
-      </div>
-    </AdminRouteGuard>
+    </div>
   );
 }
 

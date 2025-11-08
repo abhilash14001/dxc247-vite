@@ -10,6 +10,7 @@ const AdminRouteChangeListener = () => {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
+    
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);

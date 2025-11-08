@@ -43,6 +43,7 @@ const AdminLayout = ({ children }) => {
   useEffect(() => {
         
     
+    
         
         // Only run when matchesData is available and has sidebar_data
         if (!matchesData || !matchesData.sidebar_data) {

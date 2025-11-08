@@ -225,7 +225,7 @@ function Header() {
       return;
     }
 
-    if (userData && userData.accept_terms === 0 && isLoggedIn) {
+    if (userData && userData.accept_terms === 0 && isLoggedIn && userData?.is_demo === 0) {
       setShowRulesModal(true);
       // Don't show banner popup until rules are accepted
       // Keep showModal true in Redux but don't render banner while rules modal is open

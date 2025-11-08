@@ -8,7 +8,7 @@ import { resetCommonDataState } from "../../store/slices/commonDataSlice";
 
 export const AdminAuthProvider = (props) => {
     const nav = useNavigate();
-    const location = useLocation();
+    
     const dispatch = useDispatch();
     
     // Admin authentication states
@@ -17,18 +17,10 @@ export const AdminAuthProvider = (props) => {
     const [loading, setLoading] = useState(true);
     const [ACCESS_TOKEN, setACCESS_TOKEN] = useState(null);
 
-    // Function to disconnect all sockets when 401 error occurs
-    const disconnectAllSockets = () => {
-        try {
-            // Dispatch a custom event to disconnect all sockets
-            const disconnectEvent = new CustomEvent('disconnectAllSockets');
-            window.dispatchEvent(disconnectEvent);
-        } catch (error) {
-            console.error('Error disconnecting sockets:', error);
-        }
-    };
+
 
     const unAuthorizeHandle = () => {
+        
         // Token is now managed by Redux, no need to remove from localStorage
         localStorage.removeItem('admin_exposure');
         clearIntervals();
@@ -43,12 +35,14 @@ export const AdminAuthProvider = (props) => {
         clearInterval(balanceInterval.current);
 
         if (func != null) {
+            
             return nav('/login');
         }
     };
 
     const getBalance = () => {
         // Admin doesn't need balance fetching
+        console.log('get balance is loaded')
         return Promise.resolve(null);
     };
 

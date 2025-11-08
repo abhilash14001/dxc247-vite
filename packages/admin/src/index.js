@@ -60,6 +60,7 @@ const AdminTransactionPassword = lazy(() => import("./pages/AdminTransactionPass
 const AdminTransactionPasswordSuccess = lazy(() => import("./pages/AdminTransactionPasswordSuccess"));
 const AdminConfiguration = lazy(() => import("./pages/AdminConfiguration"));
 const AdminUnauthorized = lazy(() => import("./pages/AdminUnauthorized"));
+const AdminNotFound = lazy(() => import("./pages/AdminNotFound"));
 const CurrentBet = lazy(() => import("./pages/CurrentBet"));
 const BetHistory = lazy(() => import("./pages/BetHistory"));
 const DeletedBetHistory = lazy(() => import("./pages/DeletedBetHistory"));
@@ -820,13 +821,13 @@ root.render(
                 } 
               />
 
-              {/* Fallback Route */}
+              {/* 404 Not Found Route - Must be last */}
               <Route 
                 path="/*" 
                 element={
-                  <AdminRouteGuard requiredPermission="market-analysis">
+                  <AdminRouteGuard>
                     <AdminLayout>
-                      <AdminDashboard />
+                      <AdminNotFound />
                     </AdminLayout>
                   </AdminRouteGuard>
                 } 
