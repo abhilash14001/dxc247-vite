@@ -115,7 +115,7 @@ function Bookmaker2({
     // Determine if any section (runner) is ACTIVE (not suspended)
     const hasAnyActiveSection = useMemo(() => {
         if (!sections || sections.length === 0) return false;
-        return sections.some((s) => s?.gstatus && s.gstatus !== "SUSPENDED");
+        return sections.every((s) => s?.gstatus && s.gstatus == "SUSPENDED");
     }, [sections]);
 
     useEffect(() => {
@@ -266,7 +266,7 @@ function Bookmaker2({
                                 sportList.match_suspend_bookmaker === 1 ||
                                 sportList.match_suspend === 1
                             ) && !hasAnyActiveSection
-                                ? "suspended-table"
+                                ? ""
                                 : ""
                         }`}
                         data-title={

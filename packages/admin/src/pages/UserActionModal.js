@@ -26,6 +26,11 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             remark: '',
             mpassword: ''
           });
+          // Clear diff elements
+          const depositeFirstDiff = document.getElementById('deposite-first-diff');
+          const depositeSecondDiff = document.getElementById('deposite-second-diff');
+          if (depositeFirstDiff) depositeFirstDiff.textContent = '';
+          if (depositeSecondDiff) depositeSecondDiff.textContent = '';
           break;
         case 'freeChipsOut':
           setFormData({ 
@@ -33,6 +38,11 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             remark: '',
             wmpassword: ''
           });
+          // Clear diff elements
+          const withdrawFirstDiff = document.getElementById('withdraw-first-diff');
+          const withdrawSecondDiff = document.getElementById('withdraw-second-diff');
+          if (withdrawFirstDiff) withdrawFirstDiff.textContent = '';
+          if (withdrawSecondDiff) withdrawSecondDiff.textContent = '';
           break;
         case 'exposureLimit':
           setFormData({ 
@@ -58,6 +68,16 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
         default:
           setFormData({});
       }
+    } else if (!modal.isOpen) {
+      // Clear diff elements when modal closes
+      const depositeFirstDiff = document.getElementById('deposite-first-diff');
+      const depositeSecondDiff = document.getElementById('deposite-second-diff');
+      const withdrawFirstDiff = document.getElementById('withdraw-first-diff');
+      const withdrawSecondDiff = document.getElementById('withdraw-second-diff');
+      if (depositeFirstDiff) depositeFirstDiff.textContent = '';
+      if (depositeSecondDiff) depositeSecondDiff.textContent = '';
+      if (withdrawFirstDiff) withdrawFirstDiff.textContent = '';
+      if (withdrawSecondDiff) withdrawSecondDiff.textContent = '';
     }
   }, [modal]);
 
@@ -81,6 +101,93 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
       [name]: newValue
     }));
 
+    // Update diff elements based on amount changes
+    if (name === 'amount' && (modal.type === 'freeChipsIn' || modal.type === 'freeChipsOut')) {
+      const amount = parseFloat(newValue) || 0;
+      
+      if (modal.type === 'freeChipsIn') {
+        // Deposit: parent balance decreases, user balance increases
+        const parentBalance = parseFloat(modal.data?.parentBalance || 0);
+        const userBalance = parseFloat(modal.user?.balance || 0);
+        
+        // Calculate new balances
+        let newParentBalance = parentBalance - amount;
+        const newUserBalance = userBalance + amount;
+        
+        // Ensure parent balance doesn't go negative
+        if (newParentBalance < 0) {
+          newParentBalance = 0;
+        }
+        
+        // Update diff elements
+        const firstDiffEl = document.getElementById('deposite-first-diff');
+        const secondDiffEl = document.getElementById('deposite-second-diff');
+        
+        if (firstDiffEl) {
+          if (amount > 0 && amount <= parentBalance) {
+            firstDiffEl.textContent = `${newParentBalance.toFixed(2)}`;
+            firstDiffEl.style.color = '';
+          } else if (amount > parentBalance) {
+            firstDiffEl.textContent = `(Insufficient)`;
+            firstDiffEl.style.color = 'red';
+          } else {
+            firstDiffEl.textContent = '';
+            firstDiffEl.style.color = '';
+          }
+        }
+        
+        if (secondDiffEl) {
+          if (amount > 0) {
+            secondDiffEl.textContent = `${newUserBalance.toFixed(2)}`;
+            secondDiffEl.style.color = '';
+          } else {
+            secondDiffEl.textContent = '';
+            secondDiffEl.style.color = '';
+          }
+        }
+      } else if (modal.type === 'freeChipsOut') {
+        // Withdraw: parent balance increases, user balance decreases
+        const parentBalance = parseFloat(modal.data?.parentBalance || 0);
+        const userBalance = parseFloat(modal.user?.balance || 0);
+        
+        // Calculate new balances
+        const newParentBalance = parentBalance + amount;
+        let newUserBalance = userBalance - amount;
+        
+        // Ensure user balance doesn't go negative
+        if (newUserBalance < 0) {
+          newUserBalance = 0;
+        }
+        
+        // Update diff elements
+        const firstDiffEl = document.getElementById('withdraw-first-diff');
+        const secondDiffEl = document.getElementById('withdraw-second-diff');
+        
+        if (firstDiffEl) {
+          if (amount > 0) {
+            firstDiffEl.textContent = `${newParentBalance.toFixed(2)}`;
+            firstDiffEl.style.color = '';
+          } else {
+            firstDiffEl.textContent = '';
+            firstDiffEl.style.color = '';
+          }
+        }
+        
+        if (secondDiffEl) {
+          if (amount > 0 && amount <= userBalance) {
+            secondDiffEl.textContent = `${newUserBalance.toFixed(2)}`;
+            secondDiffEl.style.color = '';
+          } else if (amount > userBalance) {
+            secondDiffEl.textContent = `(Insufficient)`;
+            secondDiffEl.style.color = 'red';
+          } else {
+            secondDiffEl.textContent = '';
+            secondDiffEl.style.color = '';
+          }
+        }
+      }
+    }
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -88,6 +195,22 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
         [name]: ''
       }));
     }
+  };
+
+  // Check if balance is insufficient
+  const isInsufficientBalance = () => {
+    if (modal.type === 'freeChipsIn') {
+      // Deposit: check if amount exceeds parent balance
+      const amount = parseFloat(formData.amount || 0);
+      const parentBalance = parseFloat(modal.data?.parentBalance || 0);
+      return amount > 0 && amount > parentBalance;
+    } else if (modal.type === 'freeChipsOut') {
+      // Withdraw: check if amount exceeds user balance
+      const amount = parseFloat(formData.amount || 0);
+      const userBalance = parseFloat(modal.user?.balance || 0);
+      return amount > 0 && amount > userBalance;
+    }
+    return false;
   };
 
   // Form validation
@@ -196,7 +319,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             user_id: modal.user.id,
             credit_reference: formData.credit_reference,
             transaction_password: formData.transaction_password
-          });
+          }, true);
           break;
         case 'freeChipsIn':
           response = await adminApi(`${ADMIN_BASE_PATH}/user/free-chips`, 'POST', {
@@ -205,7 +328,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             remark: formData.remark,
             type: 'in',
             transaction_password: formData.mpassword
-          });
+          }, true);
           break;
         case 'freeChipsOut':
           response = await adminApi(`${ADMIN_BASE_PATH}/user/free-chips`, 'POST', {
@@ -214,14 +337,14 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             remark: formData.remark,
             type: 'out',
             transaction_password: formData.wmpassword
-          });
+          }, true);
           break;
         case 'exposureLimit':
           response = await adminApi(`${ADMIN_BASE_PATH}/user/update-exposure-limit`, 'POST', {
             user_id: modal.user.id,
             exposure_limit: formData.exposure_limit,
             transaction_password: formData.empassword
-          });
+          }, true);
           break;
         case 'changePassword':
           response = await adminApi(`${ADMIN_BASE_PATH}/user/change-password`, 'POST', {
@@ -229,7 +352,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
             password: formData.password,
             password_confirmation: formData.password_confirmation,
             transaction_password: formData.pmpassword
-          });
+          }, true);
           break;
         case 'toggleStatus':
           // Handle both toggles - send separate API calls for each field that changed
@@ -244,7 +367,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                 type : 'modal',
                 value: formData.userActive,
                 transaction_password: formData.smpassword
-              })
+              }, true)
             );
           }
           
@@ -885,7 +1008,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
               <button
                 type="submit"
                 className="btn btn-submit"
-                disabled={loading}
+                disabled={loading || isInsufficientBalance()}
               >
                 {loading ? (
                   <>

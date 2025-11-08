@@ -42,6 +42,7 @@ const SportsResultContent = ({
 
   // Get winner information
   const getWinnerInfo = () => {
+    
     if (sportData.bet_type?.toLowerCase() === 'session') {
       return fancyResult.result || 'N/A';
     }
@@ -64,13 +65,18 @@ const SportsResultContent = ({
   // Get odds for display
   const getOdds = (bet) => {
     if (sportData.type?.toLowerCase() === 'fancy_session') {
-      return bet.bet_oddsk || 'N/A';
+      return bet.bet_odds || 'N/A';
     }
     return bet.bet_odds || 'N/A';
   };
 
   // Get bhav (result) for display
   const getBhav = (bet) => {
+
+    if (sportData.type?.toLowerCase() === 'fancy_session') {
+      return bet.bet_oddsk || '-';
+    }
+    return bet.bet_oddsk || '-';
     if (['oddeven', 'session'].includes(sportData.bet_type?.toLowerCase())) {
       return fancyResult.result || 'N/A';
     }
@@ -123,6 +129,19 @@ const SportsResultContent = ({
     setShowBrowserDetails(null);
   };
 
+              
+
+  const map_session = {
+    'FANCY_SESSION' : 'Normal',
+    'BALL_BY_BALL' : 'Ball by Ball',
+    'OVER_BY_OVER' : 'Over by Over',
+    'ODDEVEN' : 'Odd Even',
+    'fancy1' : 'Fancy 1',
+    'BOOKMAKER' : 'Bookmaker',
+    'TOSS' : 'Toss',
+    'ODDS' : 'MATCH_ODDS',
+    'MATCH_ODDS' : 'Match Odds'
+  }
   return (
     <>
       {/* Sports Header */}
@@ -132,7 +151,7 @@ const SportsResultContent = ({
           fontSize: '14px',
           marginBottom: '15px'
         }}>
-          {sportData.sport_name || 'Cricket'} → {gameData} → {sportData.match_name || 'Match Name'} → {sportData.type || 'Over By Over'}
+          {sportData.sport_name || 'Cricket'} → {gameData} → {sportData.match_name || 'Match Name'} → {map_session[sportData.type] || 'Over By Over'}
         </div>
         
         <div className="sports-info" style={{
@@ -218,7 +237,7 @@ const SportsResultContent = ({
           <thead className="thead-dark">
             <tr>
               <th>Nation</th>
-              <th>Rate (Odds)</th>
+              <th>Rate</th>
               <th>Bhav</th>
               <th>Amount</th>
               <th>Win</th>

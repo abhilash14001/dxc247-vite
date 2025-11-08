@@ -61,6 +61,7 @@ function Bookmaker({
           sportList?.match_id || window.location.pathname.split("/").pop();
         if (matchId) {
           const activeBets = await getActiveBets(matchId, "BOOKMAKER");
+          
           setHasActiveBets(activeBets && activeBets.length > 0);
         }
       } catch (error) {
@@ -119,7 +120,7 @@ function Bookmaker({
   // Determine if any section (runner) is ACTIVE (not suspended)
   const hasAnyActiveSection = useMemo(() => {
     if (!sections || sections.length === 0) return false;
-    return sections.some((s) => s?.gstatus && s.gstatus !== "SUSPENDED");
+    return sections.every((s) => s?.gstatus && s.gstatus == "SUSPENDED");
   }, [sections]);
 
   useEffect(() => {
@@ -359,7 +360,7 @@ function Bookmaker({
                 sportList.match_suspend_bookmaker === 1 ||
                 sportList.match_suspend === 1
               ) && !hasAnyActiveSection
-                ? "suspended-table"
+                ? ""
                 : ""
             }`}
             data-title={

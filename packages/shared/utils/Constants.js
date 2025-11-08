@@ -16,7 +16,7 @@ export const isAdminRoute = () => {
   return store.getState().admin?.isAdmin;
 };
 
-const profit_margin = 1.0254;
+
 function getTeamMarketOdds(currentMarketData, teamNames, betType) {
   if (!currentMarketData || !teamNames || !betType) {
     
@@ -70,18 +70,22 @@ function balanceHedge(
   teamNameCurrentBets,
   placingBets,
   profit,
-  profitData
+  profitData,
+  commission = 0.025 // default 5%
 ) {
   function calculateResult(stake) {
-    const losslayvalue = (parseFloat(hedge.hedgeOdds) * stake) / 100;
-    const lossvalue = (parseFloat(hedge.hedgeOdds) - 1) * stake;
+    const hedgeOdds = parseFloat(hedge.hedgeOdds);
+    const side = hedge.hedgeSide.toLowerCase();
+
+    const lossLayValue = (hedgeOdds * stake) / 100;
+    const lossValue = (hedgeOdds - 1) * stake;
 
     let loss =
-      hedge.hedgeSide === "back"
+      side === "back"
         ? parseFloat(setdecimalPoint(stake))
         : hedge.betType === "ODDS"
-        ? parseFloat(setdecimalPoint(lossvalue))
-        : parseFloat(setdecimalPoint(losslayvalue));
+        ? parseFloat(setdecimalPoint(lossValue))
+        : parseFloat(setdecimalPoint(lossLayValue));
 
     calculateProfitCommon(
       hedge.betType,
@@ -103,17 +107,24 @@ function balanceHedge(
       placingBets[hedge.betType] || {}
     );
 
-    return Object.values(updatedBets); // [val1, val2]
+    return Object.values(updatedBets);
   }
 
-  // Calculate result with the stake (stake is already calculated using formula in calling function)
-  const result = calculateResult(totalHedgeStake);
-  const finalResult = [parseFloat(result[0].toFixed(2)), parseFloat(result[1].toFixed(2))];
+  // apply commission on total stake (reduce potential profit)
+  const netStake = totalHedgeStake * (1 - commission);
+  const result = calculateResult(netStake);
+
+  const finalResult = [
+    parseFloat(result[0].toFixed(2)),
+    parseFloat(result[1].toFixed(2))
+  ];
 
   return {
-    stake: totalHedgeStake,
+    stake: netStake,
     result: finalResult,
     team: hedge.team,
+    hedgeSide: hedge.hedgeSide,
+    hedgeOdds: hedge.hedgeOdds
   };
 }
 
@@ -138,158 +149,96 @@ export const handleCashoutLogic = async (params) => {
       profit,
       profitData,
       placingBets,
-
       defaultBetType = "ODDS",
     } = params;
 
-    const is_suspended = currentMarketData.every(
+    const commission = 0.025;           // 5% exchange commission
+   const platformFactor = 1.0253;     // platform stake adjustment factor
+    
+
+    const isSuspended = currentMarketData.every(
       (item) => item.gstatus === "SUSPENDED"
     );
-
-    if (is_suspended) {
+    if (isSuspended) {
       Notify("You are not eligible for cashout", null, null, "danger");
       return false;
     }
 
-    if (!currentMarketData || currentMarketData.length === 0) {
-      alert("No market data available for cashout");
-      return false;
-    }
-
-    if (!matchId) {
-      console.error("No match ID available");
-      return false;
-    }
-
     const activeBets = await getActiveBets(matchId, betType);
-
-    if (!activeBets || activeBets.length === 0) {
+    if (!activeBets?.length) {
       alert("No active bets found for cashout");
       return false;
     }
 
-    // Process each active bet for optimal hedging
-    let totalHedgeStake = 0;
+    let totalHedgeStake = exposureCheck();
     let hedgeDetails = [];
 
-    for (const betData of activeBets) {
-      // Find current market odds for this team
-      const teamMarketData = currentMarketData.find(
-        (market) => market.nat.trim() === betData.team_name
+    // collect hedge details
+    for (const bet of activeBets) {
+      const teamMarket = currentMarketData.find(
+        (m) => m.nat.trim() === bet.team_name
       );
+      if (!teamMarket) continue;
 
-      if (!teamMarketData) {
-        console.warn(`No market data found for team: ${betData.team_name}`);
-        continue;
-      }
+      const currentBackOdds = teamMarket.back?.[0]?.odds || bet.bet_odds;
+      const currentLayOdds = teamMarket.lay?.[0]?.odds || bet.bet_odds;
 
-      // Get current best odds for hedging
-      const currentBackOdds =
-        teamMarketData.back?.[0]?.odds || betData.bet_odds;
-      const currentLayOdds = teamMarketData.lay?.[0]?.odds || betData.bet_odds;
-
-      // Calculate optimal hedge stake automatically
       let hedgeSide, hedgeOdds;
-
-      if (betData.bet_side === "BACK") {
-        // Original bet is BACK, so hedge with LAY
+      if (bet.bet_side === "BACK") {
         hedgeSide = "lay";
         hedgeOdds = currentLayOdds;
-
-        totalHedgeStake += betData.bet_amount;
-      } else if (betData.bet_side === "LAY") {
-        // Original bet is LAY, so hedge with BACK
+        
+      } else {
         hedgeSide = "back";
         hedgeOdds = currentBackOdds;
-
-        totalHedgeStake -= betData.bet_amount;
+        
       }
+      
 
-      // Store hedge details for display
       hedgeDetails.push({
-        team: betData.team_name,
-        betType: betData.type,
-        originalStake: betData.bet_amount,
-        originalOdds: betData.bet_odds,
-        hedgeSide: hedgeSide,
-        hedgeOdds: hedgeOdds,
+        team: bet.team_name,
+        betType: bet.type,
+        originalStake: bet.bet_amount,
+        originalOdds: bet.bet_odds,
+        hedgeSide,
+        hedgeOdds,
       });
     }
 
-    // const firstBet = hedgeDetails[0];
-
-    // Get market odds for both teams
     const marketOdds = getTeamMarketOdds(currentMarketData, teamNames, betType);
-    let stake11 = [];
+    let stakeResults = [];
     let finalStakeValue = 0;
-
-    let firstBet = {};
+    let bestHedge = null;
 
     Object.entries(marketOdds).forEach(([team, odds]) => {
       ["back", "lay"].forEach((side) => {
-        let hedgeOdds = odds[side];
-        let betSide = side.toUpperCase();
+        const backOdds = parseFloat(odds.back);
+        const layOdds = parseFloat(odds.lay);
         let calculatedStake = totalHedgeStake;
 
-        console.log(`[balanceHedge] Calculating for Team: ${team}, Side: ${side.toUpperCase()}`);
-        console.log(`[balanceHedge] Input - hedgeOdds: ${hedgeOdds}, totalHedgeStake: ${totalHedgeStake}`);
-        console.log(`[balanceHedge] Market odds - back: ${odds.back}, lay: ${odds.lay}`);
-
-        // For LAY side, use direct formula: layStakeBalanced = ((backOdds - 1) * totalBackStake + totalBackStake) / layOdds * 1.0253
-        if (side === "lay" && odds.back > 0 && odds.lay > 0) {
-          const backOdds = parseFloat(odds.back);
-          const layOdds = parseFloat(odds.lay);
-          const totalBackStake = parseFloat(totalHedgeStake);
-          
-          console.log(`[balanceHedge] LAY calculation:`);
-          console.log(`  backOdds: ${backOdds}`);
-          console.log(`  layOdds: ${layOdds}`);
-          console.log(`  totalBackStake: ${totalBackStake}`);
-          
-          // Calculate balanced lay stake using direct formula
-          const layStakeBalanced = ((backOdds - 1) * totalBackStake + totalBackStake) / layOdds;
-          console.log(`  layStakeBalanced (before multiplier): ${layStakeBalanced.toFixed(2)}`);
-          console.log(`  Formula: ((${backOdds} - 1) * ${totalBackStake} + ${totalBackStake}) / ${layOdds} = ${layStakeBalanced.toFixed(2)}`);
-          
-          // Apply percentage multiplier (1.0253 = 2.53% increase)
-          calculatedStake = parseFloat(layStakeBalanced.toFixed(2)) * parseFloat(profit_margin);
-          calculatedStake = parseFloat(calculatedStake.toFixed(2));
-          console.log(`  After 1.0253 multiplier: ${calculatedStake}`);
+        if (side === "lay" && backOdds > 0 && layOdds > 0) {
+          // Formula for lay hedge
+          const layStakeBalanced =
+            (((backOdds - 1) * totalHedgeStake + totalHedgeStake) / layOdds) *
+            platformFactor;
+          calculatedStake = parseFloat(layStakeBalanced.toFixed(2));
         }
-        
-        // For BACK side, use direct formula: backStakeBalanced = (layStake * layOdds) / backOdds
-        if (side === "back" && odds.back > 0 && odds.lay > 0) {
-          const backOdds = parseFloat(odds.back);
-          const layOdds = parseFloat(odds.lay);
-          const layStake = parseFloat(totalHedgeStake);
-          
-          console.log(`[balanceHedge] BACK calculation:`);
-          console.log(`  backOdds: ${backOdds}`);
-          console.log(`  layOdds: ${layOdds}`);
-          console.log(`  layStake: ${layStake}`);
-          
-          // Calculate balanced back stake using direct formula
-          const backStakeBalanced = (layStake * layOdds) / backOdds;
-          calculatedStake = parseFloat(backStakeBalanced.toFixed(2)) * parseFloat(1.0253);
-          calculatedStake = parseFloat(calculatedStake.toFixed(2));
-          console.log(`  backStakeBalanced (before multiplier): ${backStakeBalanced.toFixed(2)}`);
-          console.log(`  Formula: (${layStake} * ${layOdds}) / ${backOdds} = ${backStakeBalanced.toFixed(2)}`);
-          console.log(`  After 1.0253 multiplier: ${calculatedStake}`);
-        }
-        
-        console.log(`[balanceHedge] Final calculatedStake for ${team} ${side}: ${calculatedStake}`);
 
-        // prepare hedge object
-        let hedge = {
-          team: team,
+        if (side === "back" && backOdds > 0 && layOdds > 0) {
+          // Formula for back hedge
+          const backStakeBalanced =
+            ((totalHedgeStake * layOdds) / backOdds) * platformFactor;
+          calculatedStake = parseFloat(backStakeBalanced.toFixed(2));
+        }
+
+        // hedge object
+        const hedge = {
+          team,
           hedgeSide: side,
-          hedgeOdds: hedgeOdds,
-          betSide: betSide,
-          betAmount: calculatedStake,
-          betType: betType
+          hedgeOdds: odds[side],
+          betType,
         };
 
-        
         const hedgeResult = balanceHedge(
           hedge,
           calculatedStake,
@@ -298,141 +247,56 @@ export const handleCashoutLogic = async (params) => {
           placingBets,
           profit,
           profitData,
-          loss
+          commission
         );
 
-        console.log(`[balanceHedge] Result for ${team} ${side}:`, {
-          stake: calculatedStake,
-          result: hedgeResult.result,
-          team: hedge.team,
-          side: hedge.hedgeSide,
-          odds: hedge.hedgeOdds
-        });
-
-        // Add team information to the result
-        hedgeResult.team = hedge.team;
-        hedgeResult.hedgeSide = hedge.hedgeSide;
-        hedgeResult.hedgeOdds = hedge.hedgeOdds;
+        hedgeResult.team = team;
+        hedgeResult.hedgeSide = side;
+        hedgeResult.hedgeOdds = odds[side];
         hedgeResult.stake = calculatedStake;
-
-        stake11.push(hedgeResult);
-        console.log(`[balanceHedge] Added to stake11 array. Total items: ${stake11.length}\n`);
+        stakeResults.push(hedgeResult);
       });
     });
 
-    // Find the result with minimum stake where both arrays are equal
-    let bestHedge = null;
-    let minStake = Infinity;
-
-    stake11.forEach((hedgeResult, index) => {
-      if (hedgeResult && hedgeResult.result) {
-        const [val1, val2] = hedgeResult.result;
-        const stake = hedgeResult.stake;
-
-        // Check if arrays are equal (balanced hedging)
-        if (Math.abs(val1 - val2) < 0.01) {
-          // Allow small tolerance
-          
-
-          // Find the one with minimum stake
-          if (stake < minStake) {
-            minStake = stake;
-            bestHedge = hedgeResult;
-            
-          }
-        }
-      }
-    });
-
-    // balanceHedge must always find a balanced result
-    if (bestHedge) {
-      finalStakeValue = bestHedge.stake;
-
-      // Update firstBet with the team from best hedge result
-      firstBet.team = bestHedge.team;
-      firstBet.hedgeOdds = bestHedge.hedgeOdds;
-      firstBet.hedgeSide = bestHedge.hedgeSide;
-
-      firstBet.originalStake = bestHedge.originalStake;
-      firstBet.originalOdds = bestHedge.originalOdds;
-    } else {
-      // If no balanced hedge found, use the first available result
-
-      const fallbackHedge = stake11[0]; // Use first hedge result
-
-      
-      if (fallbackHedge) {
-        finalStakeValue = fallbackHedge.stake;
-        firstBet.team = fallbackHedge.team;
-        firstBet.hedgeOdds = fallbackHedge.hedgeOdds;
-        firstBet.hedgeSide = fallbackHedge.hedgeSide;
-        firstBet.originalStake = fallbackHedge.originalStake;
-        firstBet.originalOdds = fallbackHedge.originalOdds;
-      } else {
-        return false;
+    // choose best hedge (balanced results)
+    let minDiff = Infinity;
+    for (const h of stakeResults) {
+      const [v1, v2] = h.result;
+      const diff = Math.abs(v1 - v2);
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestHedge = h;
       }
     }
 
-    if (hedgeDetails.length === 0) {
-      alert("No valid hedging opportunities found");
+    if (!bestHedge) {
+      alert("No valid hedge found");
       return false;
     }
 
-    // Use the first bet's parameters for the hedge bet setup
+    finalStakeValue = bestHedge.stake;
+    const firstBet = bestHedge;
 
-    // Set up the hedge bet parameters with total calculated stake
-    
+    // setup UI
     setBetType(betType);
-    
     setBetTypeFromArray(defaultBetType);
-
     setBetOddValue(firstBet.hedgeOdds);
     setbackOrLay(firstBet.hedgeSide);
-
-    setTeam(
-      defaultBetType === "ODDS" ? "MATCH_ODDS" : defaultBetType.toUpperCase()
-    );
-
+    setTeam(defaultBetType === "ODDS" ? "MATCH_ODDS" : defaultBetType.toUpperCase());
     setDefaultTeamName.current = firstBet.team;
-
     setPopupDisplay(true);
 
-    // Set the total stake value with proper rounding
-    // Wait for the input to be visible and ref to be attached
-    const setStakeValue = () => {
-      if (stakeValue && stakeValue.current && stakeValue.current.value !== undefined) {
+    const setStakeValueInput = () => {
+      if (stakeValue?.current) {
         stakeValue.current.value = finalStakeValue;
-        
-        
-        
-          // If handleStakeChange is not available, trigger native events
-          const input = stakeValue.current;
-          if (input) {
-            
-            // Trigger input event
-            const inputEvent = new Event('input', { bubbles: true });
-            input.dispatchEvent(inputEvent);
-            
-            // Trigger change event
-            const changeEvent = new Event('change', { bubbles: true });
-            input.dispatchEvent(changeEvent);
-            
-            // Trigger blur event
-            const blurEvent = new Event('blur', { bubbles: true });
-            input.dispatchEvent(blurEvent);
-          }
-        
+        ["input", "change", "blur"].forEach((evt) =>
+          stakeValue.current.dispatchEvent(new Event(evt, { bubbles: true }))
+        );
       } else {
-        console.warn("Input ref not ready, retrying in 100ms...");
-        setTimeout(setStakeValue, 100);
+        setTimeout(setStakeValueInput, 100);
       }
     };
-    
-    setStakeValue();
-    
-
-    
-    // Open the bet popup with pre-filled hedge data
+    setStakeValueInput();
 
     return true;
   } catch (error) {
@@ -440,6 +304,7 @@ export const handleCashoutLogic = async (params) => {
     return false;
   }
 };
+
 
 
 

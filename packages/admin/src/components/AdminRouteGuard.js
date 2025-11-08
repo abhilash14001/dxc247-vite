@@ -1,13 +1,18 @@
 import { useEffect } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { hasPermission } from '@dxc247/shared/utils/permissionUtils';
 
 const AdminRouteGuard = ({ children, requiredPermission }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, token, loading, user } = useSelector(state => state.admin);
 
   useEffect(() => {
+    // Skip redirect if already on login page to prevent infinite loop
+    if (location.pathname === '/login') {
+      return;
+    }
   
     // Check if user is not authenticated
     if (!isAuthenticated || !token) {
@@ -35,7 +40,7 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
         return;
       }
     }
-  }, [isAuthenticated, token, loading, navigate, user]);
+  }, [isAuthenticated, token, loading, navigate, user, location.pathname]);
 
   
 

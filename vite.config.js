@@ -22,6 +22,11 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: false, // Disable source maps for production (matching CRA behavior)
+    minify: 'esbuild', // Use esbuild for minification (faster, good obfuscation)
+    // Remove console and debugger in production builds
+    esbuild: {
+      drop: ['console', 'debugger'],
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -29,6 +34,11 @@ export default defineConfig({
           'redux-vendor': ['@reduxjs/toolkit', 'react-redux', 'redux-persist'],
           'ui-vendor': ['bootstrap', 'react-bootstrap', 'react-toastify'],
         },
+        compact: true, // Compact output
+        // Obfuscate file names - use hash only, hide component names
+        chunkFileNames: 'assets/chunk-[hash].js',
+        entryFileNames: 'assets/entry-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
     chunkSizeWarningLimit: 1000,

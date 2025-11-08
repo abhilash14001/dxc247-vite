@@ -12,6 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import AfterLoginPopup from "../AfterLoginPopup";
 import DesktopRulesModal from "../DesktopRulesModal";
 import EditStakeModal from "../EditStakeModal";
+import RulesAcceptModal from "../RulesAcceptModal";
 import { createPopper } from "@popperjs/core";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -208,6 +209,31 @@ function Header() {
   const [ruleModal, setRuleModal] = useState(false);
   const [stakeModal, setStakeModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [showRulesModal, setShowRulesModal] = useState(false);
+
+  // Check if rules modal should be shown (when user.accept_terms == 0)
+  useEffect(() => {
+    console.log('userData is ',userData)
+    if (userData && userData.accept_terms === 0 && isLoggedIn) {
+      setShowRulesModal(true);
+      // Don't show banner popup until rules are accepted
+      // Keep showModal true in Redux but don't render banner while rules modal is open
+    } else if (userData && userData.accept_terms === 1) {
+      // Rules already accepted, hide rules modal
+      setShowRulesModal(false);
+    }
+  }, [userData, isLoggedIn]);
+
+  const handleRulesAccept = () => {
+    setShowRulesModal(false);
+    // Banner will show automatically since showModal is already true in Redux
+    // The condition {showModal && !showRulesModal && ...} will allow banner to show
+  };
+
+  const handleRulesClose = () => {
+    // Don't allow closing without accepting
+    // Modal will handle the cancel action
+  };
 
   const showStakePopup = () => {
     setStakeModal(!stakeModal);
@@ -232,7 +258,12 @@ function Header() {
           showModal={ruleModal}
           handleClose={handleRuleModalClose}
         />
-        {showModal && (
+        <RulesAcceptModal
+          show={showRulesModal}
+          onClose={handleRulesClose}
+          onAccept={handleRulesAccept}
+        />
+        {showModal && !showRulesModal && (
           <AfterLoginPopup onClose={toggleModal} show={showModal} />
         )}
         <EditStakeModal handleClose={showStakePopup} show={stakeModal} />

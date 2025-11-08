@@ -623,14 +623,14 @@ function AdminUsers() {
                                 </a>
                                 <a
                                   href="javascript:void(0);"
-                                  onClick={() => handleDeposit(user.id, user.username, user.balance, userInfo.username, '79500')}
+                                  onClick={() => handleDeposit(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
                                   title="Deposit"
                                 >
                                   <span>D</span>
                                 </a>
                                 <a
                                   href="javascript:void(0);"
-                                  onClick={() => handleWithdraw(user.id, user.username, user.balance, userInfo.username, '79500')}
+                                  onClick={() => handleWithdraw(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
                                   title="Withdraw"
                                 >
                                   <span>W</span>
@@ -786,14 +786,14 @@ function AdminUsers() {
                                 </a>
                                 <a
                                   href="javascript:void(0);"
-                                  onClick={() => handleDeposit(user.id, user.username, user.balance, userInfo.username, '79500')}
+                                  onClick={() => handleDeposit(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
                                   title="Deposit"
                                 >
                                   <span>D</span>
                                 </a>
                                 <a
                                   href="javascript:void(0);"
-                                  onClick={() => handleWithdraw(user.id, user.username, user.balance, userInfo.username, '79500')}
+                                  onClick={() => handleWithdraw(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
                                   title="Withdraw"
                                 >
                                   <span>W</span>

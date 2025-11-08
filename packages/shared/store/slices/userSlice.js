@@ -64,6 +64,11 @@ const userSlice = createSlice({
     setTransactionPassword: (state, action) => {
       state.transactionPassword = action.payload;
     },
+    setAcceptTerms: (state) => {
+      if (state.user) {
+        state.user.accept_terms = 1;
+      }
+    },
     resetUserState: () => initialState,
   },
 });
@@ -79,6 +84,7 @@ export const {
   setShowModal,
   setBannerDetails,
   setTransactionPassword,
+  setAcceptTerms,
   resetUserState,
 } = userSlice.actions;
 
