@@ -41,21 +41,43 @@ const RulesAcceptModal = ({ show, onClose, onAccept }) => {
 
     setLoading(true);
     try {
-      const response = await axiosFetch('accept-terms', 'POST', null, {
-        user_id: user.id
-      });
+      // Call the accept-terms API endpoint
+      // Backend uses auth()->user() so no need to send user_id
+      const response = await axiosFetch('accept-terms', 'POST', null, {});
 
-      if (response && response.success) {
+      // Handle response structure (axiosFetch may return {data: {...}} or direct response)
+      const responseData = response?.data || response;
+      
+      if (responseData && responseData.success) {
         // Update user in Redux state
         dispatch(setAcceptTerms());
-        Notify('Terms accepted successfully', null, null, 'success');
-        onAccept();
-        onClose();
+        
+        // Show success notification
+        Notify(
+          responseData.message || 'Terms accepted successfully', 
+          null, 
+          null, 
+          'success'
+        );
+        
+        // Call callbacks and close modal
+        if (onAccept) {
+          onAccept();
+        }
+        if (onClose) {
+          onClose();
+        }
       } else {
-        Notify(response?.message || 'Failed to accept terms', null, null, 'danger');
+        // Handle failure response
+        const errorMessage = responseData?.message || response?.message || 'Failed to accept terms';
+        Notify(errorMessage, null, null, 'danger');
       }
     } catch (error) {
-      Notify('An error occurred while accepting terms', null, null, 'danger');
+      // Handle API errors
+      const errorMessage = error?.response?.data?.message || 
+                          error?.message || 
+                          'An error occurred while accepting terms';
+      Notify(errorMessage, null, null, 'danger');
     } finally {
       setLoading(false);
     }
@@ -215,28 +237,6 @@ const RulesAcceptModal = ({ show, onClose, onAccept }) => {
     handleCancel();
   };
 
-  // Add rules-modal class to the modal element itself
-  useEffect(() => {
-    if (show) {
-      // Use setTimeout to ensure modal is rendered
-      const timer = setTimeout(() => {
-        const modalElements = document.querySelectorAll('.modal.show');
-        // Get the last modal (most recent one) which should be this rules modal
-        const modalElement = modalElements[modalElements.length - 1];
-        if (modalElement && !modalElement.classList.contains('rules-modal')) {
-          modalElement.classList.add('rules-modal');
-        }
-      }, 0);
-
-      return () => {
-        clearTimeout(timer);
-        const modalElements = document.querySelectorAll('.modal.show.rules-modal');
-        modalElements.forEach(el => {
-          el.classList.remove('rules-modal');
-        });
-      };
-    }
-  }, [show]);
 
   return (
     <Modal 
@@ -244,6 +244,8 @@ const RulesAcceptModal = ({ show, onClose, onAccept }) => {
       onHide={handleModalClose}
       size="xl"
       backdrop="static"
+      dialogClassName="rules-modal"
+
       keyboard={false}
       centered
     >
