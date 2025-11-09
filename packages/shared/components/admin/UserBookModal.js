@@ -236,7 +236,8 @@ const UserBookModal = ({
                         <td>{bookData.pagination?.from + index}</td>
                         <td>
                           <a 
-                            href="javascript:void(0);" 
+                            href="#" 
+                            onClick={(e) => e.preventDefault()}
                           >
                             {user.username}
                           </a>

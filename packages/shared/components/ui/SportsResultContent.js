@@ -267,9 +267,12 @@ const SportsResultContent = ({
                   <td>{bet.ip_address || 'N/A'}</td>
                   <td>
                     <a
-                      href="javascript:void(0)"
+                      href="#"
                       className="browser-detail-link"
-                      onClick={() => showBrowserDetailsPopup(bet.browser_details)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        showBrowserDetailsPopup(bet.browser_details);
+                      }}
                       style={{
                         color: '#007bff',
                         textDecoration: 'none',

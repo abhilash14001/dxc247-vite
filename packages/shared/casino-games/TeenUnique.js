@@ -514,11 +514,11 @@ const TeenUnique = () => {
             </div>
             {selectedTeenUniqueCards.length > 0 && (
               <div>
-                <button class="btn btn-danger btn-sm me-1">Clear</button>
+                <button className="btn btn-danger btn-sm me-1">Clear</button>
                 <button
                   disabled={selectedTeenUniqueCards.length < 3}
                   onClick={() => setShowMobilePopup(true)}
-                  class="btn btn-success btn-sm"
+                  className="btn btn-success btn-sm"
                 >
                   Placebet
                 </button>

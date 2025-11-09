@@ -596,22 +596,28 @@ function AdminCasinoMarket() {
                                   </td>
                                   <td>
                                     <a 
-                                      href="javascript:void(0);" 
-                                      
+                                      href="#" 
+                                      onClick={(e) => e.preventDefault()}
                                       className="btn btn-success btn-sm me-1"
                                     >
                                       {casino.position}
                                     </a>
                                     <a 
-                                      href="javascript:void(0);" 
-                                      onClick={() => handleSetImage(casino.id, casino.casino_image)} 
+                                      href="#" 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleSetImage(casino.id, casino.casino_image);
+                                      }} 
                                       className="btn btn-warning btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faImage} /> Set Image
                                     </a>
                                     <a 
-                                      href="javascript:void(0);" 
-                                      onClick={() => handleSetVideoURL(casino.id, casino.casino_video)} 
+                                      href="#" 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleSetVideoURL(casino.id, casino.casino_video);
+                                      }} 
                                       className="btn btn-primary btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faVideo} /> Set URL
@@ -716,28 +722,38 @@ function AdminCasinoMarket() {
                                   </td>
                                   <td>
                                     <a 
-                                      href="javascript:void(0);" 
+                                      href="#"
+                                      onClick={(e) => e.preventDefault()} 
                                       className="btn btn-success btn-sm me-1"
                                     >
                                       {casino.casino_sort}
                                     </a>
                                     <a 
-                                      href="javascript:void(0);" 
-                                      onClick={() => handleSetImage(casino.id, casino.casino_image)} 
+                                      href="#" 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleSetImage(casino.id, casino.casino_image);
+                                      }} 
                                       className="btn btn-warning btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faImage} /> Set Image
                                     </a>
                                     <a 
-                                      href="javascript:void(0);" 
-                                      onClick={() => handleSetVideoURL(casino.id, casino.casino_video)} 
+                                      href="#" 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleSetVideoURL(casino.id, casino.casino_video);
+                                      }} 
                                       className="btn btn-primary btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faVideo} /> Set URL
                                     </a>
                                     <a 
-                                      href="javascript:void(0);" 
-                                      onClick={() => handleSetBetLimit(casino.id)} 
+                                      href="#" 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleSetBetLimit(casino.id);
+                                      }} 
                                       className="btn btn-info btn-sm me-1"
                                     >
                                       <FontAwesomeIcon icon={faCog} /> Bet Limit

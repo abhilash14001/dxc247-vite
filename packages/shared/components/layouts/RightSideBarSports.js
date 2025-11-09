@@ -634,8 +634,10 @@ const RightSideBarSports = ({
       }}
     >
       <a
+        href="#"
         className="blink-red-yellow text-decoration-underline mt-2 mb-2"
-        href="javascript:void(0)"
+        onClick={(e) => e.preventDefault()}
+        style={{ cursor: 'default' }}
       >
         <FontAwesomeIcon icon={faInfoCircle} className="me-1" />
         Teenpatti Joker 20-20

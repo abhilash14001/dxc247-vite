@@ -113,10 +113,10 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
         </button>
         {openDropdowns.bmLock && (
           <ul className="dropdown-menu" style={{ top: '100%', position: 'absolute', display: 'block' }}>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('BOOKMAKER', 1)}>Lock</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('BOOKMAKER', 0)}>UnLock</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('BOOKMAKER', 1); }}>Lock</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('BOOKMAKER', 0); }}>UnLock</a></li>
             
-            <li><a href="javascript:void(0);" onClick={() => handleSelectUsers('BOOKMAKER')}>Select User</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleSelectUsers('BOOKMAKER'); }}>Select User</a></li>
           </ul>
         )}
       </div>
@@ -150,16 +150,16 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
         </button>
         {openDropdowns.matchSuspend && (
           <ul className="dropdown-menu" style={{ top: '100%', position: 'absolute', display: 'block' }}>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPEND', 1)}>Suspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPEND', 0)}>UnSuspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPENDODDS', 1)}>Odds Suspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPENDODDS', 0)}>Odds UnSuspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPENDBOOKMAKER', 1)}>Bookmaker Suspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPENDBOOKMAKER', 0)}>Bookmaker UnSuspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPENDFANCY', 1)}>Fancy Suspend</a></li>
-            <li><a href="javascript:void(0);" onClick={() => handleMatchLock('SUSPENDFANCY', 0)}>Fancy UnSuspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPEND', 1); }}>Suspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPEND', 0); }}>UnSuspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDODDS', 1); }}>Odds Suspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDODDS', 0); }}>Odds UnSuspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDBOOKMAKER', 1); }}>Bookmaker Suspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDBOOKMAKER', 0); }}>Bookmaker UnSuspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDFANCY', 1); }}>Fancy Suspend</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDFANCY', 0); }}>Fancy UnSuspend</a></li>
             
-            <li><a href="javascript:void(0);" onClick={() => handleSelectUsers('SUSPEND')}>Select User</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); handleSelectUsers('SUSPEND'); }}>Select User</a></li>
           </ul>
         )}
       </div>

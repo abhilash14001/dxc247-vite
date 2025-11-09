@@ -316,8 +316,8 @@ const OddEven = ({
                                 <span className="market-nation-name">
                                   {teamName}
                                 </span>
-                                <div class="market-nation-book">
-                                  <span class={`market-book text-danger ${getFancySessionValue < 0 ? 'text-danger' : 'text-success'} `}>
+                                <div className="market-nation-book">
+                                  <span className={`market-book text-danger ${getFancySessionValue < 0 ? 'text-danger' : 'text-success'} `}>
                                     {getFancySessionValue}
                                   </span>
                                 </div>

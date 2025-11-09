@@ -298,7 +298,7 @@ const AdminLayout = ({ children }) => {
                   className="ui-autocomplete-input"
                   autoComplete="off"
                 />
-                <a id="clientList2" data-value="" href="javascript:void(0)">
+                <a id="clientList2" data-value="" href="#" onClick={(e) => e.preventDefault()}>
                   <i className="fas fa-search-plus"></i>
                 </a>
               </li>

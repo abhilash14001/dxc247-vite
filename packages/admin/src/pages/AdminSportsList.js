@@ -620,8 +620,11 @@ function AdminSportsList() {
         {/* Team Winner / Result Declared Button */}
         {match.isResultDeclear === 0 ? (
           <a 
-            href="javascript:void(0);" 
-            onClick={() => showSportWinnerModel(match.id)} 
+            href="#" 
+            onClick={(e) => {
+              e.preventDefault();
+              showSportWinnerModel(match.id);
+            }} 
             className="btn btn-success btn-sm me-1"
             style={{ opacity: isUpdating ? 0.6 : 1, pointerEvents: isUpdating ? 'none' : 'auto' }}
           >
@@ -629,7 +632,8 @@ function AdminSportsList() {
           </a>
         ) : (
           <a 
-            href="javascript:void(0);" 
+            href="#" 
+            onClick={(e) => e.preventDefault()}
             className="btn btn-success btn-sm me-1"
             style={{ opacity: 0.6, pointerEvents: 'none' }}
           >
@@ -651,8 +655,11 @@ function AdminSportsList() {
 
         {/* Change Status Button */}
         <a 
-          href="javascript:void(0);" 
-          onClick={() => sportChangeStatus(match.id)} 
+          href="#" 
+          onClick={(e) => {
+            e.preventDefault();
+            sportChangeStatus(match.id);
+          }} 
           className="btn btn-success btn-sm me-1"
           style={{ opacity: isUpdating ? 0.6 : 1, pointerEvents: isUpdating ? 'none' : 'auto' }}
         >
@@ -668,8 +675,11 @@ function AdminSportsList() {
 
         {/* Change Play Status Button */}
         <a 
-          href="javascript:void(0);" 
-          onClick={() => sportChangePlayStatus(match.id)} 
+          href="#" 
+          onClick={(e) => {
+            e.preventDefault();
+            sportChangePlayStatus(match.id);
+          }} 
           className="btn btn-success btn-sm"
           style={{ opacity: isUpdating ? 0.6 : 1, pointerEvents: isUpdating ? 'none' : 'auto' }}
         >

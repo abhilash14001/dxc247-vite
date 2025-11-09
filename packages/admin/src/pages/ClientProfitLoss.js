@@ -356,9 +356,12 @@ function ClientProfitLoss() {
                         <tr>
                           <td>
                             <a
-                              href="javascript:void(0);"
+                              href="#"
                               className="btn-sm btn-primary"
-                              onClick={(e) => handleParentIDChange(0, e)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleParentIDChange(0, e);
+                              }}
                             >
                               Back
                             </a>
@@ -385,8 +388,11 @@ function ClientProfitLoss() {
                               <td>
                                 {item.parent_id > 0 ? (
                                   <a
-                                    href="javascript:void(0);"
-                                    onClick={(e) => handleParentIDChange(item.user_id, e)}
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleParentIDChange(item.user_id, e);
+                                    }}
                                   >
                                     {item.username?.toUpperCase()}
                                   </a>

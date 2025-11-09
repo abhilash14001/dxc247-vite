@@ -253,12 +253,12 @@ const CasinoLayout = ({
                   </small>
                   
                   {props.max && props.min && (
-                    <small class="ms-2"><span>Range: {props.min} to {getSize(props.max, true)}</span></small>
+                    <small className="ms-2"><span>Range: {props.min} to {getSize(props.max, true)}</span></small>
                   )}
                   
                 </span>
                 {props.max && props.min && (
-                <span class="casino-rid d-xl-none"><small class="ms-2"><span>Range: {props.min} to {getSize(props.max, true)}</span></small></span>
+                <span className="casino-rid d-xl-none"><small className="ms-2"><span>Range: {props.min} to {getSize(props.max, true)}</span></small></span>
                 )}
 
                 

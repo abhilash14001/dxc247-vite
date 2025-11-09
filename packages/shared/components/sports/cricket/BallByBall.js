@@ -196,7 +196,7 @@ const BallByBall = ({
                                         </div>
                                     </div>
                                     {oddsArr.rem && (
-                                        <div class="market-row"><marquee class="market-remark">{oddsArr.rem}</marquee></div>
+                                        <div className="market-row"><marquee className="market-remark">{oddsArr.rem}</marquee></div>
                                     )}
                                 </div>
                             </div>

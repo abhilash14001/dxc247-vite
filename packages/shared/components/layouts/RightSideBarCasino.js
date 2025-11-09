@@ -233,7 +233,7 @@ const RightSideBarCasino = ({
                     ></i>
                   )}
                   {match_id === "teenunique" ? (
-                    <div class="unique-teen20-place-balls">
+                    <div className="unique-teen20-place-balls">
                       {teamname?.current.map((card, index) => (
                         <img key={index} src={`/img/sequence/s${card}.png`} />
                       ))}
@@ -533,7 +533,7 @@ const RightSideBarCasino = ({
               <div className="row row5">
                 <div className="col-6">
                   {match_id === "teenunique" ? (
-                    <div class="unique-teen20-place-balls">
+                    <div className="unique-teen20-place-balls">
                       {teamname?.current.map((card, index) => (
                         <img key={index} src={`/img/sequence/s${card}.png`} />
                       ))}

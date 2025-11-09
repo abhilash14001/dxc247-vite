@@ -381,8 +381,11 @@ function AdminUsers() {
                   <label className="col-md-8 text-left">
                     <a
                       className="btn btn-success"
-                      href="javascript:void(0);"
-                      onClick={openAddChipsModal}
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        openAddChipsModal();
+                      }}
                     >
                       Add Chips
                     </a>
@@ -577,8 +580,11 @@ function AdminUsers() {
               <tr key={user.id}>
                 <td>
                                 <a 
-                                  href="javascript:void(0);"
-                                  onClick={() => handleViewUser(user.id, user.uuid, user.username)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleViewUser(user.id, user.uuid, user.username);
+                                  }}
                                 >
                                   {user.username}
                                 </a>
@@ -615,39 +621,54 @@ function AdminUsers() {
                               <td>{user.type}</td>
                               <td className="actions text-center">
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleCreditReference(user.id, user.username, user.credit_reference)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleCreditReference(user.id, user.username, user.credit_reference);
+                                  }}
                                   title="Credit Reference"
                                 >
                                   <span>C</span>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleDeposit(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeposit(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss);
+                                  }}
                                   title="Deposit"
                                 >
                                   <span>D</span>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleWithdraw(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleWithdraw(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss);
+                                  }}
                                   title="Withdraw"
                                 >
                                   <span>W</span>
                                 </a>
-                                <a href="javascript:void(0);" title="Exposure">
+                                <a href="#" onClick={(e) => e.preventDefault()} title="Exposure">
                                   <span>L</span>
                                 </a>
                                 <a 
-                                  href="javascript:void(0);"
-                                  onClick={() => handleChangePassword(user.id)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleChangePassword(user.id);
+                                  }}
                                   title="Change Password"
                                 >
                                   <span>P</span>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleUserStatus(user.id, user.username, user.active === 1, user.active === 1)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleUserStatus(user.id, user.username, user.active === 1, user.active === 1);
+                                  }}
                                   title="User Status"
                                 >
                                   <span>S</span>
@@ -660,16 +681,22 @@ function AdminUsers() {
                                   <i className="fa fa-edit"></i>
                                 </Link>
                                 <a
-                                  href="javascript:void(0);"
+                                  href="#"
                                   title="Single User Logout"
-                                  onClick={() => handleLogoutSingleUser(user.id)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleLogoutSingleUser(user.id);
+                                  }}
                                 >
                                   <i className="fas fa-sign-out-alt"></i>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeleteUser(user.id);
+                                  }}
                                   title="Delete User"
-                                  onClick={() => handleDeleteUser(user.id)}
                                 >
                                   <i className="fas fa-trash"></i>
                                 </a>
@@ -740,8 +767,11 @@ function AdminUsers() {
                             <tr key={user.id}>
                               <td>
                                 <a 
-                                  href="javascript:void(0);"
-                                  onClick={() => handleViewUser(user.id, user.uuid, user.username)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleViewUser(user.id, user.uuid, user.username);
+                                  }}
                                 >
                                   {user.username}
                                 </a>
@@ -778,39 +808,54 @@ function AdminUsers() {
                               <td>{user.role === 1 ? 'ADMIN' : 'USER'}</td>
                               <td className="actions text-center">
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleCreditReference(user.id, user.username, user.credit_reference)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleCreditReference(user.id, user.username, user.credit_reference);
+                                  }}
                                   title="Credit Reference"
                                 >
                                   <span>C</span>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleDeposit(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeposit(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss);
+                                  }}
                                   title="Deposit"
                                 >
                                   <span>D</span>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleWithdraw(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleWithdraw(user.id, user.username, user.balance, userInfo.username, balanceData.available_balance_with_profit_loss);
+                                  }}
                                   title="Withdraw"
                                 >
                                   <span>W</span>
                                 </a>
-                                <a href="javascript:void(0);" title="Exposure">
+                                <a href="#" onClick={(e) => e.preventDefault()} title="Exposure">
                                   <span>L</span>
                                 </a>
                                 <a 
-                                  href="javascript:void(0);"
-                                  onClick={() => handleChangePassword(user.id)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleChangePassword(user.id);
+                                  }}
                                   title="Change Password"
                                 >
                                   <span>P</span>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
-                                  onClick={() => handleUserStatus(user.id, user.username, user.active === 1, user.active === 1)}
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleUserStatus(user.id, user.username, user.active === 1, user.active === 1);
+                                  }}
                                   title="User Status"
                                 >
                                   <span>S</span>
@@ -823,14 +868,18 @@ function AdminUsers() {
                                   <i className="fa fa-edit"></i>
                                 </Link>
                                 <a
-                                  href="javascript:void(0);"
+                                  href="#"
                                   title="Single User Logout"
-                                  onClick={() => handleLogoutSingleUser(user.id)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleLogoutSingleUser(user.id);
+                                  }}
                                 >
                                   <i className="fas fa-sign-out-alt"></i>
                                 </a>
                                 <a
-                                  href="javascript:void(0);"
+                                  href="#"
+                                  onClick={(e) => e.preventDefault()}
                         title="Delete User"
                                   onClick={() => handleDeleteUser(user.id)}
                                 >
