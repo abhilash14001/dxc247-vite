@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
+import { setLiveModeData } from '@dxc247/shared/store/slices/commonDataSlice';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +12,7 @@ import CenteredSpinner from '@dxc247/shared/components/ui/CenteredSpinner';
 const AdminCreateEditPrefix = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isEdit = Boolean(id);
   
   const [loading, setLoading] = useState(false);
@@ -166,6 +169,18 @@ const AdminCreateEditPrefix = () => {
 
       if (response.success) {
         toast.success(isEdit ? 'Prefix updated successfully!' : 'Prefix created successfully!');
+        
+        // Refresh liveModeData to update login theme
+        try {
+          const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
+          if (liveModeResponse) {
+            dispatch(setLiveModeData(liveModeResponse));
+          }
+        } catch (themeError) {
+          console.error('Error refreshing login theme:', themeError);
+          // Don't show error to user as prefix update was successful
+        }
+        
         navigate('/settings/manage-prefix');
       } else {
         // Show server validation message for 422 errors
