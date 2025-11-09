@@ -944,7 +944,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
         onClick={onClose}
       >
       <div 
-        className="modal-dialog" 
+        className="modal-dialog modal-dialog-centered modal-md" 
         role="document"
         onClick={(e) => e.stopPropagation()}
       >

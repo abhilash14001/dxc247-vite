@@ -111,3 +111,4 @@ yarn.lock
 packages/*/yarn.lock
 dxc247.sql
 .gitignore
+dxc247.sql:Zone.Identifier

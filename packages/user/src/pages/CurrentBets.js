@@ -120,11 +120,7 @@ const CurrentBets = () => {
       },
     ];
 
-    const data = {
-      gtype: selectedGtype,
-      filter: selectedFilter,
-    };
-
+ 
     const table = $("#current_bets_list").DataTable({
       pagingType: "full_numbers",
       lengthMenu: [10, 20, 30, 40, 50],
@@ -221,7 +217,7 @@ const CurrentBets = () => {
   };
 
   useEffect(() => {
-    const table = initDatatable();
+    initDatatable();
 
     //eslint-disable-next-line
   }, []);
@@ -255,6 +251,7 @@ const CurrentBets = () => {
 
   const handleFilterChange = (e) => {
     const newFilter = e.target.value;
+    
     setSelectedFilter(newFilter);
 
     // Always reload data when filter changes

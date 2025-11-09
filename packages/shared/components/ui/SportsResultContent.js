@@ -76,11 +76,8 @@ const SportsResultContent = ({
     if (sportData.type?.toLowerCase() === 'fancy_session') {
       return bet.bet_oddsk || '-';
     }
-    return bet.bet_oddsk || '-';
-    if (['oddeven', 'session'].includes(sportData.bet_type?.toLowerCase())) {
-      return fancyResult.result || 'N/A';
-    }
     return '-';
+    
   };
 
   // Get win amount with proper formatting
