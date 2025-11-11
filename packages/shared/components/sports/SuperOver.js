@@ -102,6 +102,8 @@ setBetOddValue(0);
 
     const mainValue = useMemo(() => ar_sectionData?.['super_over'], [ar_sectionData]);
     const sections = useMemo(() => mainValue?.['section'] || [], [mainValue]);
+    // Check if there are 3 teams - if so, hide cashout option
+    const hasThreeTeams = useMemo(() => sections.length === 3, [sections]);
     // Determine if any section (runner) is ACTIVE (not suspended)
     const hasAnyActiveSection = useMemo(() => {
         if (!sections || sections.length === 0) return false;
@@ -165,7 +167,7 @@ setBetOddValue(0);
         <div className="game-market market-4">
             <div className="market-title">
                 <span>SUPER_OVER</span>
-                
+                {!hasThreeTeams && (
                 <button 
                     className="float-right mb-0 btn btn-success" 
                     onClick={handleCashout}
@@ -173,6 +175,7 @@ setBetOddValue(0);
                 > 
                     Cashout   
                 </button>
+                )}
             </div>
             <div className="market-header">
                 <div className="market-nation-detail">

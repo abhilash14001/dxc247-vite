@@ -116,6 +116,8 @@ function Bookmaker({
     [ar_sectionData]
   );
   const sections = bookmakerData?.section || [];
+  // Check if there are 3 teams - if so, hide cashout option
+  const hasThreeTeams = useMemo(() => sections.length === 3, [sections]);
 
   // Determine if any section (runner) is ACTIVE (not suspended)
   const hasAnyActiveSection = useMemo(() => {
@@ -313,7 +315,7 @@ function Bookmaker({
         >
           <div className="market-title">
             <span>{bookmakerData?.mname || "Bookmaker"}</span>
-            {!isAdmin && (
+            {!isAdmin && !hasThreeTeams && (
             <button
               className="btn btn-success btn-sm"
               onClick={handleCashout}

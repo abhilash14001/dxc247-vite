@@ -117,13 +117,14 @@ const TiedMatch = ({
         teamNames.current['TIED_MATCH'] = [];
 
         const arSectionData = mainValue['section'];
-
+        // Check if there are 3 teams - if so, hide cashout option
+        const hasThreeTeams = arSectionData && arSectionData.length === 3;
 
         return (
             <div key={mainKey} className="game-market market-2 width30">
                 <div className="market-title">
                     <span>{mainValue['mname']}</span>
-                    {!isAdmin && (
+                    {!isAdmin && !hasThreeTeams && (
                     <button
                         className="btn btn-success btn-sm"
                         onClick={handleCashout}
