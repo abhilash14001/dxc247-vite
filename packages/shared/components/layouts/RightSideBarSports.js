@@ -738,7 +738,7 @@ const RightSideBarSports = ({
                     betType === "BOOKMAKER2" ||
                     betType === "TIED_MATCH" ||
                     betType === "cup"
-                      ? profit.current
+                      ? parseFloat(profit.current || 0).toFixed(2)
                       : 0}
                   </div>
                 </div>
