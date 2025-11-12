@@ -394,10 +394,10 @@ const RightSideBarSports = ({
       if (teamMaxValue && teamMaxValue < stakeValue.current.value) {
         setHideLoading(true);
 
-        Notify("Min Max Bet Limit Exceed2", null, null, "danger");
-        resetAll();
+        // Notify("Min Max Bet Limit Exceed2", null, null, "danger");
+        // resetAll();
 
-        return false;
+        // return false;
       } else if (teamMinValue && teamMinValue > stakeValue.current.value) {
         setHideLoading(true);
 

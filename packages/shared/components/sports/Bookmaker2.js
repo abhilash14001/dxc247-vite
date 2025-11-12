@@ -326,13 +326,24 @@ function Bookmaker2({
                                     <div className="market-nation-detail">
                                         <span className="market-nation-name">{teamName}</span>
                                         <div className="market-nation-book">
-                                        {getExByColor(teamEx, true)}
-
-                                            {placingBets['BOOKMAKER2']?.[teamName] && (
-                                                <span className={placingBets['BOOKMAKER2']?.[teamName] < 0 ? 'red-color' : 'green-color'}>
-                                                    {(placingBets['BOOKMAKER2'][teamName] % 1 !== 0 && placingBets['BOOKMAKER2'][teamName].toString().split('.')[1]?.length > 2) 
-                                                        ? Math.round(placingBets['BOOKMAKER2'][teamName] * 100) / 100 
-                                                        : placingBets['BOOKMAKER2'][teamName]}
+                                            {getExByColor(teamEx, true)}
+                                        </div>
+                                        <div className="market-nation-book">
+                                            {placingBets?.["BOOKMAKER2"]?.[teamName] && (
+                                                <span
+                                                    className={`market-live-book d-none d-xl-block ${
+                                                        placingBets["BOOKMAKER2"][teamName] < 0
+                                                            ? "text-danger"
+                                                            : "text-success"
+                                                    }`}
+                                                >
+                                                    {placingBets["BOOKMAKER2"][teamName] < 0
+                                                        ? placingBets["BOOKMAKER2"][
+                                                              teamName
+                                                          ].toLocaleString()
+                                                        : `${placingBets["BOOKMAKER2"][
+                                                              teamName
+                                                          ].toLocaleString()}`}
                                                 </span>
                                             )}
                                         </div>

@@ -16,6 +16,33 @@ export const isAdminRoute = () => {
   return store.getState().admin?.isAdmin;
 };
 
+/**
+ * Convert rupees to paisa, or return as-is if already in paisa
+ * Only converts if value has decimal places (is in rupees)
+ * If it's already a whole number, assumes it's already in paisa
+ * @param {number} r - The value to convert (rupees if decimal, paisa if whole number)
+ * @returns {number} - Value in paisa
+ */
+export const toPaise = (r) => {
+  // Only convert if value has decimal places (is in rupees)
+  // If it's already a whole number, assume it's already in paisa
+  if (r % 1 !== 0) {
+    return Math.round(r * 100);
+  }
+  return Math.round(r);
+};
+
+/**
+ * Convert display odds (profit-per-100 format) to decimal odds
+ * Display format: 150 means 150 profit per 100 staked (decimal: 2.50)
+ * If odds are between 1-10, they are already in decimal format, return as-is
+ * Otherwise, convert using formula: decimalOdds = 1 + (displayOdds / 100)
+ * @param {number} d - Display odds in profit-per-100 format, or decimal odds if between 1-10
+ * @returns {number} - Decimal odds
+ */
+export const displayToDecimal = (d) => {
+  return d >= 1 && d <= 10 ? d : 1 + d / 100;
+};
 
 function getTeamMarketOdds(currentMarketData, teamNames, betType) {
   if (!currentMarketData || !teamNames || !betType) {
@@ -63,70 +90,7 @@ function getTeamMarketOdds(currentMarketData, teamNames, betType) {
   return marketOdds;
 }
 
-function balanceHedge(
-  hedge,
-  totalHedgeStake,
-  teamNames,
-  teamNameCurrentBets,
-  placingBets,
-  profit,
-  profitData,
-  commission = 0.025 // default 5%
-) {
-  function calculateResult(stake) {
-    const hedgeOdds = parseFloat(hedge.hedgeOdds);
-    const side = hedge.hedgeSide.toLowerCase();
 
-    const lossLayValue = (hedgeOdds * stake) / 100;
-    const lossValue = (hedgeOdds - 1) * stake;
-
-    let loss =
-      side === "back"
-        ? parseFloat(setdecimalPoint(stake))
-        : hedge.betType === "ODDS"
-        ? parseFloat(setdecimalPoint(lossValue))
-        : parseFloat(setdecimalPoint(lossLayValue));
-
-    calculateProfitCommon(
-      hedge.betType,
-      hedge.hedgeSide,
-      hedge.hedgeOdds,
-      stake,
-      profit,
-      profitData
-    );
-
-    const updatedBets = calculateUpdatedBets(
-      hedge.betType,
-      hedge.hedgeSide,
-      hedge.team,
-      profit.current,
-      loss,
-      Object.values(teamNames.current[hedge.betType]),
-      teamNameCurrentBets.current,
-      placingBets[hedge.betType] || {}
-    );
-
-    return Object.values(updatedBets);
-  }
-
-  // apply commission on total stake (reduce potential profit)
-  const netStake = totalHedgeStake * (1 - commission);
-  const result = calculateResult(netStake);
-
-  const finalResult = [
-    parseFloat(result[0].toFixed(2)),
-    parseFloat(result[1].toFixed(2))
-  ];
-
-  return {
-    stake: netStake,
-    result: finalResult,
-    team: hedge.team,
-    hedgeSide: hedge.hedgeSide,
-    hedgeOdds: hedge.hedgeOdds
-  };
-}
 
 export const handleCashoutLogic = async (params) => {
   try {
@@ -152,8 +116,7 @@ export const handleCashoutLogic = async (params) => {
       defaultBetType = "ODDS",
     } = params;
 
-    const commission = 0.025;           // 5% exchange commission
-   const platformFactor = 0.0213054;     // platform stake adjustment factor
+    
     
 
     const isSuspended = currentMarketData.every(
@@ -232,33 +195,22 @@ export const handleCashoutLogic = async (params) => {
     const finalStakeValue = parseFloat(smartCashoutResult.stakeRupees);
     
     // Convert decimal odds back to display format (profit-per-100)
-    const hedgeOddsDisplay = Math.round((smartCashoutResult.decimalOdds - 1) * 100);
+    const hedgeOddsDisplay = smartCashoutResult.originalOdds ?? smartCashoutResult.decimalOdds;
+  
+
+
+    console.log('result is ', smartCashoutResult)
     
-    const bestHedge = {
-      team: smartCashoutResult.team,
-      hedgeSide: smartCashoutResult.side,
-      hedgeOdds: hedgeOddsDisplay,
-      stake: finalStakeValue,
-    };
+  const bestHedge = {
+    team: smartCashoutResult.team,
+    hedgeSide: smartCashoutResult.side,
+    hedgeOdds: hedgeOddsDisplay,
+    stake: finalStakeValue,
+  };
+  
 
-    // Calculate result using balanceHedge for compatibility with existing profit calculation
-    const hedge = {
-      team: bestHedge.team,
-      hedgeSide: bestHedge.hedgeSide,
-      hedgeOdds: bestHedge.hedgeOdds.toString(),
-      betType,
-    };
+  console.log('bestHedge is ', bestHedge)
 
-    const hedgeResult = balanceHedge(
-      hedge,
-      finalStakeValue,
-      teamNames,
-      teamNameCurrentBets,
-      placingBets,
-      profit,
-      profitData,
-      commission
-    );
 
     const firstBet = bestHedge;
 
@@ -303,21 +255,26 @@ export const handleCashoutLogic = async (params) => {
 export function calculateSmartCashout(matchData, recentBets) {
   if (!matchData || !Array.isArray(matchData.back)) throw new Error("matchData.back required");
 
-  const displayToDecimal = d => 1 + d / 100;
+  const displayToDecimal = d => (d >= 1 && d <= 10 ? d : 1 + d / 100);
+  const round2 = r => Math.round(r * 100) / 100;
+  const toPaise = r => Math.round(r * 100);
+
+  const teams = Array.from(new Set([
+    ...matchData.back.map(b => b.team),
+    ...matchData.lay.map(l => l.team)
+  ]));
 
   const backMap = Object.fromEntries((matchData.back || []).map(b => [b.team, b]));
   const layMap  = Object.fromEntries((matchData.lay  || []).map(l => [l.team, l]));
 
-  const teams = Object.keys(backMap);
+  if (teams.length < 1) throw new Error("matchData must contain at least one team");
 
-  if (teams.length !== 2) throw new Error("matchData.back must contain exactly two teams");
-
-  // compute current net if each team wins
   const netIfWin = {};
   teams.forEach(t => netIfWin[t] = 0);
 
   for (const bet of (recentBets || [])) {
     const betDec = displayToDecimal(bet.odds);
+    
     teams.forEach(teamWin => {
       if (bet.team === teamWin) {
         if (bet.side === "back") netIfWin[teamWin] += (betDec - 1) * bet.stake;
@@ -329,60 +286,150 @@ export function calculateSmartCashout(matchData, recentBets) {
     });
   }
 
-  const toPaise = r => Math.round(r * 100);
-  const round2 = r => Math.round(r * 100) / 100;
-
   const candidates = [];
 
-  // Back candidate for team
   const pushBack = (team) => {
     const other = teams.find(t => t !== team);
     const market = backMap[team];
-    if (!market) return;
+    if (!market || !other) return;
 
     const dec = displayToDecimal(market.odds);
     const vol = market.volume || 0;
     const numerator = netIfWin[other] - netIfWin[team];
     const theo = dec > 0 ? numerator / dec : NaN;
-    const capped = Math.max(0, Math.min(theo, vol));
+    if (theo <= 0 || !isFinite(theo)) return;
+
+    // const capped = Math.min(theo, vol);
+    const capped = theo;
     const netTeamWin = netIfWin[team] + (dec - 1) * capped;
     const netOtherWin = netIfWin[other] - capped;
 
     candidates.push({
       team, side: "back", decimalOdds: dec,
       theoreticalStake: theo, stake: capped,
+      isCapped: capped < theo,
       resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
       diff: Math.abs(netTeamWin - netOtherWin)
     });
   };
 
-  // Lay candidate for team
   const pushLay = (team) => {
     const other = teams.find(t => t !== team);
     const market = layMap[team];
-    if (!market) return;
+    if (!market || !other) return;
 
     const dec = displayToDecimal(market.odds);
     const vol = market.volume || 0;
     const numerator = netIfWin[team] - netIfWin[other];
     const theo = dec > 0 ? numerator / dec : NaN;
-    const capped = Math.max(0, Math.min(theo, vol));
+    if (theo <= 0 || !isFinite(theo)) return;
+
+    // const capped = Math.min(theo, vol);
+    const capped = theo;
     const netTeamWin = netIfWin[team] - (dec - 1) * capped;
     const netOtherWin = netIfWin[other] + capped;
 
     candidates.push({
       team, side: "lay", decimalOdds: dec,
       theoreticalStake: theo, stake: capped,
+      isCapped: capped < theo,
       resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
       diff: Math.abs(netTeamWin - netOtherWin)
     });
   };
 
-  teams.forEach(t => { pushBack(t); pushLay(t); });
+  teams.forEach(t => {
+    pushBack(t);
+    pushLay(t);
+  });
+
+  if (teams.length === 1) {
+    const team = teams[0];
+    const back = backMap[team];
+    const lay = layMap[team];
+    const decBack = back ? displayToDecimal(back.odds) : null;
+    const decLay = lay ? displayToDecimal(lay.odds) : null;
+
+    let netWin = netIfWin[team];
+    let netLose = 0;
+    for (const bet of recentBets || []) {
+      if (bet.team !== team) continue;
+      if (bet.side === "back") netLose -= bet.stake;
+      else if (bet.side === "lay") netLose += bet.stake;
+    }
+
+    if (decBack) {
+      const theo = (netLose - netWin) / decBack;
+      if (theo > 0 && isFinite(theo)) {
+        // const capped = Math.min(theo, back.volume || 0);
+        const capped = theo;
+        const netWinBack = netWin + (decBack - 1) * capped;
+        const netLoseBack = netLose - capped;
+        candidates.push({
+          team, side: "back", decimalOdds: decBack,
+          theoreticalStake: theo, stake: capped,
+          isCapped: capped < theo,
+          resultingNets: { win: netWinBack, lose: netLoseBack },
+          diff: Math.abs(netWinBack - netLoseBack)
+        });
+      }
+    }
+
+    if (decLay) {
+      const theo = (netWin - netLose) / decLay;
+      if (theo > 0 && isFinite(theo)) {
+        // const capped = Math.min(theo, lay.volume || 0);
+        const capped = theo;
+        const netWinLay = netWin - (decLay - 1) * capped;
+        const netLoseLay = netLose + capped;
+        candidates.push({
+          team, side: "lay", decimalOdds: decLay,
+          theoreticalStake: theo, stake: capped,
+          isCapped: capped < theo,
+
+          resultingNets: { win: netWinLay, lose: netLoseLay },
+          diff: Math.abs(netWinLay - netLoseLay)
+        });
+      }
+    }
+
+    if (!candidates.length) {
+      const netValue = round2(netIfWin[team]);
+      return {
+        team,
+        side: "back",
+        decimalOdds: 0,
+        stakeRupees: 0,
+        stakePaise: 0,
+        resultingNet: netValue,
+        resultingNetsIfCapped: { [team]: netValue }
+      };
+    }
+
+    candidates.sort((a, b) => a.diff - b.diff);
+    const best = candidates[0];
+    const netWin1 = round2(best.resultingNets.win);
+    const netLose1 = round2(best.resultingNets.lose);
+    const resultingNet1 = round2((netWin1 + netLose1) / 2);
+
+    return {
+      team: best.team,
+      side: best.side,
+      decimalOdds: round2(best.decimalOdds),
+      stakeRupees: round2(best.stake),
+      stakePaise: toPaise(best.stake),
+      resultingNet: resultingNet1,
+      isCapped: best.isCapped,
+      theoreticalStake: round2(best.theoreticalStake),
+      resultingNetsIfCapped: {
+        win: netWin,
+        lose: netLose
+      }
+    };
+  }
 
   if (!candidates.length) return null;
 
-  // select best candidate by smallest diff, then smaller stake, then smaller absolute avg net
   candidates.sort((a, b) => {
     if (a.diff !== b.diff) return a.diff - b.diff;
     if (a.stake !== b.stake) return a.stake - b.stake;
@@ -392,9 +439,6 @@ export function calculateSmartCashout(matchData, recentBets) {
   });
 
   const best = candidates[0];
-
-  // compute signed resultingNet as the arithmetic mean of the two resulting nets (preserves negative sign)
-  // Round individual values first, then calculate average and round again to ensure 2 decimal precision
   const netTeam = round2(best.resultingNets[teams[0]]);
   const netOther = round2(best.resultingNets[teams[1]]);
   const resultingNetSigned = round2((netTeam + netOther) / 2);
@@ -405,565 +449,17 @@ export function calculateSmartCashout(matchData, recentBets) {
     decimalOdds: round2(best.decimalOdds),
     stakeRupees: round2(best.stake),
     stakePaise: toPaise(best.stake),
-    resultingNet: resultingNetSigned,               // signed value (e.g., -4.67) - rounded to 2 decimals
+    resultingNet: resultingNetSigned,
+    isCapped: best.isCapped,
+    originalOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds,
+
+    theoreticalStake: round2(best.theoreticalStake),
     resultingNetsIfCapped: {
       [teams[0]]: netTeam,
       [teams[1]]: netOther
     }
   };
 }
-
-/**
- * Calculate the hedge stake needed to cash out an original bet
- * @param {Object} originalBet - The original bet with odds and stake
- * @param {number} originalBet.odds - The odds of the original bet
- * @param {number} originalBet.stake - The stake of the original bet
- * @param {number} hedgeOdds - The odds of the hedge bet
- * @returns {number} The hedge stake amount
- */
-export function calculateCashoutStake(originalBet, hedgeOdds) {
-  const profit = (originalBet.odds - 1) * originalBet.stake;
-  return profit / (hedgeOdds - 1);
-}
-
-/**
- * Calculate balanced hedge stake for cross-team hedging
- * This calculates the stake needed to balance profit/loss across both outcomes
- * @param {Object} originalBet - The original bet with odds, stake, and side
- * @param {number} originalBet.odds - The odds of the original bet
- * @param {number} originalBet.stake - The stake of the original bet
- * @param {string} originalBet.side - The side of the bet ('back' or 'lay')
- * @param {number} hedgeOdds - The odds of the hedge bet
- * @param {Object} options - Configuration options
- * @param {number} options.oddsBase - Base value for odds calculation (default: 1)
- * @returns {number} The balanced hedge stake
- */
-export function calculateBalancedHedgeStake(originalBet, hedgeOdds, options = {}) {
-  const { odds: originalOdds, stake: originalStake, side } = originalBet;
-  const { oddsBase = 1 } = options;
-  
-  let profitIfOriginalWins, lossIfOriginalLoses;
-  
-  if (side === "back") {
-    // Back bet: profit if wins, loss if loses
-    profitIfOriginalWins = (originalOdds - oddsBase) * originalStake;
-    lossIfOriginalLoses = originalStake;
-  } else {
-    // Lay bet: profit if loses, loss if wins
-    profitIfOriginalWins = -originalStake * (originalOdds - oddsBase);
-    lossIfOriginalLoses = originalStake;
-  }
-  
-  // For balanced hedge: profit from hedge should offset loss from original
-  // If original wins: net = profitIfOriginalWins - hedgeStake
-  // If hedge wins: net = (hedgeOdds - oddsBase) * hedgeStake - lossIfOriginalLoses
-  // Setting equal: profitIfOriginalWins - X = (hedgeOdds - oddsBase) * X - lossIfOriginalLoses
-  // profitIfOriginalWins + lossIfOriginalLoses = X + (hedgeOdds - oddsBase) * X
-  // profitIfOriginalWins + lossIfOriginalLoses = X * hedgeOdds
-  // X = (profitIfOriginalWins + lossIfOriginalLoses) / hedgeOdds
-  
-  const balancedStake = (profitIfOriginalWins + lossIfOriginalLoses) / hedgeOdds;
-  
-  return balancedStake;
-}
-
-/**
- * Compute all possible cashout options by hedging against other teams
- * @param {Object} matchData - Match data with back and lay markets
- * @param {Array} matchData.back - Array of back market options
- * @param {Array} matchData.lay - Array of lay market options
- * @param {Array} recentBets - Array of recent bets to cash out
- * @param {Object} options - Configuration options
- * @param {string} options.calculationType - 'balanced' (default) or 'profit-match'
- * @param {number} options.oddsBase - Base value for odds calculation (default: 1)
- * @param {number} options.decimalPlaces - Number of decimal places for rounding (default: 2)
- * @param {number} options.defaultVolume - Default volume if not provided (default: 0)
- * @returns {Array} Array of cashout options with hedge details
- */
-export function computeCashouts(matchData, recentBets, options = {}) {
-  const {
-    calculationType = 'balanced',
-    oddsBase = 1,
-    decimalPlaces = 2,
-    defaultVolume = 0
-  } = options;
-  
-  return recentBets.flatMap(bet => {
-    // Get all teams except the original bet team
-    const otherTeams = matchData.back.filter(option => option.team !== bet.team);
-    
-    return otherTeams.map(option => {
-      let hedgeStake;
-      
-      if (calculationType === 'balanced') {
-        // Use balanced calculation for equal profit/loss
-        hedgeStake = calculateBalancedHedgeStake(bet, option.odds, { oddsBase });
-      } else {
-        // Use profit-match calculation (original function)
-        hedgeStake = calculateCashoutStake(bet, option.odds);
-      }
-      
-      // Calculate profit/loss scenarios
-      const originalProfit = (bet.odds - oddsBase) * bet.stake;
-      const hedgeProfit = (option.odds - oddsBase) * hedgeStake;
-      
-      // If original team wins: profit from original - loss from hedge
-      // If hedge team wins: profit from hedge - loss from original
-      const profitIfOriginalWins = originalProfit - hedgeStake;
-      const profitIfHedgeWins = hedgeProfit - bet.stake;
-      
-      // Calculate balance (closeness of profit/loss)
-      const avgProfit = (profitIfOriginalWins + profitIfHedgeWins) / 2;
-      const balance = Math.abs(profitIfOriginalWins - profitIfHedgeWins);
-      
-      const roundToDecimal = (value) => {
-        const factor = Math.pow(10, decimalPlaces);
-        return (Math.round(value * factor) / factor).toFixed(decimalPlaces);
-      };
-      
-      return {
-        originalTeam: bet.team,
-        hedgeTeam: option.team,
-        hedgeOdds: option.odds,
-        originalStake: bet.stake,
-        originalOdds: bet.odds,
-        hedgeStake: roundToDecimal(hedgeStake),
-        profitIfOriginalWins: roundToDecimal(profitIfOriginalWins),
-        profitIfHedgeWins: roundToDecimal(profitIfHedgeWins),
-        avgProfit: roundToDecimal(avgProfit),
-        balance: roundToDecimal(balance),
-        volume: option.volume !== undefined ? option.volume : defaultVolume
-      };
-    });
-  });
-}
-
-/**
- * Select the best cashout option from computeCashouts results
- * @param {Array} cashoutOptions - Array of cashout options from computeCashouts
- * @param {Object} options - Configuration options
- * @param {string} options.selectionCriteria - 'best-balance' (default), 'highest-profit', 'lowest-stake', or 'highest-liquidity'
- * @param {number} options.defaultVolume - Default volume if not provided (default: 0)
- * @param {Function} options.customSort - Custom sorting function (optional)
- * @returns {Object|null} The best cashout option or null if no options
- */
-export function selectBestCashout(cashoutOptions, options = {}) {
-  if (!cashoutOptions || cashoutOptions.length === 0) {
-    return null;
-  }
-  
-  const {
-    selectionCriteria = 'best-balance',
-    defaultVolume = 0,
-    customSort = null
-  } = options;
-  
-  let sorted = [...cashoutOptions];
-  
-  // Use custom sort function if provided
-  if (customSort && typeof customSort === 'function') {
-    sorted.sort(customSort);
-    return sorted[0];
-  }
-  
-  switch (selectionCriteria) {
-    case 'best-balance':
-      // Sort by best balance (lowest difference), then by highest average profit
-      sorted.sort((a, b) => {
-        const balanceA = parseFloat(a.balance);
-        const balanceB = parseFloat(b.balance);
-        if (balanceA !== balanceB) {
-          return balanceA - balanceB;
-        }
-        return parseFloat(b.avgProfit) - parseFloat(a.avgProfit);
-      });
-      break;
-      
-    case 'highest-profit':
-      // Sort by highest average profit
-      sorted.sort((a, b) => parseFloat(b.avgProfit) - parseFloat(a.avgProfit));
-      break;
-      
-    case 'lowest-stake':
-      // Sort by lowest hedge stake
-      sorted.sort((a, b) => parseFloat(a.hedgeStake) - parseFloat(b.hedgeStake));
-      break;
-      
-    case 'highest-liquidity':
-      // Sort by highest volume (liquidity)
-      sorted.sort((a, b) => {
-        const volumeA = a.volume !== undefined ? a.volume : defaultVolume;
-        const volumeB = b.volume !== undefined ? b.volume : defaultVolume;
-        return volumeB - volumeA;
-      });
-      break;
-      
-    default:
-      // Default to best-balance
-      sorted.sort((a, b) => {
-        const balanceA = parseFloat(a.balance);
-        const balanceB = parseFloat(b.balance);
-        if (balanceA !== balanceB) {
-          return balanceA - balanceB;
-        }
-        return parseFloat(b.avgProfit) - parseFloat(a.avgProfit);
-      });
-  }
-  
-  return sorted[0];
-}
-
-/**
- * Compute all hedge options for a match with back and lay markets
- * @param {Object} matchData - Match data with back and lay markets
- * @param {Array} matchData.back - Array of back market options with {team, odds, volume}
- * @param {Array} matchData.lay - Array of lay market options with {team, odds, volume}
- * @param {Array} recentBets - Array of recent bets with {team, odds, stake, side}
- * @returns {Object} Object keyed by team, each containing { back: {...}, lay: {...} }
- */
-export function computeAllHedges(matchData, recentBets) {
-  console.log('=== computeAllHedges START ===');
-  console.log('Input matchData:', JSON.stringify(matchData, null, 2));
-  console.log('Input recentBets:', JSON.stringify(recentBets, null, 2));
-
-  if (!matchData || !matchData.back || !matchData.lay) {
-    throw new Error("invalid matchData");
-  }
-
-  // helper: convert displayed odds to decimal
-  const displayToDecimal = (d) => {
-    const result = 1 + d / 100;
-    console.log(`displayToDecimal: ${d} => ${result}`);
-    return result;
-  };
-
-  // build maps for quick lookup
-  const backMap = Object.fromEntries((matchData.back || []).map(b => [b.team, b]));
-  const layMap = Object.fromEntries((matchData.lay || []).map(l => [l.team, l]));
-
-  console.log('backMap:', JSON.stringify(backMap, null, 2));
-  console.log('layMap:', JSON.stringify(layMap, null, 2));
-
-  const teams = Object.keys(backMap);
-  console.log('teams:', teams);
-
-  if (teams.length !== 2) {
-    throw new Error("matchData.back must contain exactly two teams");
-  }
-
-  // compute current net P/L if each team wins (rupees)
-  const netIfWin = {};
-  teams.forEach(t => netIfWin[t] = 0);
-  console.log('Initial netIfWin:', JSON.stringify(netIfWin, null, 2));
-
-  for (const bet of recentBets || []) {
-    console.log(`\n--- Processing bet: ${JSON.stringify(bet)} ---`);
-    const betDec = displayToDecimal(bet.odds);
-    console.log(`Bet decimal odds: ${betDec}`);
-
-    teams.forEach(teamWin => {
-      const beforeNet = netIfWin[teamWin];
-      if (bet.team === teamWin) {
-        if (bet.side === "back") {
-          const profit = (betDec - 1) * bet.stake;
-          netIfWin[teamWin] += profit;
-          console.log(`  Team ${teamWin} wins: BACK bet on same team, profit = (${betDec} - 1) * ${bet.stake} = ${profit}, net: ${beforeNet} => ${netIfWin[teamWin]}`);
-        } else if (bet.side === "lay") {
-          const loss = -((betDec - 1) * bet.stake);
-          netIfWin[teamWin] += loss;
-          console.log(`  Team ${teamWin} wins: LAY bet on same team, loss = -((${betDec} - 1) * ${bet.stake}) = ${loss}, net: ${beforeNet} => ${netIfWin[teamWin]}`);
-        }
-      } else {
-        if (bet.side === "back") {
-          netIfWin[teamWin] += -bet.stake;
-          console.log(`  Team ${teamWin} wins: BACK bet on other team, loss = -${bet.stake}, net: ${beforeNet} => ${netIfWin[teamWin]}`);
-        } else if (bet.side === "lay") {
-          netIfWin[teamWin] += bet.stake;
-          console.log(`  Team ${teamWin} wins: LAY bet on other team, profit = ${bet.stake}, net: ${beforeNet} => ${netIfWin[teamWin]}`);
-        }
-      }
-    });
-  }
-
-  console.log('\nFinal netIfWin after all bets:', JSON.stringify(netIfWin, null, 2));
-
-  // utility to round rupees to 2 decimals and paise integer
-  const toPaise = (r) => {
-    const result = Math.round(r * 100);
-    console.log(`toPaise: ${r} => ${result}`);
-    return result;
-  };
-  const round2 = (r) => {
-    const result = Math.round(r * 100) / 100;
-    return result;
-  };
-
-  const results = {};
-
-  for (const team of teams) {
-    console.log(`\n========== Processing team: ${team} ==========`);
-    const other = teams.find(t => t !== team);
-    console.log(`Other team: ${other}`);
-
-    // decimal odds for this team's back and lay (use available market values)
-    console.log(`\n--- Market Data for ${team} ---`);
-    console.log(`Back market: ${JSON.stringify(backMap[team])}`);
-    const decBack = displayToDecimal(backMap[team].odds);
-    const volBack = backMap[team].volume || 0;
-    console.log(`Back decimal odds: ${decBack}, volume: ${volBack}`);
-
-    const decLay = layMap[team] ? displayToDecimal(layMap[team].odds) : null;
-    const volLay = layMap[team] ? layMap[team].volume || 0 : 0;
-    if (layMap[team]) {
-      console.log(`Lay market: ${JSON.stringify(layMap[team])}`);
-      console.log(`Lay decimal odds: ${decLay}, volume: ${volLay}`);
-    } else {
-      console.log(`No lay market for ${team}`);
-    }
-
-    // Formula derivations:
-    // - Stake s_back (back on team) solves: netOther - s_back = netTeam + (decBack - 1)*s_back
-    //   => s_back * decBack = netOther - netTeam  => s_back = (netOther - netTeam) / decBack
-    // - Stake s_lay (lay on team) solves: netOther + s_lay = netTeam - (decLay - 1)*s_lay
-    //   (lay stake s_lay means you offer to pay (decLay - 1)*s_lay if team wins; if team loses you gain s_lay)
-    //   => netOther + s_lay = netTeam - (decLay - 1)*s_lay
-    //   => s_lay * (1 + (decLay - 1)) = netTeam - netOther
-    //   => s_lay * decLay = netTeam - netOther  => s_lay = (netTeam - netOther) / decLay
-
-    const netTeam = netIfWin[team];
-    const netOther = netIfWin[other];
-    console.log(`\n--- Net P/L Values ---`);
-    console.log(`netIfWin[${team}]: ${netTeam}`);
-    console.log(`netIfWin[${other}]: ${netOther}`);
-
-    // compute theoretical stakes (rupees)
-    console.log(`\n--- Theoretical Stakes Calculation ---`);
-    const theoBack = decBack > 0 ? (netOther - netTeam) / decBack : NaN;
-    console.log(`Theoretical BACK stake: (${netOther} - ${netTeam}) / ${decBack} = ${theoBack}`);
-
-    const theoLay = (decLay && decLay > 0) ? (netTeam - netOther) / decLay : NaN;
-    if (decLay && decLay > 0) {
-      console.log(`Theoretical LAY stake: (${netTeam} - ${netOther}) / ${decLay} = ${theoLay}`);
-    } else {
-      console.log(`Theoretical LAY stake: NaN (no lay market or invalid odds)`);
-    }
-
-    // feasibility and capping by available volume (volumes assumed in same units as stake)
-    const backFeasible = theoBack > 0;
-    const layFeasible = theoLay > 0;
-    console.log(`\n--- Feasibility Check ---`);
-    console.log(`Back feasible: ${backFeasible} (theoBack > 0)`);
-    console.log(`Lay feasible: ${layFeasible} (theoLay > 0)`);
-
-    const backCapped = Math.max(0, Math.min(theoBack, volBack));
-    const layCapped = Math.max(0, Math.min(theoLay, volLay));
-    console.log(`\n--- Volume Capping ---`);
-    console.log(`Back capped stake: Math.max(0, Math.min(${theoBack}, ${volBack})) = ${backCapped}`);
-    console.log(`Lay capped stake: Math.max(0, Math.min(${theoLay}, ${volLay})) = ${layCapped}`);
-
-    // compute resulting nets after placing the capped stake
-    // After backing team with stake s_back:
-    //   - if team wins: netTeam' = netTeam + (decBack - 1)*s_back
-    //   - if other wins: netOther' = netOther - s_back
-    console.log(`\n--- Resulting Nets After BACK Hedge ---`);
-    const backNetTeamWin = netTeam + (decBack - 1) * backCapped;
-    const backNetOtherWin = netOther - backCapped;
-    console.log(`If ${team} wins: ${netTeam} + (${decBack} - 1) * ${backCapped} = ${backNetTeamWin}`);
-    console.log(`If ${other} wins: ${netOther} - ${backCapped} = ${backNetOtherWin}`);
-
-    // After laying team with stake s_lay:
-    //   - if team wins: netTeam' = netTeam - (decLay - 1) * layCapped
-    //   - if other wins: netOther' = netOther + layCapped
-    console.log(`\n--- Resulting Nets After LAY Hedge ---`);
-    const layNetTeamWin = decLay ? netTeam - (decLay - 1) * layCapped : null;
-    const layNetOtherWin = netOther + layCapped;
-    if (decLay) {
-      console.log(`If ${team} wins: ${netTeam} - (${decLay} - 1) * ${layCapped} = ${layNetTeamWin}`);
-      console.log(`If ${other} wins: ${netOther} + ${layCapped} = ${layNetOtherWin}`);
-    } else {
-      console.log(`No lay market, resulting nets: null`);
-    }
-
-    console.log(`\n--- Building Result Object for ${team} ---`);
-    const roundedNetTeam = round2(netTeam);
-    const roundedNetOther = round2(netOther);
-    const roundedDecBack = round2(decBack);
-    const roundedTheoBack = round2(theoBack);
-    const roundedBackCapped = round2(backCapped);
-    const roundedBackNetTeamWin = round2(backNetTeamWin);
-    const roundedBackNetOtherWin = round2(backNetOtherWin);
-
-    console.log(`Rounded values - netTeam: ${roundedNetTeam}, netOther: ${roundedNetOther}`);
-    console.log(`Rounded values - decBack: ${roundedDecBack}, theoBack: ${roundedTheoBack}, backCapped: ${roundedBackCapped}`);
-    console.log(`Rounded values - backNetTeamWin: ${roundedBackNetTeamWin}, backNetOtherWin: ${roundedBackNetOtherWin}`);
-
-    const backPaise = toPaise(theoBack);
-    const backCappedPaise = toPaise(backCapped);
-
-    const roundedTheoLay = round2(theoLay);
-    const roundedLayCapped = round2(layCapped);
-    const roundedLayNetTeamWin = decLay ? round2(layNetTeamWin) : null;
-    const roundedLayNetOtherWin = round2(layNetOtherWin);
-    const layPaise = toPaise(theoLay);
-    const layCappedPaise = toPaise(layCapped);
-    const roundedDecLay = decLay ? round2(decLay) : null;
-
-    if (decLay) {
-      console.log(`Rounded values - decLay: ${roundedDecLay}, theoLay: ${roundedTheoLay}, layCapped: ${roundedLayCapped}`);
-      console.log(`Rounded values - layNetTeamWin: ${roundedLayNetTeamWin}, layNetOtherWin: ${roundedLayNetOtherWin}`);
-    }
-
-    results[team] = {
-      currentNetIfWin: { [team]: roundedNetTeam, [other]: roundedNetOther },
-      back: {
-        decimalOdds: roundedDecBack,
-        theoreticalStakeRupees: roundedTheoBack,
-        theoreticalStakePaise: backPaise,
-        feasible: backFeasible,
-        availableVolume: volBack,
-        cappedStakeRupees: roundedBackCapped,
-        cappedStakePaise: backCappedPaise,
-        resultingNetsIfBackCapped: {
-          [team]: roundedBackNetTeamWin,
-          [other]: roundedBackNetOtherWin
-        }
-      },
-      lay: {
-        decimalOdds: roundedDecLay,
-        theoreticalStakeRupees: roundedTheoLay,
-        theoreticalStakePaise: layPaise,
-        feasible: layFeasible,
-        availableVolume: volLay,
-        cappedStakeRupees: roundedLayCapped,
-        cappedStakePaise: layCappedPaise,
-        resultingNetsIfLayCapped: decLay ? {
-          [team]: roundedLayNetTeamWin,
-          [other]: roundedLayNetOtherWin
-        } : null
-      }
-    };
-
-    console.log(`\nResult for ${team}:`, JSON.stringify(results[team], null, 2));
-  }
-
-  console.log('\n=== computeAllHedges FINAL RESULTS ===');
-  console.log(JSON.stringify(results, null, 2));
-  console.log('=== computeAllHedges END ===\n');
-
-  return results;
-}
-
-export function computeBestHedge(matchData, recentBets) {
-  if (!matchData || !Array.isArray(matchData.back)) throw new Error("matchData.back required");
-
-  const displayToDecimal = d => 1 + d / 100;
-
-  const backMap = Object.fromEntries((matchData.back || []).map(b => [b.team, b]));
-  const layMap  = Object.fromEntries((matchData.lay  || []).map(l => [l.team, l]));
-
-  const teams = Object.keys(backMap);
-
-  if (teams.length !== 2) throw new Error("matchData.back must contain exactly two teams");
-
-  // compute current net if each team wins
-  const netIfWin = {};
-  teams.forEach(t => netIfWin[t] = 0);
-
-  for (const bet of (recentBets || [])) {
-    const betDec = displayToDecimal(bet.odds);
-    teams.forEach(teamWin => {
-      if (bet.team === teamWin) {
-        if (bet.side === "back") netIfWin[teamWin] += (betDec - 1) * bet.stake;
-        else if (bet.side === "lay") netIfWin[teamWin] += -((betDec - 1) * bet.stake);
-      } else {
-        if (bet.side === "back") netIfWin[teamWin] += -bet.stake;
-        else if (bet.side === "lay") netIfWin[teamWin] += bet.stake;
-      }
-    });
-  }
-
-  const toPaise = r => Math.round(r * 100);
-  const round2 = r => Math.round(r * 100) / 100;
-
-  const candidates = [];
-
-  // Back candidate for team
-  const pushBack = (team) => {
-    const other = teams.find(t => t !== team);
-    const market = backMap[team];
-    if (!market) return;
-
-    const dec = displayToDecimal(market.odds);
-    const vol = market.volume || 0;
-    const numerator = netIfWin[other] - netIfWin[team];
-    const theo = dec > 0 ? numerator / dec : NaN;
-    const capped = Math.max(0, Math.min(theo, vol));
-    const netTeamWin = netIfWin[team] + (dec - 1) * capped;
-    const netOtherWin = netIfWin[other] - capped;
-
-    candidates.push({
-      team, side: "back", decimalOdds: dec,
-      theoreticalStake: theo, stake: capped,
-      resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
-      diff: Math.abs(netTeamWin - netOtherWin)
-    });
-  };
-
-  // Lay candidate for team
-  const pushLay = (team) => {
-    const other = teams.find(t => t !== team);
-    const market = layMap[team];
-    if (!market) return;
-
-    const dec = displayToDecimal(market.odds);
-    const vol = market.volume || 0;
-    const numerator = netIfWin[team] - netIfWin[other];
-    const theo = dec > 0 ? numerator / dec : NaN;
-    const capped = Math.max(0, Math.min(theo, vol));
-    const netTeamWin = netIfWin[team] - (dec - 1) * capped;
-    const netOtherWin = netIfWin[other] + capped;
-
-    candidates.push({
-      team, side: "lay", decimalOdds: dec,
-      theoreticalStake: theo, stake: capped,
-      resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
-      diff: Math.abs(netTeamWin - netOtherWin)
-    });
-  };
-
-  teams.forEach(t => { pushBack(t); pushLay(t); });
-
-  if (!candidates.length) return null;
-
-  // select best candidate by smallest diff, then smaller stake, then smaller absolute avg net
-  candidates.sort((a, b) => {
-    if (a.diff !== b.diff) return a.diff - b.diff;
-    if (a.stake !== b.stake) return a.stake - b.stake;
-    const avgA = Math.abs((Object.values(a.resultingNets)[0] + Object.values(a.resultingNets)[1]) / 2);
-    const avgB = Math.abs((Object.values(b.resultingNets)[0] + Object.values(b.resultingNets)[1]) / 2);
-    return avgA - avgB;
-  });
-
-  const best = candidates[0];
-
-  // compute signed resultingNet as the arithmetic mean of the two resulting nets (preserves negative sign)
-  const vals = Object.values(best.resultingNets);
-  const resultingNetSigned = round2((vals[0] + vals[1]) / 2);
-
-  return {
-    team: best.team,
-    side: best.side,
-    decimalOdds: round2(best.decimalOdds),
-    stakeRupees: round2(best.stake),
-    stakePaise: toPaise(best.stake),
-    resultingNet: resultingNetSigned,
-    resultingNetsIfCapped: {
-      [teams[0]]: round2(best.resultingNets[teams[0]]),
-      [teams[1]]: round2(best.resultingNets[teams[1]])
-    }
-  };
-}
-
 // Utility function to get the correct token based on current route
 export function getCurrentToken() {
   
