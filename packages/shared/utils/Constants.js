@@ -210,6 +210,7 @@ export const handleCashoutLogic = async (params) => {
  */
 function findNearestStakeValue(targetValue, stakeValues = {}) {
   if (!stakeValues || Object.keys(stakeValues).length === 0) {
+    console.log('[CASHOUT CALCULATION] findNearestStakeValue: No stake values, returning target:', targetValue);
     return targetValue; // Return original if no stake values available
   }
 
@@ -220,6 +221,7 @@ function findNearestStakeValue(targetValue, stakeValues = {}) {
     .sort((a, b) => a - b);
 
   if (availableStakes.length === 0) {
+    console.log('[CASHOUT CALCULATION] findNearestStakeValue: No valid stakes, returning target:', targetValue);
     return targetValue;
   }
 
@@ -235,11 +237,23 @@ function findNearestStakeValue(targetValue, stakeValues = {}) {
     }
   }
 
+  console.log('[CASHOUT CALCULATION] findNearestStakeValue:', {
+    targetValue,
+    availableStakes,
+    nearest,
+    difference: minDiff
+  });
+
   return nearest;
 }
 
 export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   if (!matchData || !Array.isArray(matchData.back)) throw new Error("matchData.back required");
+
+  console.log('[CASHOUT CALCULATION] Starting calculation...');
+  console.log('[CASHOUT CALCULATION] Input - matchData:', matchData);
+  console.log('[CASHOUT CALCULATION] Input - recentBets:', recentBets);
+  console.log('[CASHOUT CALCULATION] Input - stakeValues:', stakeValues);
 
   const displayToDecimal = d => (d >= 1 && d <= 10 ? d : 1 + d / 100);
   const round2 = r => Math.round(r * 100) / 100;
@@ -247,6 +261,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
 
   // Calculate total bet amount sum from recentBets
   const totalBetAmount = recentBets.reduce((sum, bet) => sum + (parseFloat(bet.stake) || 0), 0);
+  console.log('[CASHOUT CALCULATION] Total bet amount:', totalBetAmount);
 
   const teams = Array.from(new Set([
     ...matchData.back.map(b => b.team),
@@ -275,6 +290,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
       }
     });
   }
+  console.log('[CASHOUT CALCULATION] Current net positions (netIfWin):', netIfWin);
 
 
   const candidates = [];
@@ -289,12 +305,31 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     const numerator = netIfWin[other] - netIfWin[team];
     const theo = dec > 0 ? numerator / dec : NaN;
     
+    console.log(`[CASHOUT CALCULATION] BACK hedge for ${team}:`, {
+      team,
+      other,
+      displayOdds: market.odds,
+      decimalOdds: dec,
+      netIfWin_team: netIfWin[team],
+      netIfWin_other: netIfWin[other],
+      numerator,
+      theoreticalStake: theo
+    });
+    
     if (theo <= 0 || !isFinite(theo)) return;
 
     // Use the nearest stake value to the theoretical stake (rounded to available stake values)
     const capped = findNearestStakeValue(theo, stakeValues);
     const netTeamWin = netIfWin[team] + (dec - 1) * capped;
     const netOtherWin = netIfWin[other] - capped;
+
+    console.log(`[CASHOUT CALCULATION] BACK hedge result for ${team}:`, {
+      theoreticalStake: theo,
+      cappedStake: capped,
+      netTeamWin,
+      netOtherWin,
+      balanceDiff: Math.abs(netTeamWin - netOtherWin)
+    });
 
     candidates.push({
       team, side: "back", decimalOdds: dec,
@@ -311,9 +346,19 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     if (!market || !other) return;
 
     const dec = displayToDecimal(market.odds);
-    const vol = market.volume || 0;
     const numerator = netIfWin[team] - netIfWin[other];
     const theo = dec > 0 ? numerator / dec : NaN;
+    
+    console.log(`[CASHOUT CALCULATION] LAY hedge for ${team}:`, {
+      team,
+      other,
+      displayOdds: market.odds,
+      decimalOdds: dec,
+      netIfWin_team: netIfWin[team],
+      netIfWin_other: netIfWin[other],
+      numerator,
+      theoreticalStake: theo
+    });
     
     if (theo <= 0 || !isFinite(theo)) return;
 
@@ -321,6 +366,14 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     const capped = findNearestStakeValue(theo, stakeValues);
     const netTeamWin = netIfWin[team] - (dec - 1) * capped;
     const netOtherWin = netIfWin[other] + capped;
+
+    console.log(`[CASHOUT CALCULATION] LAY hedge result for ${team}:`, {
+      theoreticalStake: theo,
+      cappedStake: capped,
+      netTeamWin,
+      netOtherWin,
+      balanceDiff: Math.abs(netTeamWin - netOtherWin)
+    });
 
     candidates.push({
       team, side: "lay", decimalOdds: dec,
@@ -336,7 +389,11 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     pushLay(t);
   });
 
+  console.log('[CASHOUT CALCULATION] All candidates generated:', candidates.length, 'candidates');
+  console.log('[CASHOUT CALCULATION] Candidates details:', candidates);
+
   if (teams.length === 1) {
+    console.log('[CASHOUT CALCULATION] Single team scenario detected');
     const team = teams[0];
     const back = backMap[team];
     const lay = layMap[team];
@@ -351,13 +408,22 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
       else if (bet.side === "lay") netLose += bet.stake;
     }
 
+    console.log('[CASHOUT CALCULATION] Single team - netWin:', netWin, 'netLose:', netLose);
+
     if (decBack) {
       const theo = (netLose - netWin) / decBack;
+      console.log('[CASHOUT CALCULATION] Single team BACK - theoretical stake:', theo);
       if (theo > 0 && isFinite(theo)) {
         // Use the nearest stake value to the theoretical stake (rounded to available stake values)
         const capped = findNearestStakeValue(theo, stakeValues);
         const netWinBack = netWin + (decBack - 1) * capped;
         const netLoseBack = netLose - capped;
+        console.log('[CASHOUT CALCULATION] Single team BACK result:', {
+          theoreticalStake: theo,
+          cappedStake: capped,
+          netWinBack,
+          netLoseBack
+        });
         candidates.push({
           team, side: "back", decimalOdds: decBack,
           theoreticalStake: theo, stake: capped,
@@ -370,11 +436,18 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
 
     if (decLay) {
       const theo = (netWin - netLose) / decLay;
+      console.log('[CASHOUT CALCULATION] Single team LAY - theoretical stake:', theo);
       if (theo > 0 && isFinite(theo)) {
         // Use the nearest stake value to the theoretical stake (rounded to available stake values)
         const capped = findNearestStakeValue(theo, stakeValues);
         const netWinLay = netWin - (decLay - 1) * capped;
         const netLoseLay = netLose + capped;
+        console.log('[CASHOUT CALCULATION] Single team LAY result:', {
+          theoreticalStake: theo,
+          cappedStake: capped,
+          netWinLay,
+          netLoseLay
+        });
         candidates.push({
           team, side: "lay", decimalOdds: decLay,
           theoreticalStake: theo, stake: capped,
@@ -387,6 +460,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
 
     if (!candidates.length) {
       const netValue = round2(netIfWin[team]);
+      console.log('[CASHOUT CALCULATION] Single team - No candidates, returning current net:', netValue);
       return {
         team,
         side: "back",
@@ -403,6 +477,13 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     const netWin1 = round2(best.resultingNets.win);
     const netLose1 = round2(best.resultingNets.lose);
     const resultingNet1 = round2((netWin1 + netLose1) / 2);
+
+    console.log('[CASHOUT CALCULATION] Single team - Selected best candidate:', {
+      team: best.team,
+      side: best.side,
+      stake: round2(best.stake),
+      resultingNet: resultingNet1
+    });
 
     return {
       team: best.team,
@@ -423,6 +504,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   if (!candidates.length) return null;
 
   // Sort candidates: prioritize stake nearest to total bet amount, then by balance diff, then by stake size
+  console.log('[CASHOUT CALCULATION] Sorting candidates with totalBetAmount:', totalBetAmount);
   candidates.sort((a, b) => {
     // First priority: stake closest to total bet amount
     const diffA = Math.abs(a.stake - totalBetAmount);
@@ -446,8 +528,24 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   const netOther = round2(best.resultingNets[teams[1]]);
   const resultingNetSigned = round2((netTeam + netOther) / 2);
 
+  console.log('[CASHOUT CALCULATION] Selected best candidate:', {
+    team: best.team,
+    side: best.side,
+    displayOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds,
+    decimalOdds: round2(best.decimalOdds),
+    theoreticalStake: round2(best.theoreticalStake),
+    actualStake: round2(best.stake),
+    resultingNets: {
+      [teams[0]]: netTeam,
+      [teams[1]]: netOther
+    },
+    resultingNet: resultingNetSigned,
+    balanceDiff: round2(best.diff),
+    isCapped: best.isCapped
+  });
 
-  return {
+
+  const finalResult = {
     team: best.team,
     side: best.side,
     decimalOdds: round2(best.decimalOdds),
@@ -456,13 +554,17 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     resultingNet: resultingNetSigned,
     isCapped: best.isCapped,
     originalOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds,
-
     theoreticalStake: round2(best.theoreticalStake),
     resultingNetsIfCapped: {
       [teams[0]]: netTeam,
       [teams[1]]: netOther
     }
   };
+
+  console.log('[CASHOUT CALCULATION] Final result:', finalResult);
+  console.log('[CASHOUT CALCULATION] Calculation complete!');
+
+  return finalResult;
 }
 // Utility function to get the correct token based on current route
 export function getCurrentToken() {
