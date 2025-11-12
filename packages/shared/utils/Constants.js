@@ -44,54 +44,6 @@ export const displayToDecimal = (d) => {
   return d >= 1 && d <= 10 ? d : 1 + d / 100;
 };
 
-function getTeamMarketOdds(currentMarketData, teamNames, betType) {
-  if (!currentMarketData || !teamNames || !betType) {
-    
-    return null;
-  }
-
-  // Get team names for the specific bet type
-  const teams = Object.values(teamNames.current[betType] || {});
-
-  if (teams.length < 2) {
-    
-    return null;
-  }
-
-  const team1 = teams[0];
-  const team2 = teams[1];
-
-  // Find market data for both teams
-  const team1Data = currentMarketData.find(
-    (market) => market.nat.trim() === team1
-  );
-  const team2Data = currentMarketData.find(
-    (market) => market.nat.trim() === team2
-  );
-
-  if (!team1Data || !team2Data) {
-    
-    return null;
-  }
-
-  // Extract back[0] and lay[0] odds for both teams
-  const marketOdds = {
-    [team1]: {
-      back: team1Data.back?.find((item) => item.oname === "back1")?.odds || 0,
-      lay: team1Data.lay?.find((item) => item.oname === "lay1")?.odds || 0,
-    },
-    [team2]: {
-      back: team2Data.back?.find((item) => item.oname === "back1")?.odds || 0,
-      lay: team2Data.lay?.find((item) => item.oname === "lay1")?.odds || 0,
-    },
-  };
-
-  // Return both team odds and minimum odds
-  return marketOdds;
-}
-
-
-
 export const handleCashoutLogic = async (params) => {
   try {
     const {
@@ -2145,26 +2097,6 @@ export const updatePlacingBetsState = (
     globalUpdatePlacingBets.current = updatedBets;
   }
 };
-
-// --- The original balanceHedge function is NOT used in this revised structure ---
-// The logic is now inline within handleCashoutLogic calling calculateHedgeOutcome.
-// If you MUST keep a function named `balanceHedge`, then `calculateHedgeOutcome`'s logic
-// would be placed inside it, and handleCashoutLogic would be refactored to call THAT function.
-// But the requirement was to optimize the CALCULATION, which is achieved by removing the iterative part.
-// The current structure optimizes the overall process.
-
-// If you absolutely need the `balanceHedge` function name:
-/*
-function balanceHedge(hedge, originalStake, originalOdds) { // Modified signature to accept original bet details
-    // ... (Logic from calculateHedgeOutcome goes here) ...
-    // Returns { stake, result }
-}
-
-// Then in handleCashoutLogic:
-// ...
-// const hedgeOutcome = balanceHedge(hedgeDetailsForCalc, originalStake, originalOdds);
-// ...
-*/
 
 export const calculateProfitCommon = (
   betType,
