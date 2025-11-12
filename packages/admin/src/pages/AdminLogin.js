@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
@@ -17,6 +17,7 @@ import Notify from "@dxc247/shared/utils/Notify";
 function AdminLogin() {
   
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { isAuthenticated, loading, token, tokenExpiresAt, user } = useSelector(state => state.admin);
   const { liveModeData, serverPublicKey } = useSelector(state => state.commonData);
@@ -109,8 +110,8 @@ function AdminLogin() {
 
   // Check authentication and token validity
   useEffect(() => {
-    // Only redirect if authenticated AND token is valid
-    if (isAuthenticated && token && tokenExpiresAt) {
+    // Only redirect if authenticated AND token is valid AND currently on login page
+    if (isAuthenticated && token && tokenExpiresAt && location.pathname === '/login') {
       const now = Date.now();
       const expiration = parseInt(tokenExpiresAt);
       
@@ -136,7 +137,7 @@ function AdminLogin() {
       }
     }
     
-  }, [isAuthenticated, token, tokenExpiresAt, user, navigate, dispatch]);
+  }, [isAuthenticated, token, tokenExpiresAt, user, navigate, dispatch, location.pathname]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
