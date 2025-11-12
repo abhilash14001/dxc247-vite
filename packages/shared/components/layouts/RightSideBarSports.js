@@ -154,25 +154,30 @@ const RightSideBarSports = ({
     } else {
       dispatch(setIsSubmitDisabled(true));
     }
+    
+    // Calculate the actual stake value to use
+    let actualStake;
     if (is_add) {
-      const newStake = parseFloat(stakeValue.current.value || 0) + value;
-      stakeValue.current.value = newStake;
+      actualStake = parseFloat(stakeValue.current.value || 0) + value;
+      stakeValue.current.value = actualStake;
     } else {
       // Replace with new value
-      stakeValue.current.value = value;
+      actualStake = value;
+      stakeValue.current.value = actualStake;
     }
 
     if (newodds !== null) {
       odds = newodds;
     }
 
-    calculateProfit(value, odds);
-    const losslayvalue = (parseFloat(odds) * parseFloat(value)) / 100;
+    // Use actualStake for all calculations, not just the increment value
+    calculateProfit(actualStake, odds);
+    const losslayvalue = (parseFloat(odds) * parseFloat(actualStake)) / 100;
 
-    const lossvalue = (parseFloat(odds) - 1) * parseFloat(value);
+    const lossvalue = (parseFloat(odds) - 1) * parseFloat(actualStake);
     loss.current =
       backOrLay === "back"
-        ? parseFloat(setdecimalPoint(value))
+        ? parseFloat(setdecimalPoint(actualStake))
         : betType === "ODDS"
         ? parseFloat(setdecimalPoint(lossvalue))
         : parseFloat(setdecimalPoint(losslayvalue));
@@ -293,6 +298,11 @@ const RightSideBarSports = ({
     dispatch(setIsSubmitDisabled(true));
     clearTeam();
     loss.current = 0;
+    
+    // Clear placingBets if setPlacingBets is available
+    if (setPlacingBets !== null && typeof setPlacingBets === 'function') {
+      setPlacingBets([]);
+    }
   };
   const resetAll = () => {
     clearAllSelection();
@@ -394,10 +404,6 @@ const RightSideBarSports = ({
       if (teamMaxValue && teamMaxValue < stakeValue.current.value) {
         setHideLoading(true);
 
-        Notify("Min Max Bet Limit Exceed2", null, null, "danger");
-        resetAll();
-
-        return false;
       } else if (teamMinValue && teamMinValue > stakeValue.current.value) {
         setHideLoading(true);
 

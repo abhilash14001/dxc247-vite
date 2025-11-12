@@ -269,6 +269,7 @@ export function calculateSmartCashout(matchData, recentBets) {
 
   if (teams.length < 1) throw new Error("matchData must contain at least one team");
 
+
   const netIfWin = {};
   teams.forEach(t => netIfWin[t] = 0);
 
@@ -286,6 +287,7 @@ export function calculateSmartCashout(matchData, recentBets) {
     });
   }
 
+
   const candidates = [];
 
   const pushBack = (team) => {
@@ -297,6 +299,7 @@ export function calculateSmartCashout(matchData, recentBets) {
     const vol = market.volume || 0;
     const numerator = netIfWin[other] - netIfWin[team];
     const theo = dec > 0 ? numerator / dec : NaN;
+    
     if (theo <= 0 || !isFinite(theo)) return;
 
     // const capped = Math.min(theo, vol);
@@ -322,6 +325,7 @@ export function calculateSmartCashout(matchData, recentBets) {
     const vol = market.volume || 0;
     const numerator = netIfWin[team] - netIfWin[other];
     const theo = dec > 0 ? numerator / dec : NaN;
+    
     if (theo <= 0 || !isFinite(theo)) return;
 
     // const capped = Math.min(theo, vol);
@@ -386,7 +390,6 @@ export function calculateSmartCashout(matchData, recentBets) {
           team, side: "lay", decimalOdds: decLay,
           theoreticalStake: theo, stake: capped,
           isCapped: capped < theo,
-
           resultingNets: { win: netWinLay, lose: netLoseLay },
           diff: Math.abs(netWinLay - netLoseLay)
         });
@@ -442,6 +445,48 @@ export function calculateSmartCashout(matchData, recentBets) {
   const netTeam = round2(best.resultingNets[teams[0]]);
   const netOther = round2(best.resultingNets[teams[1]]);
   const resultingNetSigned = round2((netTeam + netOther) / 2);
+
+  // Single console.log with available odds and result
+  const availableOdds = teams.map(team => ({
+    team,
+    back: backMap[team] ? { odds: backMap[team].odds, decimal: displayToDecimal(backMap[team].odds), volume: backMap[team].volume || 0 } : null,
+    lay: layMap[team] ? { odds: layMap[team].odds, decimal: displayToDecimal(layMap[team].odds), volume: layMap[team].volume || 0 } : null
+  }));
+
+  const allCandidates = candidates.map(c => {
+    const nets = Object.values(c.resultingNets);
+    const avgNet = round2((nets[0] + nets[1]) / 2);
+    return {
+      team: c.team,
+      side: c.side.toUpperCase(),
+      displayOdds: matchData[c.side]?.find(m => m.team === c.team)?.odds || 'N/A',
+      decimalOdds: round2(c.decimalOdds),
+      stake: round2(c.stake),
+      stakePaise: toPaise(c.stake),
+      resultingNets: Object.fromEntries(Object.entries(c.resultingNets).map(([k, v]) => [k, round2(v)])),
+      balanceDiff: round2(c.diff),
+      avgNet,
+      isCapped: c.isCapped
+    };
+  });
+
+  console.log('[BETTING RESULT]', {
+    availableOdds,
+    currentNetPositions: teams.reduce((acc, team) => ({ ...acc, [team]: round2(netIfWin[team]) }), {}),
+    allCandidates,
+    selectedResult: {
+      team: best.team,
+      side: best.side.toUpperCase(),
+      displayOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds || 'N/A',
+      decimalOdds: round2(best.decimalOdds),
+      stake: round2(best.stake),
+      stakePaise: toPaise(best.stake),
+      resultingNet: resultingNetSigned,
+      resultingNets: Object.fromEntries(Object.entries(best.resultingNets).map(([k, v]) => [k, round2(v)])),
+      balanceDiff: round2(best.diff),
+      isCapped: best.isCapped
+    }
+  });
 
   return {
     team: best.team,
