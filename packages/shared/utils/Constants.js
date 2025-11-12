@@ -41,7 +41,8 @@ export const toPaise = (r) => {
  * @returns {number} - Decimal odds
  */
 export const displayToDecimal = (d) => {
-  return d >= 1 && d <= 10 ? d : 1 + d / 100;
+
+  return d > 1 && d <= 5 ? d : 1 + d / 100;
 };
 
 export const handleCashoutLogic = async (params) => {
@@ -151,8 +152,19 @@ export const handleCashoutLogic = async (params) => {
     // Smart cashout already calculates optimal stake based on exposure, so use it directly
     const finalStakeValue = parseFloat(smartCashoutResult.stakeRupees);
     
-    // Convert decimal odds back to display format (profit-per-100)
-    const hedgeOddsDisplay = smartCashoutResult.originalOdds ?? smartCashoutResult.decimalOdds;
+    // Always use original display odds (bet.odds) for bet placement, not decimal odds
+    // decimalOdds is only for calculations
+    let hedgeOddsDisplay = smartCashoutResult.originalOdds;
+    if (!hedgeOddsDisplay) {
+      // Fallback: get display odds from matchData if originalOdds not available
+      const marketTeam = matchData[smartCashoutResult.side]?.find(m => m.team === smartCashoutResult.team);
+      if (marketTeam) {
+        hedgeOddsDisplay = marketTeam.odds;
+      } else {
+        alert("Unable to get display odds for hedge bet");
+        return false;
+      }
+    }
     
   const bestHedge = {
     team: smartCashoutResult.team,
@@ -255,7 +267,6 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   console.log('[CASHOUT CALCULATION] Input - recentBets:', recentBets);
   console.log('[CASHOUT CALCULATION] Input - stakeValues:', stakeValues);
 
-  const displayToDecimal = d => (d >= 1 && d <= 10 ? d : 1 + d / 100);
   const round2 = r => Math.round(r * 100) / 100;
   const toPaise = r => Math.round(r * 100);
 
@@ -332,7 +343,9 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     });
 
     candidates.push({
-      team, side: "back", decimalOdds: dec,
+      team, side: "back", 
+      decimalOdds: dec,  // Used for calculations only
+      originalDisplayOdds: market.odds,  // Original display odds for bet placement
       theoreticalStake: theo, stake: capped,
       isCapped: capped < theo,
       resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
@@ -376,7 +389,9 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     });
 
     candidates.push({
-      team, side: "lay", decimalOdds: dec,
+      team, side: "lay", 
+      decimalOdds: dec,  // Used for calculations only
+      originalDisplayOdds: market.odds,  // Original display odds for bet placement
       theoreticalStake: theo, stake: capped,
       isCapped: capped < theo,
       resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
@@ -425,7 +440,9 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
           netLoseBack
         });
         candidates.push({
-          team, side: "back", decimalOdds: decBack,
+          team, side: "back", 
+          decimalOdds: decBack,  // Used for calculations only
+          originalDisplayOdds: back.odds,  // Original display odds for bet placement
           theoreticalStake: theo, stake: capped,
           isCapped: capped < theo,
           resultingNets: { win: netWinBack, lose: netLoseBack },
@@ -449,7 +466,9 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
           netLoseLay
         });
         candidates.push({
-          team, side: "lay", decimalOdds: decLay,
+          team, side: "lay", 
+          decimalOdds: decLay,  // Used for calculations only
+          originalDisplayOdds: lay.odds,  // Original display odds for bet placement
           theoreticalStake: theo, stake: capped,
           isCapped: capped < theo,
           resultingNets: { win: netWinLay, lose: netLoseLay },
@@ -488,11 +507,12 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     return {
       team: best.team,
       side: best.side,
-      decimalOdds: round2(best.decimalOdds),
+      decimalOdds: round2(best.decimalOdds),  // For calculations only
       stakeRupees: round2(best.stake),
       stakePaise: toPaise(best.stake),
       resultingNet: resultingNet1,
       isCapped: best.isCapped,
+      originalOdds: best.originalDisplayOdds,  // Original display odds for bet placement
       theoreticalStake: round2(best.theoreticalStake),
       resultingNetsIfCapped: {
         win: netWin,
@@ -531,8 +551,8 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   console.log('[CASHOUT CALCULATION] Selected best candidate:', {
     team: best.team,
     side: best.side,
-    displayOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds,
-    decimalOdds: round2(best.decimalOdds),
+    displayOdds: best.originalDisplayOdds,  // Original display odds for bet placement
+    decimalOdds: round2(best.decimalOdds),  // Used for calculations only
     theoreticalStake: round2(best.theoreticalStake),
     actualStake: round2(best.stake),
     resultingNets: {
@@ -548,12 +568,12 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   const finalResult = {
     team: best.team,
     side: best.side,
-    decimalOdds: round2(best.decimalOdds),
+    decimalOdds: round2(best.decimalOdds),  // For calculations only
     stakeRupees: round2(best.stake),
     stakePaise: toPaise(best.stake),
     resultingNet: resultingNetSigned,
     isCapped: best.isCapped,
-    originalOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds,
+    originalOdds: best.originalDisplayOdds || matchData[best.side]?.find(m => m.team === best.team)?.odds,  // Original display odds for bet placement
     theoreticalStake: round2(best.theoreticalStake),
     resultingNetsIfCapped: {
       [teams[0]]: netTeam,
