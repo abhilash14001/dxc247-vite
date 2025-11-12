@@ -181,10 +181,15 @@ export const handleCashoutLogic = async (params) => {
       });
     }
 
+    // Calculate total bet amount sum for this betType
+    const totalBetAmount = recentBets.reduce((sum, bet) => sum + (parseFloat(bet.stake) || 0), 0);
+    
+    // Get stake values from Redux store or params if available
+    const stakeValues = params.stakeValues || store.getState()?.commonData?.stake_values || {};
+    
     // Use smart cashout calculation - returns best hedge option
-    const smartCashoutResult = calculateSmartCashout(matchData, recentBets);
+    const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues);
 
-    console.log(smartCashoutResult, 'smartCashoutResult');
     if (!smartCashoutResult) {
       alert("No valid hedge found");
       return false;
@@ -196,10 +201,6 @@ export const handleCashoutLogic = async (params) => {
     
     // Convert decimal odds back to display format (profit-per-100)
     const hedgeOddsDisplay = smartCashoutResult.originalOdds ?? smartCashoutResult.decimalOdds;
-  
-
-
-    console.log('result is ', smartCashoutResult)
     
   const bestHedge = {
     team: smartCashoutResult.team,
@@ -207,9 +208,6 @@ export const handleCashoutLogic = async (params) => {
     hedgeOdds: hedgeOddsDisplay,
     stake: finalStakeValue,
   };
-  
-
-  console.log('bestHedge is ', bestHedge)
 
 
     const firstBet = bestHedge;
@@ -252,12 +250,51 @@ export const handleCashoutLogic = async (params) => {
  * @param {Object} currentPL - Current profit/loss by team (negative = loss, positive = profit)
  * @returns {Array} Array of cashout results sorted by best balance
  */
-export function calculateSmartCashout(matchData, recentBets) {
+/**
+ * Find the nearest stake value from available stake values
+ * @param {number} targetValue - The value to find nearest to
+ * @param {Object} stakeValues - Object with stake values (e.g., {0: {val: 1000}, 1: {val: 2000}})
+ * @returns {number} - The nearest stake value
+ */
+function findNearestStakeValue(targetValue, stakeValues = {}) {
+  if (!stakeValues || Object.keys(stakeValues).length === 0) {
+    return targetValue; // Return original if no stake values available
+  }
+
+  // Extract all stake values from stakeValues object
+  const availableStakes = Object.values(stakeValues)
+    .map(item => parseFloat(item?.val || item || 0))
+    .filter(val => val > 0)
+    .sort((a, b) => a - b);
+
+  if (availableStakes.length === 0) {
+    return targetValue;
+  }
+
+  // Find the nearest stake value
+  let nearest = availableStakes[0];
+  let minDiff = Math.abs(targetValue - nearest);
+
+  for (const stake of availableStakes) {
+    const diff = Math.abs(targetValue - stake);
+    if (diff < minDiff) {
+      minDiff = diff;
+      nearest = stake;
+    }
+  }
+
+  return nearest;
+}
+
+export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   if (!matchData || !Array.isArray(matchData.back)) throw new Error("matchData.back required");
 
   const displayToDecimal = d => (d >= 1 && d <= 10 ? d : 1 + d / 100);
   const round2 = r => Math.round(r * 100) / 100;
   const toPaise = r => Math.round(r * 100);
+
+  // Calculate total bet amount sum from recentBets
+  const totalBetAmount = recentBets.reduce((sum, bet) => sum + (parseFloat(bet.stake) || 0), 0);
 
   const teams = Array.from(new Set([
     ...matchData.back.map(b => b.team),
@@ -302,8 +339,8 @@ export function calculateSmartCashout(matchData, recentBets) {
     
     if (theo <= 0 || !isFinite(theo)) return;
 
-    // const capped = Math.min(theo, vol);
-    const capped = theo;
+    // Use the nearest stake value to the theoretical stake (rounded to available stake values)
+    const capped = findNearestStakeValue(theo, stakeValues);
     const netTeamWin = netIfWin[team] + (dec - 1) * capped;
     const netOtherWin = netIfWin[other] - capped;
 
@@ -328,8 +365,8 @@ export function calculateSmartCashout(matchData, recentBets) {
     
     if (theo <= 0 || !isFinite(theo)) return;
 
-    // const capped = Math.min(theo, vol);
-    const capped = theo;
+    // Use the nearest stake value to the theoretical stake (rounded to available stake values)
+    const capped = findNearestStakeValue(theo, stakeValues);
     const netTeamWin = netIfWin[team] - (dec - 1) * capped;
     const netOtherWin = netIfWin[other] + capped;
 
@@ -365,8 +402,8 @@ export function calculateSmartCashout(matchData, recentBets) {
     if (decBack) {
       const theo = (netLose - netWin) / decBack;
       if (theo > 0 && isFinite(theo)) {
-        // const capped = Math.min(theo, back.volume || 0);
-        const capped = theo;
+        // Use the nearest stake value to the theoretical stake (rounded to available stake values)
+        const capped = findNearestStakeValue(theo, stakeValues);
         const netWinBack = netWin + (decBack - 1) * capped;
         const netLoseBack = netLose - capped;
         candidates.push({
@@ -382,8 +419,8 @@ export function calculateSmartCashout(matchData, recentBets) {
     if (decLay) {
       const theo = (netWin - netLose) / decLay;
       if (theo > 0 && isFinite(theo)) {
-        // const capped = Math.min(theo, lay.volume || 0);
-        const capped = theo;
+        // Use the nearest stake value to the theoretical stake (rounded to available stake values)
+        const capped = findNearestStakeValue(theo, stakeValues);
         const netWinLay = netWin - (decLay - 1) * capped;
         const netLoseLay = netLose + capped;
         candidates.push({
@@ -433,9 +470,20 @@ export function calculateSmartCashout(matchData, recentBets) {
 
   if (!candidates.length) return null;
 
+  // Sort candidates: prioritize stake nearest to total bet amount, then by balance diff, then by stake size
   candidates.sort((a, b) => {
+    // First priority: stake closest to total bet amount
+    const diffA = Math.abs(a.stake - totalBetAmount);
+    const diffB = Math.abs(b.stake - totalBetAmount);
+    if (diffA !== diffB) return diffA - diffB;
+    
+    // Second priority: best balance (smallest diff)
     if (a.diff !== b.diff) return a.diff - b.diff;
+    
+    // Third priority: smaller stake
     if (a.stake !== b.stake) return a.stake - b.stake;
+    
+    // Fourth priority: smaller absolute average net
     const avgA = Math.abs((Object.values(a.resultingNets)[0] + Object.values(a.resultingNets)[1]) / 2);
     const avgB = Math.abs((Object.values(b.resultingNets)[0] + Object.values(b.resultingNets)[1]) / 2);
     return avgA - avgB;
@@ -446,47 +494,6 @@ export function calculateSmartCashout(matchData, recentBets) {
   const netOther = round2(best.resultingNets[teams[1]]);
   const resultingNetSigned = round2((netTeam + netOther) / 2);
 
-  // Single console.log with available odds and result
-  const availableOdds = teams.map(team => ({
-    team,
-    back: backMap[team] ? { odds: backMap[team].odds, decimal: displayToDecimal(backMap[team].odds), volume: backMap[team].volume || 0 } : null,
-    lay: layMap[team] ? { odds: layMap[team].odds, decimal: displayToDecimal(layMap[team].odds), volume: layMap[team].volume || 0 } : null
-  }));
-
-  const allCandidates = candidates.map(c => {
-    const nets = Object.values(c.resultingNets);
-    const avgNet = round2((nets[0] + nets[1]) / 2);
-    return {
-      team: c.team,
-      side: c.side.toUpperCase(),
-      displayOdds: matchData[c.side]?.find(m => m.team === c.team)?.odds || 'N/A',
-      decimalOdds: round2(c.decimalOdds),
-      stake: round2(c.stake),
-      stakePaise: toPaise(c.stake),
-      resultingNets: Object.fromEntries(Object.entries(c.resultingNets).map(([k, v]) => [k, round2(v)])),
-      balanceDiff: round2(c.diff),
-      avgNet,
-      isCapped: c.isCapped
-    };
-  });
-
-  console.log('[BETTING RESULT]', {
-    availableOdds,
-    currentNetPositions: teams.reduce((acc, team) => ({ ...acc, [team]: round2(netIfWin[team]) }), {}),
-    allCandidates,
-    selectedResult: {
-      team: best.team,
-      side: best.side.toUpperCase(),
-      displayOdds: matchData[best.side]?.find(m => m.team === best.team)?.odds || 'N/A',
-      decimalOdds: round2(best.decimalOdds),
-      stake: round2(best.stake),
-      stakePaise: toPaise(best.stake),
-      resultingNet: resultingNetSigned,
-      resultingNets: Object.fromEntries(Object.entries(best.resultingNets).map(([k, v]) => [k, round2(v)])),
-      balanceDiff: round2(best.diff),
-      isCapped: best.isCapped
-    }
-  });
 
   return {
     team: best.team,

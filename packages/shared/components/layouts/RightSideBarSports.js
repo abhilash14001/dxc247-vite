@@ -205,8 +205,6 @@ const RightSideBarSports = ({
         placingBets
       );
 
-      console.log("updatedBets is ", updatedBets);
-
       // Use the utility function to update state
       updatePlacingBetsState(setPlacingBets, betType, updatedBets);
     }
@@ -513,12 +511,6 @@ const RightSideBarSports = ({
         typeof allTeamNames === "object" &&
         !Array.isArray(allTeamNames)
       ) {
-        console.log(
-          "DEBUG: Converting object to array. Original:",
-          allTeamNames
-        );
-        console.log("DEBUG: Object.keys():", Object.keys(allTeamNames));
-        console.log("DEBUG: Object.values():", Object.values(allTeamNames));
 
         // Try different approaches to get the values
         const values = Object.values(allTeamNames);
