@@ -353,34 +353,38 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-6 col-sm-12 hide_partner">
-                    <div className="form-group">
-                      <label htmlFor="downline_partnership">Down Line Partnership</label>
-                      <input 
-                        className="form-control partnerships" 
-                        type="number" 
-                        name="downline_partnership" 
-                        id="downline_partnership" 
-                        value={formData.downline_partnership}
-                        onInput={(e) => setPartnershipToAll(e.target.value, '100')}
-                        onChange={handleInputChange}
-                      />
+                  {formData.role !== '7' && (
+                    <div className="col-md-6 col-sm-12 hide_partner">
+                      <div className="form-group">
+                        <label htmlFor="downline_partnership">Down Line Partnership</label>
+                        <input 
+                          className="form-control partnerships" 
+                          type="number" 
+                          name="downline_partnership" 
+                          id="downline_partnership" 
+                          value={formData.downline_partnership}
+                          onInput={(e) => setPartnershipToAll(e.target.value, '100')}
+                          onChange={handleInputChange}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
-                    <div className="form-group">
-                      <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
-                      <input 
-                        type="number" 
-                        name="over_partnership" 
-                        readOnly 
-                        className="form-control partnerships" 
-                        id="over_partnership" 
-                        value={formData.over_partnership}
-                        required
-                      />
+                  )}
+                  {formData.role !== '7' && (
+                    <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
+                      <div className="form-group">
+                        <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
+                        <input 
+                          type="number" 
+                          name="over_partnership" 
+                          readOnly 
+                          className="form-control partnerships" 
+                          id="over_partnership" 
+                          value={formData.over_partnership}
+                          required
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <input name="expiry_date" type="hidden" value={formData.expiry_date} />
                 </div>
