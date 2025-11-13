@@ -278,13 +278,9 @@ const CurrentBet = () => {
                     <td>{bet.username}</td>
                     <td>{bet.game_name}</td>
                     <td>
-                      <a
-                        href={`${ADMIN_BASE_PATH}/sports/${bet.game_name?.toLowerCase()}/${bet.match_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <span>
                         {bet.sport_name}
-                      </a>
+                      </span>
                     </td>
                     <td>{bet.bet_type}</td>
                     <td>{bet.bet_side}</td>
