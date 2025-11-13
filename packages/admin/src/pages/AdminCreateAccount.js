@@ -91,7 +91,12 @@ const AdminCreateAccount = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
+    let newValue = type === 'checkbox' ? checked : value;
+    
+    // Only allow numbers for phone field
+    if (name === 'phone') {
+      newValue = value.replace(/\D/g, '');
+    }
     
     setFormData(prev => ({
       ...prev,
@@ -259,10 +264,10 @@ const AdminCreateAccount = () => {
           <h2 className="m-b-20">Add Account</h2>
           <form className="form-horizontal123" onSubmit={handleSubmit} id="clientFrm" noValidate>
             <div className="row">
-              <div className="col-md-6 personal-detail">
+              <div className="col-md-12 personal-detail">
                 <h4 className="m-b-20 col-md-12">Personal Detail</h4>
                 <div className="row">
-                  <div className="col-md-6">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="name">Full Name</label>
                       <input 
@@ -276,7 +281,7 @@ const AdminCreateAccount = () => {
                       {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                     </div>
                   </div>
-                  <div className="col-md-6">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="username">Login UserID</label>
                       <input 
@@ -295,7 +300,7 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-6 col-sm-12">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="password">Password</label>
                       <input 
@@ -310,7 +315,7 @@ const AdminCreateAccount = () => {
                       {errors.password && <div className="invalid-feedback">{errors.password}</div>}
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-12">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="password_confirmation">Re-enter Password</label>
                       <input 
@@ -326,7 +331,7 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-6 col-sm-12">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="city">City</label>
                       <input 
@@ -339,7 +344,7 @@ const AdminCreateAccount = () => {
                       />
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-12">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="phone">Phone</label>
                       <input 
@@ -349,50 +354,13 @@ const AdminCreateAccount = () => {
                         id="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                       />
                     </div>
                   </div>
 
-                  {formData.role !== '7' && (
-                    <div className="col-md-6 col-sm-12 hide_partner">
-                      <div className="form-group">
-                        <label htmlFor="downline_partnership">Down Line Partnership</label>
-                        <input 
-                          className="form-control partnerships" 
-                          type="number" 
-                          name="downline_partnership" 
-                          id="downline_partnership" 
-                          value={formData.downline_partnership}
-                          onInput={(e) => setPartnershipToAll(e.target.value, '100')}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {formData.role !== '7' && (
-                    <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
-                      <div className="form-group">
-                        <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
-                        <input 
-                          type="number" 
-                          name="over_partnership" 
-                          readOnly 
-                          className="form-control partnerships" 
-                          id="over_partnership" 
-                          value={formData.over_partnership}
-                          required
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <input name="expiry_date" type="hidden" value={formData.expiry_date} />
-                </div>
-              </div>
-              <div className="col-md-6 account-detail">
-                <h4 className="m-b-20 col-md-12">Account Detail</h4>
-                <div className="row">
-                  <div className="col-md-6 col-sm-12">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label>User Role/Type</label>
                       <select 
@@ -412,25 +380,8 @@ const AdminCreateAccount = () => {
                       {errors.role && <div className="invalid-feedback">{errors.role}</div>}
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-12 prefix_domain" style={{ display: 'none' }}>
-                    <div className="form-group">
-                      <label>Select Prefix</label>
-                      <select 
-                        name="prefix_domain" 
-                        id="prefix_domain" 
-                        className="form-control"
-                        value={formData.prefix_domain}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select Prefix</option>
-                        <option value="3">dxc247.com</option>
-                        <option value="6">ibm247.com</option>
-                        <option value="9">sp247.in</option>
-                      </select>
-                    </div>
-                  </div>
 
-                  <div className="col-md-6 col-sm-12">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="credit_reference">Credit Reference</label>
                       <input 
@@ -444,51 +395,40 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-6 col-sm-12 prefix_domain" style={{ display: 'none' }}>
-                    <div className="form-group">
-                      <label htmlFor="account_limit">Account Limit</label>
-                      <input 
-                        type="number" 
-                        name="account_limit" 
-                        className="form-control" 
-                        value={formData.account_limit}
-                        onChange={handleInputChange}
-                      />
+                  {formData.role && formData.role !== '7' && (
+                    <div className="col-md-3 col-sm-6 hide_partner">
+                      <div className="form-group">
+                        <label htmlFor="downline_partnership">Down Line Partnership</label>
+                        <input 
+                          className="form-control partnerships" 
+                          type="number" 
+                          name="downline_partnership" 
+                          id="downline_partnership" 
+                          value={formData.downline_partnership}
+                          onInput={(e) => setPartnershipToAll(e.target.value, '100')}
+                          onChange={handleInputChange}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-6 col-sm-12 exposure_limit" style={{ display: 'none' }}>
-                    <div className="form-group">
-                      <label htmlFor="exposure_limit">Exposure Limit</label>
-                      <input 
-                        type="number" 
-                        name="exposure_limit" 
-                        className="form-control" 
-                        value={formData.exposure_limit}
-                        required
-                        onChange={handleInputChange}
-                      />
+                  )}
+                  {formData.role && formData.role !== '7' && (
+                    <div className="col-md-3 col-sm-6 partnership over_partnership_form hide_partner">
+                      <div className="form-group">
+                        <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
+                        <input 
+                          type="number" 
+                          name="over_partnership" 
+                          readOnly 
+                          className="form-control partnerships" 
+                          id="over_partnership" 
+                          value={formData.over_partnership}
+                          required
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-6 col-sm-12 prefix_domain" style={{ display: 'none' }}>
-                    <div className="form-group">
-                      <label className="w-100">&nbsp;</label>
-                      <label htmlFor="isBetDeleteAccess">Is Bet Delete</label>
-                      <input 
-                        type="hidden" 
-                        name="isBetDeleteAccess" 
-                        className="form-control" 
-                        value="0"
-                      />
-                      <input 
-                        type="checkbox" 
-                        name="isBetDeleteAccess" 
-                        id="isBetDeleteAccess" 
-                        value="1"
-                        checked={formData.isBetDeleteAccess}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
+                  )}
+
+                  <input name="expiry_date" type="hidden" value={formData.expiry_date} />
                 </div>
               </div>
             </div>
