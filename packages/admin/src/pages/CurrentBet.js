@@ -77,7 +77,7 @@ const CurrentBet = () => {
           `${ADMIN_BASE_PATH}/admin-current-bet`,
           "POST",
           params
-        );
+        , true);
 
         if (res.success) {
           setBetData(res.data || []);
