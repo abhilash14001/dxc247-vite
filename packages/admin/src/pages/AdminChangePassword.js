@@ -31,7 +31,7 @@ const AdminChangePassword = () => {
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/src/pages/AdminLogin.css';
+    link.href = '/assets/css/AdminLogin.css';
     link.media = 'all';
     link.crossOrigin = 'anonymous';
     
@@ -48,7 +48,7 @@ const AdminChangePassword = () => {
     // Preload for faster loading
     const preloadLink = document.createElement('link');
     preloadLink.rel = 'preload';
-    preloadLink.href = '/src/pages/AdminLogin.css';
+    preloadLink.href = '/assets/css/AdminLogin.css';
     preloadLink.as = 'style';
     preloadLink.onload = () => {
       document.head.appendChild(link);
@@ -224,19 +224,20 @@ const AdminChangePassword = () => {
   }
 
   return (
-    <div className="login">
-      <div className="wrapper">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="loginInner1">
-                <div className="log-logo text-center">
-                  <img
-                    src={`${import.meta.env.VITE_MAIN_URL}/uploads/sites_configuration/C3K6931720187871logo%20(1).png`}
-                    alt="Admin Logo"
-                    className="logo-login"
-                  />
-                </div>
+    <div id="app">
+      <div className="login" style={{ display: 'flex' }}>
+        <div className="wrapper">
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-md-12">
+                <div className="loginInner1">
+                  <div className="log-logo text-center">
+                    <img
+                      src={`${import.meta.env.VITE_MAIN_URL}/uploads/sites_configuration/C3K6931720187871logo%20(1).png`}
+                      alt="Admin Logo"
+                      className="logo-login"
+                    />
+                  </div>
                 <div className="featured-box-login featured-box-secundary default loginFrm">
                   <h2 className="text-center login-title">Change Password</h2>
                   <p className="text-center" style={{ color: '#666', fontSize: '14px', marginBottom: '30px' }}>
@@ -338,6 +339,7 @@ const AdminChangePassword = () => {
                     info@Dxc247.Com <span className="ml-1"></span>
                   </a>
                 </p>
+                </div>
               </div>
             </div>
           </div>
