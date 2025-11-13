@@ -17,20 +17,8 @@ const AddChipsModal = ({ isOpen, onClose, onSubmit, userId }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.amount || !formData.creditReference) {
-      alert('Please fill in all fields');
-      return;
-    }
+ 
 
-    if (parseFloat(formData.amount) <= 0) {
-      alert('Amount must be greater than 0');
-      return;
-    }
-
-    if (parseFloat(formData.creditReference) <= 0) {
-      alert('Credit Reference must be greater than 0');
-      return;
-    }
 
     setLoading(true);
     try {
