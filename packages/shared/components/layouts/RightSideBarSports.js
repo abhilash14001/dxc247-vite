@@ -844,6 +844,8 @@ const RightSideBarSports = ({
                         className="stakeinput w-100"
                         ref={stakeValue}
                         onChange={handleStakeChange}
+                        onBlur={handleStakeChange}
+                        onInput={handleStakeChange}
                       />
                     </div>
                     <div className="col-6">

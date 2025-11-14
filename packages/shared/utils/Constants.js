@@ -186,6 +186,7 @@ export const handleCashoutLogic = async (params) => {
     setPopupDisplay(true);
 
     const setStakeValueInput = () => {
+      
       if (stakeValue?.current) {
         stakeValue.current.value = finalStakeValue;
         ["input", "change", "blur"].forEach((evt) =>
