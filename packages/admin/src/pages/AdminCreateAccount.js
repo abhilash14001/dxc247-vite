@@ -114,13 +114,22 @@ const AdminCreateAccount = () => {
 
   const setPartnershipToAll = (value, defaultValue = '100') => {
     const partnershipValue = value || defaultValue;
+    const numValue = parseInt(partnershipValue) || 0;
+    
+    // Ensure downline_partnership doesn't exceed 100
+    const downlineValue = Math.min(Math.max(numValue, 0), 100);
+    
+    // Calculate over_partnership: 100 - downline_partnership
+    const overValue = 100 - downlineValue;
+    
     setFormData(prev => ({
       ...prev,
-      downline_partnership: partnershipValue,
-      cricket_partnership: partnershipValue,
-      soccer_partnership: partnershipValue,
-      tennis_partnership: partnershipValue,
-      casino_partnership: partnershipValue
+      downline_partnership: downlineValue.toString(),
+      over_partnership: overValue.toString(),
+      cricket_partnership: downlineValue.toString(),
+      soccer_partnership: downlineValue.toString(),
+      tennis_partnership: downlineValue.toString(),
+      casino_partnership: downlineValue.toString()
     }));
   };
 
@@ -139,6 +148,16 @@ const AdminCreateAccount = () => {
     // Account Details Validation
     if (!formData.role) newErrors.role = 'User Role is required';
     if (!formData.credit_reference) newErrors.credit_reference = 'Credit Reference is required';
+    
+    // Downline Partnership Validation
+    if (formData.role && formData.role !== '7') {
+      const downlineValue = parseInt(formData.downline_partnership) || 0;
+      if (downlineValue < 0) {
+        newErrors.downline_partnership = 'Downline Partnership cannot be less than 0';
+      } else if (downlineValue > 100) {
+        newErrors.downline_partnership = 'Downline Partnership cannot exceed 100';
+      }
+    }
     
     // Transaction Password Validation
     if (!formData.master_password.trim()) {
@@ -400,14 +419,28 @@ const AdminCreateAccount = () => {
                       <div className="form-group">
                         <label htmlFor="downline_partnership">Down Line Partnership</label>
                         <input 
-                          className="form-control partnerships" 
+                          className={`form-control partnerships ${errors.downline_partnership ? 'is-invalid' : ''}`}
                           type="number" 
                           name="downline_partnership" 
                           id="downline_partnership" 
+                          min="0"
+                          max="100"
                           value={formData.downline_partnership}
-                          onInput={(e) => setPartnershipToAll(e.target.value, '100')}
+                          onInput={(e) => {
+                            const value = e.target.value;
+                            // Prevent values over 100
+                            if (value && parseInt(value) > 100) {
+                              e.target.value = '100';
+                              setPartnershipToAll('100', '100');
+                            } else {
+                              setPartnershipToAll(value, '100');
+                            }
+                          }}
                           onChange={handleInputChange}
                         />
+                        {errors.downline_partnership && (
+                          <div className="invalid-feedback">{errors.downline_partnership}</div>
+                        )}
                       </div>
                     </div>
                   )}
