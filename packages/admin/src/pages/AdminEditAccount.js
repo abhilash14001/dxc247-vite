@@ -159,8 +159,8 @@
             bookmaker_pre_inplay_stake: userData.bookmaker_pre_inplay_stake || '100000',
             bookmaker_min_odds: userData.bookmaker_min_odds || '0.01',
             bookmaker_max_odds: userData.bookmaker_max_odds || '15',
-            bookmaker_bet_status: userData.bookmaker_bet_status || true,
-            bookmaker_partnership: userData.bookmaker_partnership || '100',
+            bookmaker_bet_status: userData.bookmaker_bet_status !== undefined ? userData.bookmaker_bet_status : true,
+            bookmaker_partnership: userData.bookmaker_partnership || userData.downline_partnership || '100',
             
             // Sport Information - Session
             session_min_stake: userData.session_min_stake || '100',
@@ -171,8 +171,8 @@
             session_pre_inplay_stake: userData.session_pre_inplay_stake || '100000',
             session_min_odds: userData.session_min_odds || '0.01',
             session_max_odds: userData.session_max_odds || '15',
-            session_bet_status: userData.session_bet_status || true,
-            session_partnership: userData.session_partnership || '100',
+            session_bet_status: userData.session_bet_status !== undefined ? userData.session_bet_status : true,
+            session_partnership: userData.session_partnership || userData.downline_partnership || '100',
             
             // Sport Information - Soccer
             soccer_min_stake: userData.soccer_min_stake || '5',
@@ -228,10 +228,16 @@
 
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
+      let newValue = type === 'checkbox' ? checked : value;
+      
+      // Only allow numbers for phone field
+      if (name === 'phone') {
+        newValue = value.replace(/\D/g, '');
+      }
       
       setFormData(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : value
+        [name]: newValue
       }));
       
       // Clear error for this field when user starts typing
@@ -241,6 +247,29 @@
           [name]: ''
         }));
       }
+    };
+
+    const setPartnershipToAll = (value, defaultValue = '100') => {
+      const partnershipValue = value || defaultValue;
+      const numValue = parseInt(partnershipValue) || 0;
+      
+      // Ensure downline_partnership doesn't exceed 100
+      const downlineValue = Math.min(Math.max(numValue, 0), 100);
+      
+      // Calculate over_partnership: 100 - downline_partnership
+      const overValue = 100 - downlineValue;
+      
+      setFormData(prev => ({
+        ...prev,
+        downline_partnership: downlineValue.toString(),
+        over_partnership: overValue.toString(),
+        cricket_partnership: downlineValue.toString(),
+        bookmaker_partnership: downlineValue.toString(),
+        session_partnership: downlineValue.toString(),
+        soccer_partnership: downlineValue.toString(),
+        tennis_partnership: downlineValue.toString(),
+        casino_partnership: downlineValue.toString()
+      }));
     };
 
     const validateForm = () => {
@@ -256,15 +285,24 @@
       if (isEditMode && formData.password && formData.password !== formData.password_confirmation) {
         newErrors.password_confirmation = 'Passwords do not match';
       }
-      if (!formData.city.trim()) newErrors.city = 'City is required';
-      if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+      // City and Phone are optional - no validation needed
       
       // Account Details Validation
       if (!formData.role) newErrors.role = 'Role is required';
-      if (!formData.prefix_domain) newErrors.prefix_domain = 'Prefix Domain is required';
+      if (formData.role === '2' && !formData.prefix_domain) newErrors.prefix_domain = 'Prefix Domain is required';
       if (!formData.credit_reference) newErrors.credit_reference = 'Credit Reference is required';
-      if (!formData.account_limit) newErrors.account_limit = 'Account Limit is required';
-      if (!formData.exposure_limit) newErrors.exposure_limit = 'Exposure Limit is required';
+      if (formData.role === '2' && !formData.account_limit) newErrors.account_limit = 'Account Limit is required';
+      if (formData.role === '7' && !formData.exposure_limit) newErrors.exposure_limit = 'Exposure Limit is required';
+      
+      // Downline Partnership Validation
+      if (formData.role && formData.role !== '7') {
+        const downlineValue = parseInt(formData.downline_partnership) || 0;
+        if (downlineValue < 0) {
+          newErrors.downline_partnership = 'Downline Partnership cannot be less than 0';
+        } else if (downlineValue > 100) {
+          newErrors.downline_partnership = 'Downline Partnership cannot exceed 100';
+        }
+      }
       
       // Transaction Password Validation
       if (!formData.master_password.trim()) {
@@ -411,35 +449,76 @@
                         <label htmlFor="city">City</label>
                         <input
                           type="text"
-                          className={`form-control ${errors.city ? 'is-invalid' : ''}`}
+                          className="form-control"
                           id="city"
                           name="city"
                           value={formData.city}
                           onChange={handleInputChange}
-                          required
                         />
-                        {errors.city && (
-                          <div className="invalid-feedback">{errors.city}</div>
-                        )}
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-12">
                       <div className="form-group">
                         <label htmlFor="phone">Phone</label>
                         <input
-                          type="text"
-                          className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+                          type="tel"
+                          className="form-control"
                           id="phone"
                           name="phone"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          required
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                         />
-                        {errors.phone && (
-                          <div className="invalid-feedback">{errors.phone}</div>
-                        )}
                       </div>
                     </div>
+
+                    {formData.role && formData.role !== '7' && (
+                      <div className="col-md-6 col-sm-12 hide_partner">
+                        <div className="form-group">
+                          <label htmlFor="downline_partnership">Down Line Partnership</label>
+                          <input 
+                            className={`form-control partnerships ${errors.downline_partnership ? 'is-invalid' : ''}`}
+                            type="number" 
+                            name="downline_partnership" 
+                            id="downline_partnership" 
+                            min="0"
+                            max="100"
+                            value={formData.downline_partnership}
+                            onInput={(e) => {
+                              const value = e.target.value;
+                              // Prevent values over 100
+                              if (value && parseInt(value) > 100) {
+                                e.target.value = '100';
+                                setPartnershipToAll('100', '100');
+                              } else {
+                                setPartnershipToAll(value, '100');
+                              }
+                            }}
+                            onChange={handleInputChange}
+                          />
+                          {errors.downline_partnership && (
+                            <div className="invalid-feedback">{errors.downline_partnership}</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {formData.role && formData.role !== '7' && (
+                      <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
+                        <div className="form-group">
+                          <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
+                          <input 
+                            type="number" 
+                            name="over_partnership" 
+                            readOnly 
+                            className="form-control partnerships" 
+                            id="over_partnership" 
+                            value={formData.over_partnership}
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="col-md-6 col-sm-12 d-none">
                       <div className="form-group">
@@ -459,50 +538,30 @@
                 <div className="col-md-6 account-detail">
                   <h4 className="m-b-20 col-md-12">Account Detail</h4>
                   <div className="row">
-                    <div className="col-md-6 col-sm-12">
-                      <div className="form-group">
-                        <label>User Role/Type</label>
-                        <select
-                          className={`form-control ${errors.role ? 'is-invalid' : ''}`}
-                          id="role"
-                          name="role"
-                          value={formData.role}
-                          onChange={handleInputChange}
-                          required
-                        >
-                          <option value="">Select User Role</option>
-                          <option value="2">Admin</option>
-                          <option value="3">Sub Admin</option>
-                          <option value="4">Super Master</option>
-                          <option value="5">Master</option>
-                          <option value="7">User</option>
-                        </select>
-                        {errors.role && (
-                          <div className="invalid-feedback">{errors.role}</div>
-                        )}
+                    <input type="hidden" name="role" value={formData.role} />
+                    {formData.role && formData.role === '2' && (
+                      <div className="col-md-6 col-sm-12 prefix_domain">
+                        <div className="form-group">
+                          <label>Select Prefix</label>
+                          <select
+                            className={`form-control ${errors.prefix_domain ? 'is-invalid' : ''}`}
+                            id="prefix_domain"
+                            name="prefix_domain"
+                            value={formData.prefix_domain}
+                            onChange={handleInputChange}
+                            required
+                          >
+                            <option value="">Select Prefix</option>
+                            <option value="3">dxc247.com</option>
+                            <option value="6">ibm247.com</option>
+                            <option value="9">sp247.in</option>
+                          </select>
+                          {errors.prefix_domain && (
+                            <div className="invalid-feedback">{errors.prefix_domain}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-6 col-sm-12 prefix_domain">
-                      <div className="form-group">
-                        <label>Select Prefix</label>
-                        <select
-                          className={`form-control ${errors.prefix_domain ? 'is-invalid' : ''}`}
-                          id="prefix_domain"
-                          name="prefix_domain"
-                          value={formData.prefix_domain}
-                          onChange={handleInputChange}
-                          required
-                        >
-                          <option value="">Select Prefix</option>
-                          <option value="3">dxc247.com</option>
-                          <option value="6">ibm247.com</option>
-                          <option value="9">sp247.in</option>
-                        </select>
-                        {errors.prefix_domain && (
-                          <div className="invalid-feedback">{errors.prefix_domain}</div>
-                        )}
-                      </div>
-                    </div>
+                    )}
 
                     <div className="col-md-6 col-sm-12">
                       <div className="form-group">
@@ -520,62 +579,68 @@
                       </div>
                     </div>
 
-                    <div className="col-md-6 col-sm-12 prefix_domain">
-                      <div className="form-group">
-                        <label htmlFor="account_limit">Account Limit</label>
-                        <input
-                          type="number"
-                          className={`form-control ${errors.account_limit ? 'is-invalid' : ''}`}
-                          id="account_limit"
-                          name="account_limit"
-                          value={formData.account_limit}
-                          onChange={handleInputChange}
-                          required
-                          step="1"
-                        />
-                        {errors.account_limit && (
-                          <div className="invalid-feedback">{errors.account_limit}</div>
-                        )}
+                    {formData.role && formData.role === '2' && (
+                      <div className="col-md-6 col-sm-12 prefix_domain">
+                        <div className="form-group">
+                          <label htmlFor="account_limit">Account Limit</label>
+                          <input
+                            type="number"
+                            className={`form-control ${errors.account_limit ? 'is-invalid' : ''}`}
+                            id="account_limit"
+                            name="account_limit"
+                            value={formData.account_limit}
+                            onChange={handleInputChange}
+                            required
+                            step="1"
+                          />
+                          {errors.account_limit && (
+                            <div className="invalid-feedback">{errors.account_limit}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-6 col-sm-12 prefix_domain">
-                      <div className="form-group">
-                        <label htmlFor="isBetDeleteAccess">Is Bet Delete</label>
-                        <input
-                          type="hidden"
-                          name="isBetDeleteAccess"
-                          className="form-control"
-                          value="0"
-                        />
-                        <input
-                          type="checkbox"
-                          name="isBetDeleteAccess"
-                          id="isBetDeleteAccess"
-                          className=""
-                          value="1"
-                          checked={formData.isBetDeleteAccess}
-                          onChange={handleInputChange}
-                        />
+                    )}
+                    {formData.role && formData.role === '2' && (
+                      <div className="col-md-6 col-sm-12 prefix_domain">
+                        <div className="form-group">
+                          <label htmlFor="isBetDeleteAccess">Is Bet Delete</label>
+                          <input
+                            type="hidden"
+                            name="isBetDeleteAccess"
+                            className="form-control"
+                            value="0"
+                          />
+                          <input
+                            type="checkbox"
+                            name="isBetDeleteAccess"
+                            id="isBetDeleteAccess"
+                            className=""
+                            value="1"
+                            checked={formData.isBetDeleteAccess}
+                            onChange={handleInputChange}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-6 col-sm-12 exposure_limit" style={{display: 'none'}}>
-                      <div className="form-group">
-                        <label htmlFor="exposure_limit">Exposure Limit</label>
-                        <input
-                          type="number"
-                          className={`form-control ${errors.exposure_limit ? 'is-invalid' : ''}`}
-                          id="exposure_limit"
-                          name="exposure_limit"
-                          value={formData.exposure_limit}
-                          onChange={handleInputChange}
-                          required
-                          step="0.01"
-                        />
-                        {errors.exposure_limit && (
-                          <div className="invalid-feedback">{errors.exposure_limit}</div>
-                        )}
+                    )}
+                    {formData.role && formData.role === '7' && (
+                      <div className="col-md-6 col-sm-12 exposure_limit">
+                        <div className="form-group">
+                          <label htmlFor="exposure_limit">Exposure Limit</label>
+                          <input
+                            type="number"
+                            className={`form-control ${errors.exposure_limit ? 'is-invalid' : ''}`}
+                            id="exposure_limit"
+                            name="exposure_limit"
+                            value={formData.exposure_limit}
+                            onChange={handleInputChange}
+                            required
+                            step="0.01"
+                          />
+                          {errors.exposure_limit && (
+                            <div className="invalid-feedback">{errors.exposure_limit}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -620,27 +685,45 @@
                           </td>
                           <td>
                             <input className="form-control" type="text" name="cricket_max_profit" id="cricket_max_profit" placeholder="0" value={formData.cricket_max_profit} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="bookmaker_max_profit" id="bookmaker_max_profit" placeholder="0" value={formData.bookmaker_max_profit} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="session_max_profit" id="session_max_profit" placeholder="0" value={formData.session_max_profit} onChange={handleInputChange} />
                           </td>
                           <td>
                             <input className="form-control" type="text" name="cricket_bet_delay" id="cricket_bet_delay" placeholder="0" value={formData.cricket_bet_delay} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="bookmaker_bet_delay" id="bookmaker_bet_delay" placeholder="0" value={formData.bookmaker_bet_delay} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="session_bet_delay" id="session_bet_delay" placeholder="0" value={formData.session_bet_delay} onChange={handleInputChange} />
                           </td>
                           <td>
                             <input className="form-control" type="text" name="cricket_pre_inplay_profit" id="cricket_pre_inplay_profit" placeholder="0" value={formData.cricket_pre_inplay_profit} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="bookmaker_pre_inplay_profit" id="bookmaker_pre_inplay_profit" placeholder="0" value={formData.bookmaker_pre_inplay_profit} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="session_pre_inplay_profit" id="session_pre_inplay_profit" placeholder="0" value={formData.session_pre_inplay_profit} onChange={handleInputChange} />
                           </td>
                           <td>
                             <input className="form-control" type="text" name="cricket_pre_inplay_stake" id="cricket_pre_inplay_stake" placeholder="0" value={formData.cricket_pre_inplay_stake} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="bookmaker_pre_inplay_stake" id="bookmaker_pre_inplay_stake" placeholder="0" value={formData.bookmaker_pre_inplay_stake} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="session_pre_inplay_stake" id="session_pre_inplay_stake" placeholder="0" value={formData.session_pre_inplay_stake} onChange={handleInputChange} />
                           </td>
                           <td>
                             <input className="form-control" type="text" name="cricket_min_odds" id="cricket_min_odds" placeholder="0" value={formData.cricket_min_odds} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="bookmaker_min_odds" id="bookmaker_min_odds" placeholder="0" value={formData.bookmaker_min_odds} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="session_min_odds" id="session_min_odds" placeholder="0" value={formData.session_min_odds} onChange={handleInputChange} />
                           </td>
                           <td>
                             <input className="form-control" type="text" name="cricket_max_odds" id="cricket_max_odds" placeholder="0" value={formData.cricket_max_odds} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="bookmaker_max_odds" id="bookmaker_max_odds" placeholder="0" value={formData.bookmaker_max_odds} onChange={handleInputChange} />
+                            <input className="form-control mt-10" type="text" name="session_max_odds" id="session_max_odds" placeholder="0" value={formData.session_max_odds} onChange={handleInputChange} />
                           </td>
                           <td>
                             <input type="checkbox" name="cricket_bet_status" value="1" checked={formData.cricket_bet_status} onChange={handleInputChange} />
+                            <br />
+                            <input type="checkbox" name="bookmaker_bet_status" value="1" checked={formData.bookmaker_bet_status} onChange={handleInputChange} className="mt-10" />
+                            <br />
+                            <input type="checkbox" name="session_bet_status" value="1" checked={formData.session_bet_status} onChange={handleInputChange} className="mt-10" />
                           </td>
                           <td>
                             <input className="form-control partnership" type="text" name="cricket_partnership" id="cricket_partnership" data-partnership="100" readOnly placeholder="0" value={formData.cricket_partnership} />
+                            <input className="form-control partnership mt-10" type="text" name="bookmaker_partnership" id="bookmaker_partnership" data-partnership="100" readOnly placeholder="0" value={formData.bookmaker_partnership} />
+                            <input className="form-control partnership mt-10" type="text" name="session_partnership" id="session_partnership" data-partnership="100" readOnly placeholder="0" value={formData.session_partnership} />
                           </td>
                         </tr>
                         <tr>

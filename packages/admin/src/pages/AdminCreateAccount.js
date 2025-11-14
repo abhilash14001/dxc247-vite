@@ -41,10 +41,26 @@ const AdminCreateAccount = () => {
     // Sport Information - Bookmaker
     bookmaker_min_stake: '100',
     bookmaker_max_stake: '10000000',
+    bookmaker_max_profit: '10000000',
+    bookmaker_bet_delay: '5',
+    bookmaker_pre_inplay_profit: '1000000',
+    bookmaker_pre_inplay_stake: '100000',
+    bookmaker_min_odds: '0.01',
+    bookmaker_max_odds: '15',
+    bookmaker_bet_status: true,
+    bookmaker_partnership: '100',
     
     // Sport Information - Session
     session_min_stake: '100',
     session_max_stake: '10000000',
+    session_max_profit: '10000000',
+    session_bet_delay: '5',
+    session_pre_inplay_profit: '1000000',
+    session_pre_inplay_stake: '100000',
+    session_min_odds: '0.01',
+    session_max_odds: '15',
+    session_bet_status: true,
+    session_partnership: '100',
     
     // Sport Information - Soccer
     soccer_min_stake: '5',
@@ -127,6 +143,8 @@ const AdminCreateAccount = () => {
       downline_partnership: downlineValue.toString(),
       over_partnership: overValue.toString(),
       cricket_partnership: downlineValue.toString(),
+      bookmaker_partnership: downlineValue.toString(),
+      session_partnership: downlineValue.toString(),
       soccer_partnership: downlineValue.toString(),
       tennis_partnership: downlineValue.toString(),
       casino_partnership: downlineValue.toString()
@@ -144,6 +162,7 @@ const AdminCreateAccount = () => {
     if (formData.password !== formData.password_confirmation) {
       newErrors.password_confirmation = 'Passwords do not match';
     }
+    // City and Phone are optional - no validation needed
     
     // Account Details Validation
     if (!formData.role) newErrors.role = 'User Role is required';
@@ -283,10 +302,10 @@ const AdminCreateAccount = () => {
           <h2 className="m-b-20">Add Account</h2>
           <form className="form-horizontal123" onSubmit={handleSubmit} id="clientFrm" noValidate>
             <div className="row">
-              <div className="col-md-12 personal-detail">
+              <div className="col-md-6 personal-detail">
                 <h4 className="m-b-20 col-md-12">Personal Detail</h4>
                 <div className="row">
-                  <div className="col-md-3 col-sm-6">
+                  <div className="col-md-6 col-sm-12">
                     <div className="form-group">
                       <label htmlFor="name">Full Name</label>
                       <input 
@@ -300,7 +319,7 @@ const AdminCreateAccount = () => {
                       {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                     </div>
                   </div>
-                  <div className="col-md-3 col-sm-6">
+                  <div className="col-md-6 col-sm-12">
                     <div className="form-group">
                       <label htmlFor="username">Login UserID</label>
                       <input 
@@ -319,7 +338,7 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-3 col-sm-6">
+                  <div className="col-md-6 col-sm-12">
                     <div className="form-group">
                       <label htmlFor="password">Password</label>
                       <input 
@@ -334,7 +353,7 @@ const AdminCreateAccount = () => {
                       {errors.password && <div className="invalid-feedback">{errors.password}</div>}
                     </div>
                   </div>
-                  <div className="col-md-3 col-sm-6">
+                  <div className="col-md-6 col-sm-12">
                     <div className="form-group">
                       <label htmlFor="password_confirmation">Re-enter Password</label>
                       <input 
@@ -350,7 +369,7 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-3 col-sm-6">
+                  <div className="col-md-6 col-sm-12">
                     <div className="form-group">
                       <label htmlFor="city">City</label>
                       <input 
@@ -363,7 +382,7 @@ const AdminCreateAccount = () => {
                       />
                     </div>
                   </div>
-                  <div className="col-md-3 col-sm-6">
+                  <div className="col-md-6 col-sm-12">
                     <div className="form-group">
                       <label htmlFor="phone">Phone</label>
                       <input 
@@ -379,43 +398,8 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-3 col-sm-6">
-                    <div className="form-group">
-                      <label>User Role/Type</label>
-                      <select 
-                        name="role" 
-                        id="role" 
-                        className={`form-control ${errors.role ? 'is-invalid' : ''}`}
-                        value={formData.role}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select User Role</option>
-                        <option value="2">Admin</option>
-                        <option value="3">Sub Admin</option>
-                        <option value="4">Super Master</option>
-                        <option value="5">Master</option>
-                        <option value="7">User</option>
-                      </select>
-                      {errors.role && <div className="invalid-feedback">{errors.role}</div>}
-                    </div>
-                  </div>
-
-                  <div className="col-md-3 col-sm-6">
-                    <div className="form-group">
-                      <label htmlFor="credit_reference">Credit Reference</label>
-                      <input 
-                        type="number" 
-                        name="credit_reference" 
-                        className={`form-control ${errors.credit_reference ? 'is-invalid' : ''}`}
-                        value={formData.credit_reference}
-                        onChange={handleInputChange}
-                      />
-                      {errors.credit_reference && <div className="invalid-feedback">{errors.credit_reference}</div>}
-                    </div>
-                  </div>
-
                   {formData.role && formData.role !== '7' && (
-                    <div className="col-md-3 col-sm-6 hide_partner">
+                    <div className="col-md-6 col-sm-12 hide_partner">
                       <div className="form-group">
                         <label htmlFor="downline_partnership">Down Line Partnership</label>
                         <input 
@@ -445,7 +429,7 @@ const AdminCreateAccount = () => {
                     </div>
                   )}
                   {formData.role && formData.role !== '7' && (
-                    <div className="col-md-3 col-sm-6 partnership over_partnership_form hide_partner">
+                    <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
                       <div className="form-group">
                         <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
                         <input 
@@ -461,7 +445,142 @@ const AdminCreateAccount = () => {
                     </div>
                   )}
 
-                  <input name="expiry_date" type="hidden" value={formData.expiry_date} />
+                  <div className="col-md-6 col-sm-12 d-none">
+                    <div className="form-group">
+                      <label htmlFor="expiry_date">Expiry Date</label>
+                      <input
+                        type="date"
+                        className="form-control expiry_date"
+                        id="expiry_date"
+                        name="expiry_date"
+                        value={formData.expiry_date}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 account-detail">
+                <h4 className="m-b-20 col-md-12">Account Detail</h4>
+                <div className="row">
+                  <div className="col-md-6 col-sm-12">
+                    <div className="form-group">
+                      <label>User Role/Type</label>
+                      <select 
+                        name="role" 
+                        id="role" 
+                        className={`form-control ${errors.role ? 'is-invalid' : ''}`}
+                        value={formData.role}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select User Role</option>
+                        <option value="2">Admin</option>
+                        <option value="3">Sub Admin</option>
+                        <option value="4">Super Master</option>
+                        <option value="5">Master</option>
+                        <option value="7">User</option>
+                      </select>
+                      {errors.role && <div className="invalid-feedback">{errors.role}</div>}
+                    </div>
+                  </div>
+                  {formData.role && formData.role === '2' && (
+                    <div className="col-md-6 col-sm-12 prefix_domain">
+                      <div className="form-group">
+                        <label>Select Prefix</label>
+                        <select
+                          className={`form-control ${errors.prefix_domain ? 'is-invalid' : ''}`}
+                          id="prefix_domain"
+                          name="prefix_domain"
+                          value={formData.prefix_domain}
+                          onChange={handleInputChange}
+                        >
+                          <option value="">Select Prefix</option>
+                          <option value="3">dxc247.com</option>
+                          <option value="6">ibm247.com</option>
+                          <option value="9">sp247.in</option>
+                        </select>
+                        {errors.prefix_domain && (
+                          <div className="invalid-feedback">{errors.prefix_domain}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="col-md-6 col-sm-12">
+                    <div className="form-group">
+                      <label htmlFor="credit_reference">Credit Reference</label>
+                      <input 
+                        type="number" 
+                        name="credit_reference" 
+                        className={`form-control ${errors.credit_reference ? 'is-invalid' : ''}`}
+                        value={formData.credit_reference}
+                        onChange={handleInputChange}
+                        step="0.01"
+                      />
+                      {errors.credit_reference && <div className="invalid-feedback">{errors.credit_reference}</div>}
+                    </div>
+                  </div>
+
+                  {formData.role && formData.role === '2' && (
+                    <div className="col-md-6 col-sm-12 prefix_domain">
+                      <div className="form-group">
+                        <label htmlFor="account_limit">Account Limit</label>
+                        <input
+                          type="number"
+                          className={`form-control ${errors.account_limit ? 'is-invalid' : ''}`}
+                          id="account_limit"
+                          name="account_limit"
+                          value={formData.account_limit}
+                          onChange={handleInputChange}
+                          step="1"
+                        />
+                        {errors.account_limit && (
+                          <div className="invalid-feedback">{errors.account_limit}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {formData.role && formData.role === '2' && (
+                    <div className="col-md-6 col-sm-12 prefix_domain">
+                      <div className="form-group">
+                        <label htmlFor="isBetDeleteAccess">Is Bet Delete</label>
+                        <input
+                          type="hidden"
+                          name="isBetDeleteAccess"
+                          className="form-control"
+                          value="0"
+                        />
+                        <input
+                          type="checkbox"
+                          name="isBetDeleteAccess"
+                          id="isBetDeleteAccess"
+                          className=""
+                          value="1"
+                          checked={formData.isBetDeleteAccess}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {formData.role && formData.role === '7' && (
+                    <div className="col-md-6 col-sm-12 exposure_limit">
+                      <div className="form-group">
+                        <label htmlFor="exposure_limit">Exposure Limit</label>
+                        <input
+                          type="number"
+                          className={`form-control ${errors.exposure_limit ? 'is-invalid' : ''}`}
+                          id="exposure_limit"
+                          name="exposure_limit"
+                          value={formData.exposure_limit}
+                          onChange={handleInputChange}
+                          step="0.01"
+                        />
+                        {errors.exposure_limit && (
+                          <div className="invalid-feedback">{errors.exposure_limit}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -564,6 +683,24 @@ const AdminCreateAccount = () => {
                             value={formData.cricket_max_profit}
                             onChange={handleInputChange}
                           />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="bookmaker_max_profit" 
+                            id="bookmaker_max_profit" 
+                            placeholder="0" 
+                            value={formData.bookmaker_max_profit}
+                            onChange={handleInputChange}
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="session_max_profit" 
+                            id="session_max_profit" 
+                            placeholder="0" 
+                            value={formData.session_max_profit}
+                            onChange={handleInputChange}
+                          />
                         </td>
                         <td>
                           <input 
@@ -573,6 +710,26 @@ const AdminCreateAccount = () => {
                             id="cricket_bet_delay" 
                             placeholder="0" 
                             value={formData.cricket_bet_delay}
+                            onChange={handleInputChange}
+                            step="1"
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="bookmaker_bet_delay" 
+                            id="bookmaker_bet_delay" 
+                            placeholder="0" 
+                            value={formData.bookmaker_bet_delay}
+                            onChange={handleInputChange}
+                            step="1"
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="session_bet_delay" 
+                            id="session_bet_delay" 
+                            placeholder="0" 
+                            value={formData.session_bet_delay}
                             onChange={handleInputChange}
                             step="1"
                           />
@@ -587,6 +744,24 @@ const AdminCreateAccount = () => {
                             value={formData.cricket_pre_inplay_profit}
                             onChange={handleInputChange}
                           />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="bookmaker_pre_inplay_profit" 
+                            id="bookmaker_pre_inplay_profit" 
+                            placeholder="0" 
+                            value={formData.bookmaker_pre_inplay_profit}
+                            onChange={handleInputChange}
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="session_pre_inplay_profit" 
+                            id="session_pre_inplay_profit" 
+                            placeholder="0" 
+                            value={formData.session_pre_inplay_profit}
+                            onChange={handleInputChange}
+                          />
                         </td>
                         <td>
                           <input 
@@ -596,6 +771,24 @@ const AdminCreateAccount = () => {
                             id="cricket_pre_inplay_stake" 
                             placeholder="0" 
                             value={formData.cricket_pre_inplay_stake}
+                            onChange={handleInputChange}
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="bookmaker_pre_inplay_stake" 
+                            id="bookmaker_pre_inplay_stake" 
+                            placeholder="0" 
+                            value={formData.bookmaker_pre_inplay_stake}
+                            onChange={handleInputChange}
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="session_pre_inplay_stake" 
+                            id="session_pre_inplay_stake" 
+                            placeholder="0" 
+                            value={formData.session_pre_inplay_stake}
                             onChange={handleInputChange}
                           />
                         </td>
@@ -609,6 +802,24 @@ const AdminCreateAccount = () => {
                             value={formData.cricket_min_odds}
                             onChange={handleInputChange}
                           />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="bookmaker_min_odds" 
+                            id="bookmaker_min_odds" 
+                            placeholder="0" 
+                            value={formData.bookmaker_min_odds}
+                            onChange={handleInputChange}
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="session_min_odds" 
+                            id="session_min_odds" 
+                            placeholder="0" 
+                            value={formData.session_min_odds}
+                            onChange={handleInputChange}
+                          />
                         </td>
                         <td>
                           <input 
@@ -620,6 +831,24 @@ const AdminCreateAccount = () => {
                             value={formData.cricket_max_odds}
                             onChange={handleInputChange}
                           />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="bookmaker_max_odds" 
+                            id="bookmaker_max_odds" 
+                            placeholder="0" 
+                            value={formData.bookmaker_max_odds}
+                            onChange={handleInputChange}
+                          />
+                          <input 
+                            className="form-control mt-10" 
+                            type="number" 
+                            name="session_max_odds" 
+                            id="session_max_odds" 
+                            placeholder="0" 
+                            value={formData.session_max_odds}
+                            onChange={handleInputChange}
+                          />
                         </td>
                         <td>
                           <input 
@@ -628,6 +857,24 @@ const AdminCreateAccount = () => {
                             value="1" 
                             checked={formData.cricket_bet_status}
                             onChange={handleInputChange}
+                          />
+                          <br />
+                          <input 
+                            type="checkbox" 
+                            name="bookmaker_bet_status" 
+                            value="1" 
+                            checked={formData.bookmaker_bet_status}
+                            onChange={handleInputChange}
+                            className="mt-10"
+                          />
+                          <br />
+                          <input 
+                            type="checkbox" 
+                            name="session_bet_status" 
+                            value="1" 
+                            checked={formData.session_bet_status}
+                            onChange={handleInputChange}
+                            className="mt-10"
                           />
                         </td>
                         <td>
@@ -640,6 +887,28 @@ const AdminCreateAccount = () => {
                             readOnly 
                             placeholder="0" 
                             value={formData.cricket_partnership}
+                            step="0.01"
+                          />
+                          <input 
+                            className="form-control partnership mt-10" 
+                            type="number" 
+                            name="bookmaker_partnership" 
+                            id="bookmaker_partnership" 
+                            data-partnership="100" 
+                            readOnly 
+                            placeholder="0" 
+                            value={formData.bookmaker_partnership}
+                            step="0.01"
+                          />
+                          <input 
+                            className="form-control partnership mt-10" 
+                            type="number" 
+                            name="session_partnership" 
+                            id="session_partnership" 
+                            data-partnership="100" 
+                            readOnly 
+                            placeholder="0" 
+                            value={formData.session_partnership}
                             step="0.01"
                           />
                         </td>
