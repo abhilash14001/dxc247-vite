@@ -39,7 +39,7 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess 
                 <th>Matched Bet</th>
                 <th>Odds</th>
                 <th>Stack</th>
-                {isAdmin && <th>Action</th>}
+                {isAdmin && isBetDeleteAccess && <th>Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -55,7 +55,7 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess 
                     )}
                     <td>{data.bet_odds}</td>
                     <td>{data.bet_amount}</td>
-                    {isAdmin && (
+                    {isAdmin && isBetDeleteAccess && (
                       <td>
                         {data.is_deleted === 1 ? (
                           <button 
@@ -66,15 +66,13 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess 
                             <i className="fa fa-undo"></i>
                           </button>
                         ) : (
-                          isBetDeleteAccess && (
-                            <button 
-                              className="btn btn-sm btn-danger"
-                              onClick={() => onDelete && onDelete(data.id)}
-                              title="Delete bet"
-                            >
-                              <i className="fa fa-trash"></i>
-                            </button>
-                          )
+                          <button 
+                            className="btn btn-sm btn-danger"
+                            onClick={() => onDelete && onDelete(data.id)}
+                            title="Delete bet"
+                          >
+                            <i className="fa fa-trash"></i>
+                          </button>
                         )}
                       </td>
                     )}
@@ -103,7 +101,7 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess 
         <div className="unique-match-bet">Matched Bet</div>
         <div className="unique-match-odds">Odds</div>
         <div className="unique-match-stake">Stake</div>
-        {isAdmin && <div className="unique-match-action">Action</div>}
+        {isAdmin && isBetDeleteAccess && <div className="unique-match-action">Action</div>}
       </div>
 
       {mybetModel.map((data, key) => {
@@ -116,7 +114,7 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess 
               </div>
               <div className="unique-match-odds">{data.bet_odds}</div>
               <div className="unique-match-stake">{data.bet_amount}</div>
-              {isAdmin && (
+              {isAdmin && isBetDeleteAccess && (
                 <div className="unique-match-action">
                   {data.is_deleted === 1 ? (
                     <button 
@@ -127,15 +125,13 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess 
                       <i className="fa fa-undo"></i>
                     </button>
                   ) : (
-                    isBetDeleteAccess && (
-                      <button 
-                        className="btn btn-sm btn-danger"
-                        onClick={() => onDelete && onDelete(data)}
-                        title="Delete bet"
-                      >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    )
+                    <button 
+                      className="btn btn-sm btn-danger"
+                      onClick={() => onDelete && onDelete(data)}
+                      title="Delete bet"
+                    >
+                      <i className="fa fa-trash"></i>
+                    </button>
                   )}
                 </div>
               )}

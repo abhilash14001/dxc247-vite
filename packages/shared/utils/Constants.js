@@ -2602,10 +2602,11 @@ export const useDeleteMatchedBet = () => {
   const deleteBet = async (betId, onSuccess = null, onError = null) => {
     // Check if admin has bet delete access
     const adminUser = store.getState().admin?.user;
+    const isSuperAdmin = adminUser?.role === 1;
     const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
     
-    // Only allow deletion if user has access (or if not in admin route)
-    if (isAdminRoute() && !isBetDeleteAccess) {
+    // Only allow deletion if user has access or is superadmin (or if not in admin route)
+    if (isAdminRoute() && !isBetDeleteAccess && !isSuperAdmin) {
       toast.error("You do not have permission to delete bets.");
       if (onError && typeof onError === 'function') {
         onError("Permission denied");

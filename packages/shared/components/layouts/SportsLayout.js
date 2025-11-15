@@ -172,9 +172,10 @@ const SportsLayout = ({
     // Check if admin has bet delete access (only for delete action, not restore)
     if (!isDeleted && isAdminRoute()) {
       const adminUser = store.getState().admin?.user;
+      const isSuperAdmin = adminUser?.role === 1;
       const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
       
-      if (!isBetDeleteAccess) {
+      if (!isBetDeleteAccess && !isSuperAdmin) {
         Notify("You do not have permission to delete bets.", null, null, 'danger');
         return;
       }

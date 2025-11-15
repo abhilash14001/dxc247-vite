@@ -40,7 +40,9 @@ const RightSideBarCasino = ({
   
   // Check if admin has bet delete access
   const adminUser = isAdminRoute() ? store.getState().admin?.user : null;
+  const isSuperAdmin = adminUser?.role === 1;
   const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
+  const canDeleteBet = isBetDeleteAccess || isSuperAdmin;
   const { popupDisplayForDesktop, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   const { stakeValues } = useStake();
@@ -447,7 +449,7 @@ const RightSideBarCasino = ({
               type={sportList?.match_id}
               mybetModel={myBetModel}
               isAdmin={isAdminRoute()}
-              isBetDeleteAccess={isBetDeleteAccess}
+              isBetDeleteAccess={canDeleteBet}
               onDelete={async (data) => {
                 await deleteBet(
                   data,

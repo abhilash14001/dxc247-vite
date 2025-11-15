@@ -108,7 +108,9 @@ const RightSideBarSports = ({
   
   // Check if admin has bet delete access
   const adminUser = isAdminRoute() ? store.getState().admin?.user : null;
+  const isSuperAdmin = adminUser?.role === 1;
   const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
+  const canDeleteBet = isBetDeleteAccess || isSuperAdmin;
   
   // Use the custom hook for stake values checking
   useStakeValuesCheck();
@@ -982,7 +984,7 @@ const RightSideBarSports = ({
                       <th>Matched Bet</th>
                       <th className="text-end">Odds</th>
                       <th className="text-end">Stake</th>
-                      {isAdminRoute() && <th className="text-center">Action</th>}
+                      {isAdminRoute() && canDeleteBet && <th className="text-center">Action</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -1004,7 +1006,7 @@ const RightSideBarSports = ({
                             )}
                             <td className="text-end">{data.bet_odds}</td>
                             <td className="text-end">{data.bet_amount}</td>
-                            {isAdminRoute() && (
+                            {isAdminRoute() && canDeleteBet && (
                               <td className="text-center">
                                 {data.is_deleted === 1 ? (
                                   <button
@@ -1026,26 +1028,24 @@ const RightSideBarSports = ({
                                     <i className="fa fa-undo"></i>
                                   </button>
                                 ) : (
-                                  (isAdminRoute() && !isBetDeleteAccess) ? null : (
-                                    <button
-                                      className="btn btn-sm btn-danger"
-                                      onClick={() => deleteBet(
-                                        data.id || data.bet_id,
-                                        () => {
-                                          // Success callback - refresh bet list
-                                          if (getBetListData) {
-                                            getBetListData();
-                                          }
-                                        },
-                                        (errorMessage) => {
-                                          console.error("Delete bet error:", errorMessage);
+                                  <button
+                                    className="btn btn-sm btn-danger"
+                                    onClick={() => deleteBet(
+                                      data.id || data.bet_id,
+                                      () => {
+                                        // Success callback - refresh bet list
+                                        if (getBetListData) {
+                                          getBetListData();
                                         }
-                                      )}
-                                      title="Delete bet"
-                                    >
-                                      <i className="fa fa-trash"></i>
-                                    </button>
-                                  )
+                                      },
+                                      (errorMessage) => {
+                                        console.error("Delete bet error:", errorMessage);
+                                      }
+                                    )}
+                                    title="Delete bet"
+                                  >
+                                    <i className="fa fa-trash"></i>
+                                  </button>
                                 )}
                               </td>
                             )}
