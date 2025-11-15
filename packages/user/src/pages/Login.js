@@ -180,10 +180,9 @@ function Login() {
       }
     };
   
-    if (!liveModeData || Object.keys(liveModeData).length === 0) {
-      fetchLiveModeData();
-    }
-  }, [liveModeData]);
+    // Always fetch latest data when login page loads
+    fetchLiveModeData();
+  }, []); // Empty dependency array - only run on mount
 
 
   return (
@@ -242,14 +241,16 @@ function Login() {
                   >
                     Login<i className="fas fa-sign-in-alt float-end mt-1"></i>
                   </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-block mt-2"
-                    onClick={handleDemoLogin}
-                  >
-                    Login with demo ID
-                    <i className="fas fa-sign-in-alt float-end mt-1"></i>
-                  </button>
+                  {liveModeData?.is_demo_login === 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-block mt-2"
+                      onClick={handleDemoLogin}
+                    >
+                      Login with demo ID
+                      <i className="fas fa-sign-in-alt float-end mt-1"></i>
+                    </button>
+                  )}
                   
                 </div>
 

@@ -70,43 +70,45 @@ root.render(
             <RouteChangeListener />
             <AuthProvider>
               <BlockUrlMiddleware>
-                <SportsProvider>
-                  <StakeProvider>
-                    <CasinoProvider>
-                      <UserThemeWrapper>
-                        <Routes>
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/transaction-password" element={<TransactionPasswordSuccess />} />
-                          <Route path="/*" element={
-                            <ProtectedRoute>
-                              <Routes>
-                                <Route path="/change-password" element={<ChangePassword />} />
-                                <Route path="/our/:which_casino" element={<AllCasinosWithLoading />} />
-                                <Route path="/" element={<HomeWithLoading />} />
-                                <Route path="/tennis/:match_id" element={<TennisWithLoading />} />
-                                <Route path="/game-list/:match" element={<HomeTabPagesWithLoading />} />
-                                <Route path="/fantasy" element={<FantasyGamesWithLoading />} />
-                                <Route path="/fantasy-list" element={<FantasyGameWithLoading />} />
-                                <Route path="/account-statement" element={<AccountStatementWithLoading />} />
-                                <Route path="/current-bets" element={<CurrentBetsWithLoading />} />
-                                <Route path="/profit-loss" element={<ProfitLossWithLoading />} />
-                                <Route path="/bet-history" element={<BetHistoriesWithLoading />} />
-                                <Route path="/rules" element={<Rules />} />
-                                <Route path="/casino-game-results" element={<CasinoResultWithLoading />} />
-                                <Route path="/aviator-list" element={<AviatorList />} />
-                                <Route path="/casino/:match_id" element={<CasinoMainWithLoading />} />
-                                <Route path="/soccer/:match_id" element={<SoccerWithLoading />} />
-                                <Route path="/cricket/:match_id" element={<CricketWithLoading />} />
-                                {/* 404 Not Found Route - Must be last */}
-                                <Route path="/*" element={<NotFound />} />
-                              </Routes>
-                            </ProtectedRoute>
-                          } />
-                        </Routes>
-                      </UserThemeWrapper>
-                    </CasinoProvider>
-                  </StakeProvider>
-                </SportsProvider>
+                <LiveModeGuard>
+                  <SportsProvider>
+                    <StakeProvider>
+                      <CasinoProvider>
+                        <UserThemeWrapper>
+                          <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/transaction-password" element={<TransactionPasswordSuccess />} />
+                            <Route path="/*" element={
+                              <ProtectedRoute>
+                                <Routes>
+                                  <Route path="/change-password" element={<ChangePassword />} />
+                                  <Route path="/our/:which_casino" element={<AllCasinosWithLoading />} />
+                                  <Route path="/" element={<HomeWithLoading />} />
+                                  <Route path="/tennis/:match_id" element={<TennisWithLoading />} />
+                                  <Route path="/game-list/:match" element={<HomeTabPagesWithLoading />} />
+                                  <Route path="/fantasy" element={<FantasyGamesWithLoading />} />
+                                  <Route path="/fantasy-list" element={<FantasyGameWithLoading />} />
+                                  <Route path="/account-statement" element={<AccountStatementWithLoading />} />
+                                  <Route path="/current-bets" element={<CurrentBetsWithLoading />} />
+                                  <Route path="/profit-loss" element={<ProfitLossWithLoading />} />
+                                  <Route path="/bet-history" element={<BetHistoriesWithLoading />} />
+                                  <Route path="/rules" element={<Rules />} />
+                                  <Route path="/casino-game-results" element={<CasinoResultWithLoading />} />
+                                  <Route path="/aviator-list" element={<AviatorList />} />
+                                  <Route path="/casino/:match_id" element={<CasinoMainWithLoading />} />
+                                  <Route path="/soccer/:match_id" element={<SoccerWithLoading />} />
+                                  <Route path="/cricket/:match_id" element={<CricketWithLoading />} />
+                                  {/* 404 Not Found Route - Must be last */}
+                                  <Route path="/*" element={<NotFound />} />
+                                </Routes>
+                              </ProtectedRoute>
+                            } />
+                          </Routes>
+                        </UserThemeWrapper>
+                      </CasinoProvider>
+                    </StakeProvider>
+                  </SportsProvider>
+                </LiveModeGuard>
               </BlockUrlMiddleware>
             </AuthProvider>
             

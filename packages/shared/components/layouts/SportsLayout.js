@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
-import axiosFetch, { isAdminRoute, ADMIN_BASE_PATH, exposureCheck } from "@dxc247/shared/utils/Constants";
+import axiosFetch, { isAdminRoute, ADMIN_BASE_PATH, exposureCheck, store } from "@dxc247/shared/utils/Constants";
 import { getBetListData } from "@dxc247/shared/utils/betUtils";
 import { adminApi } from "@dxc247/shared/utils/adminApi";
 import Pagination from "@dxc247/shared/components/common/Pagination";
@@ -168,6 +168,17 @@ const SportsLayout = ({
   const handleIndividualBetAction = async (betId, isDeleted) => {
     const action = isDeleted ? 'restore' : 'delete';
     const actionText = isDeleted ? 'restore' : 'delete';
+    
+    // Check if admin has bet delete access (only for delete action, not restore)
+    if (!isDeleted && isAdminRoute()) {
+      const adminUser = store.getState().admin?.user;
+      const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
+      
+      if (!isBetDeleteAccess) {
+        Notify("You do not have permission to delete bets.", null, null, 'danger');
+        return;
+      }
+    }
     
     const confirmed = await showConfirm({
       title: `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Bet`,

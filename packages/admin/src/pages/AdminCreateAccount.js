@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { adminApi } from '@dxc247/shared/utils/adminApi';
@@ -108,6 +108,30 @@ const AdminCreateAccount = () => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [prefixes, setPrefixes] = useState([]);
+  const [loadingPrefixes, setLoadingPrefixes] = useState(false);
+
+  // Fetch prefixes on component mount
+  useEffect(() => {
+    const fetchPrefixes = async () => {
+      setLoadingPrefixes(true);
+      try {
+        const response = await adminApi(`${ADMIN_BASE_PATH}/prefix/list?page=1&per_page=100`, 'GET', {}, true);
+        if (response.success && response.data) {
+          setPrefixes(response.data || []);
+        } else {
+          setPrefixes([]);
+        }
+      } catch (error) {
+        console.error('Error fetching prefixes:', error);
+        setPrefixes([]);
+      } finally {
+        setLoadingPrefixes(false);
+      }
+    };
+    
+    fetchPrefixes();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -531,9 +555,15 @@ const AdminCreateAccount = () => {
                           onChange={handleInputChange}
                         >
                           <option value="">Select Prefix</option>
-                          <option value="3">dxc247.com</option>
-                          <option value="6">ibm247.com</option>
-                          <option value="9">sp247.in</option>
+                          {loadingPrefixes ? (
+                            <option value="" disabled>Loading prefixes...</option>
+                          ) : (
+                            prefixes.map((prefix) => (
+                              <option key={prefix.id} value={prefix.id}>
+                                {prefix.domain_name}
+                              </option>
+                            ))
+                          )}
                         </select>
                         {errors.prefix_domain && (
                           <div className="invalid-feedback">{errors.prefix_domain}</div>

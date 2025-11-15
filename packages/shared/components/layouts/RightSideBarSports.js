@@ -18,7 +18,7 @@ import { useCashoutTeam, useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 import { Modal, Button } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsSubmitDisabled } from "@dxc247/shared/store/slices/casinoSlice";
-import { isAdminRoute, useDeleteMatchedBet } from "@dxc247/shared/utils/Constants";
+import { isAdminRoute, useDeleteMatchedBet, store } from "@dxc247/shared/utils/Constants";
 import useStakeValuesCheck from "@dxc247/shared/hooks/useStakeValuesCheck";
 import CricketScoreboard from "../CricketScoreboard";
 const RightSideBarSports = ({
@@ -105,6 +105,10 @@ const RightSideBarSports = ({
   const cashoutTeam = useCashoutTeam();
   const { clearTeam } = useSetCashoutTeam();
   const { deleteBet, undoBet } = useDeleteMatchedBet();
+  
+  // Check if admin has bet delete access
+  const adminUser = isAdminRoute() ? store.getState().admin?.user : null;
+  const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
   
   // Use the custom hook for stake values checking
   useStakeValuesCheck();
@@ -1022,24 +1026,26 @@ const RightSideBarSports = ({
                                     <i className="fa fa-undo"></i>
                                   </button>
                                 ) : (
-                                  <button
-                                    className="btn btn-sm btn-danger"
-                                    onClick={() => deleteBet(
-                                      data.id || data.bet_id,
-                                      () => {
-                                        // Success callback - refresh bet list
-                                        if (getBetListData) {
-                                          getBetListData();
+                                  (isAdminRoute() && !isBetDeleteAccess) ? null : (
+                                    <button
+                                      className="btn btn-sm btn-danger"
+                                      onClick={() => deleteBet(
+                                        data.id || data.bet_id,
+                                        () => {
+                                          // Success callback - refresh bet list
+                                          if (getBetListData) {
+                                            getBetListData();
+                                          }
+                                        },
+                                        (errorMessage) => {
+                                          console.error("Delete bet error:", errorMessage);
                                         }
-                                      },
-                                      (errorMessage) => {
-                                        console.error("Delete bet error:", errorMessage);
-                                      }
-                                    )}
-                                    title="Delete bet"
-                                  >
-                                    <i className="fa fa-trash"></i>
-                                  </button>
+                                      )}
+                                      title="Delete bet"
+                                    >
+                                      <i className="fa fa-trash"></i>
+                                    </button>
+                                  )
                                 )}
                               </td>
                             )}

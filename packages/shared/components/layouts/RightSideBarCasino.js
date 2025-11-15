@@ -6,7 +6,7 @@ import { CasinoContext } from "../../contexts/CasinoContext";
 import { useSelector, useDispatch } from "react-redux";
 import { resetSelectQuestions, setSelectQuestions } from "../../store/slices/kbcSlice";
 import { setIsSubmitDisabled } from "../../store/slices/casinoSlice";
-import { isAdminRoute } from "../../utils/Constants";
+import { isAdminRoute, store } from "../../utils/Constants";
 
 import MatchedBetTable from "../casino/MatchedBetTable";
 import { useStake } from "../../contexts/StakeContext";
@@ -37,6 +37,10 @@ const RightSideBarCasino = ({
   const dispatch = useDispatch();
   const { deleteBet, undoBet } = useDeleteMatchedBet();
   const ourroulleteRates = useSelector((state) => state.roulette?.ourroulleteRates || {Single: 0, Split: 0, Street: 0, Corner: 0});
+  
+  // Check if admin has bet delete access
+  const adminUser = isAdminRoute() ? store.getState().admin?.user : null;
+  const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
   const { popupDisplayForDesktop, setPopupDisplayForDesktop } =
     useContext(SportsContext);
   const { stakeValues } = useStake();
@@ -443,6 +447,7 @@ const RightSideBarCasino = ({
               type={sportList?.match_id}
               mybetModel={myBetModel}
               isAdmin={isAdminRoute()}
+              isBetDeleteAccess={isBetDeleteAccess}
               onDelete={async (data) => {
                 await deleteBet(
                   data,

@@ -14,7 +14,8 @@ const LiveModeGuard = ({ children }) => {
   useEffect(() => {
     // Check if current domain has live mode enabled from Redux store
     if (liveModeData) {
-      const matchingDomain = liveModeData
+      // liveModeData is a single object (not an array) based on how it's used in UserThemeProvider
+      const matchingDomain = liveModeData;
       
       if (matchingDomain) {
         setIsLiveMode(matchingDomain.side_live_mode === 1);

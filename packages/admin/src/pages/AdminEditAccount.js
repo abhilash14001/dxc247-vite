@@ -13,6 +13,8 @@
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(isEditMode);
     const [errors, setErrors] = useState({});
+    const [prefixes, setPrefixes] = useState([]);
+    const [loadingPrefixes, setLoadingPrefixes] = useState(false);
     
     const [formData, setFormData] = useState({
       // Personal Details
@@ -116,6 +118,28 @@
       }
     }, [isEditMode, userId]);
 
+    // Fetch prefixes on component mount
+    useEffect(() => {
+      const fetchPrefixes = async () => {
+        setLoadingPrefixes(true);
+        try {
+          const response = await adminApi(`${ADMIN_BASE_PATH}/prefix/list?page=1&per_page=100`, 'GET', {}, true);
+          if (response.success && response.data) {
+            setPrefixes(response.data || []);
+          } else {
+            setPrefixes([]);
+          }
+        } catch (error) {
+          console.error('Error fetching prefixes:', error);
+          setPrefixes([]);
+        } finally {
+          setLoadingPrefixes(false);
+        }
+      };
+      
+      fetchPrefixes();
+    }, []);
+
     const fetchUserData = async () => {
       setInitialLoading(true);
       try {
@@ -131,7 +155,7 @@
             downline_partnership: userData.downline_partnership || '100',
             over_partnership: userData.over_partnership || '0',
             expiry_date: userData.expiry_date || '02-10-2035',
-            role: userData.role || '',
+            role: String(userData.role || ''),
             prefix_domain: userData.prefix_domain || '',
             credit_reference: userData.credit_reference || '',
             account_limit: userData.account_limit || '',
@@ -473,7 +497,7 @@
                       </div>
                     </div>
 
-                    {formData.role && formData.role !== '7' && (
+                    {formData.role && formData.role !== '7' && formData.role !== 7 && (
                       <div className="col-md-6 col-sm-12 hide_partner">
                         <div className="form-group">
                           <label htmlFor="downline_partnership">Down Line Partnership</label>
@@ -503,7 +527,7 @@
                         </div>
                       </div>
                     )}
-                    {formData.role && formData.role !== '7' && (
+                    {formData.role && formData.role !== '7' && formData.role !== 7 && (
                       <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
                         <div className="form-group">
                           <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
@@ -539,7 +563,7 @@
                   <h4 className="m-b-20 col-md-12">Account Detail</h4>
                   <div className="row">
                     <input type="hidden" name="role" value={formData.role} />
-                    {formData.role && formData.role === '2' && (
+                    {(formData.role === '2' || formData.role === 2) && (
                       <div className="col-md-6 col-sm-12 prefix_domain">
                         <div className="form-group">
                           <label>Select Prefix</label>
@@ -552,9 +576,15 @@
                             required
                           >
                             <option value="">Select Prefix</option>
-                            <option value="3">dxc247.com</option>
-                            <option value="6">ibm247.com</option>
-                            <option value="9">sp247.in</option>
+                            {loadingPrefixes ? (
+                              <option value="" disabled>Loading prefixes...</option>
+                            ) : (
+                              prefixes.map((prefix) => (
+                                <option key={prefix.id} value={prefix.id}>
+                                  {prefix.domain_name}
+                                </option>
+                              ))
+                            )}
                           </select>
                           {errors.prefix_domain && (
                             <div className="invalid-feedback">{errors.prefix_domain}</div>
@@ -579,7 +609,7 @@
                       </div>
                     </div>
 
-                    {formData.role && formData.role === '2' && (
+                    {(formData.role === '2' || formData.role === 2) && (
                       <div className="col-md-6 col-sm-12 prefix_domain">
                         <div className="form-group">
                           <label htmlFor="account_limit">Account Limit</label>
@@ -599,29 +629,32 @@
                         </div>
                       </div>
                     )}
-                    {formData.role && formData.role === '2' && (
+                    {(formData.role === '2' || formData.role === 2) && (
                       <div className="col-md-6 col-sm-12 prefix_domain">
                         <div className="form-group">
-                          <label htmlFor="isBetDeleteAccess">Is Bet Delete</label>
-                          <input
-                            type="hidden"
-                            name="isBetDeleteAccess"
-                            className="form-control"
-                            value="0"
-                          />
-                          <input
-                            type="checkbox"
-                            name="isBetDeleteAccess"
-                            id="isBetDeleteAccess"
-                            className=""
-                            value="1"
-                            checked={formData.isBetDeleteAccess}
-                            onChange={handleInputChange}
-                          />
+                          <div className="form-check">
+                            <input
+                              type="hidden"
+                              name="isBetDeleteAccess"
+                              value="0"
+                            />
+                            <input
+                              type="checkbox"
+                              name="isBetDeleteAccess"
+                              id="isBetDeleteAccess"
+                              className="form-check-input"
+                              value="1"
+                              checked={formData.isBetDeleteAccess}
+                              onChange={handleInputChange}
+                            />
+                            <label className="form-check-label" htmlFor="isBetDeleteAccess">
+                              Is Bet Delete
+                            </label>
+                          </div>
                         </div>
                       </div>
                     )}
-                    {formData.role && formData.role === '7' && (
+                    {(formData.role === '7' || formData.role === 7) && (
                       <div className="col-md-6 col-sm-12 exposure_limit">
                         <div className="form-group">
                           <label htmlFor="exposure_limit">Exposure Limit</label>
@@ -881,6 +914,23 @@
 
             .mt-10 {
               margin-top: 10px;
+            }
+
+            .form-check {
+              display: flex;
+              align-items: center;
+              padding-top: 0.5rem;
+            }
+
+            .form-check-input {
+              margin-top: 0;
+              margin-right: 0.5rem;
+              cursor: pointer;
+            }
+
+            .form-check-label {
+              margin-bottom: 0;
+              cursor: pointer;
             }
           `}
         </style>

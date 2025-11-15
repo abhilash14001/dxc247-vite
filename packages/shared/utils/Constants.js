@@ -10,6 +10,7 @@ import JSEncrypt from 'jsencrypt';
 let globalTimer = null;
 
 axios.defaults.withCredentials = true;
+export { store };
 export const ADMIN_BASE_PATH = "/admin";
 export const isAdminRoute = () => {
   
@@ -2599,6 +2600,19 @@ export const useDeleteMatchedBet = () => {
   const { showConfirm } = useToastConfirm();
   
   const deleteBet = async (betId, onSuccess = null, onError = null) => {
+    // Check if admin has bet delete access
+    const adminUser = store.getState().admin?.user;
+    const isBetDeleteAccess = adminUser?.isBetDeleteAccess === 1 || adminUser?.isBetDeleteAccess === true;
+    
+    // Only allow deletion if user has access (or if not in admin route)
+    if (isAdminRoute() && !isBetDeleteAccess) {
+      toast.error("You do not have permission to delete bets.");
+      if (onError && typeof onError === 'function') {
+        onError("Permission denied");
+      }
+      return false;
+    }
+
     let loadingToast;
 
     try {

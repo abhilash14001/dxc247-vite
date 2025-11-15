@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import Pagination from "@dxc247/shared/components/common/Pagination";
 import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { Link } from "react-router-dom";
@@ -13,6 +14,9 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 function AdminUsers() {
   const { modal: confirmModal, showConfirm, hideModal } = useConfirmModal();
+  const { liveModeData } = useSelector(state => state.commonData);
+  const { user: adminUser } = useSelector(state => state.admin);
+  const isSuperAdmin = adminUser?.role === 1;
   const [showBalanceBar, setShowBalanceBar] = useState(false);
   const [activeTab, setActiveTab] = useState("active_users");
   const [searchTerm, setSearchTerm] = useState("");
@@ -287,6 +291,12 @@ function AdminUsers() {
   };
 
   const handleDeleteUser = async (userId) => {
+    // Check if user deletion is disabled (superadmin can always delete)
+    if (!isSuperAdmin && liveModeData?.is_user_delete_disable === 1) {
+      toast.error('User deletion is currently disabled by administrator.');
+      return;
+    }
+
     const confirmed = await showConfirm({
       title: "Delete User",
       message: "Are you sure you want to delete this user? This action cannot be undone.",
@@ -690,16 +700,18 @@ function AdminUsers() {
                                 >
                                   <i className="fas fa-sign-out-alt"></i>
                                 </a>
-                                <a
-                                  href="#"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDeleteUser(user.id);
-                                  }}
-                                  title="Delete User"
-                                >
-                                  <i className="fas fa-trash"></i>
-                                </a>
+                                {(isSuperAdmin || liveModeData?.is_user_delete_disable !== 1) && (
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleDeleteUser(user.id);
+                                    }}
+                                    title="Delete User"
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </a>
+                                )}
                               </td>
                             </tr>
                           ))
@@ -877,14 +889,18 @@ function AdminUsers() {
                                 >
                                   <i className="fas fa-sign-out-alt"></i>
                                 </a>
-                                <a
-                                  href="#"
-                                  onClick={(e) => e.preventDefault()}
-                        title="Delete User"
-                                  onClick={() => handleDeleteUser(user.id)}
-                                >
-                                  <i className="fas fa-trash"></i>
-                                </a>
+                                {(isSuperAdmin || liveModeData?.is_user_delete_disable !== 1) && (
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleDeleteUser(user.id);
+                                    }}
+                                    title="Delete User"
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </a>
+                                )}
                 </td>
               </tr>
                           ))

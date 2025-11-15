@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 
 import { CasinoContext } from "../../contexts/CasinoContext";
 
-const MatchedBetTable = ({ mybetModel, type, isAdmin = false, onDelete = null, onUndo = null }) => {
+const MatchedBetTable = ({ mybetModel, type, isAdmin = false, isBetDeleteAccess = true, onDelete = null, onUndo = null }) => {
   const { availableTeenUniqueCards } = useContext(CasinoContext);
   const games = ["ab20"];
 
@@ -66,13 +66,15 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, onDelete = null, o
                             <i className="fa fa-undo"></i>
                           </button>
                         ) : (
-                          <button 
-                            className="btn btn-sm btn-danger"
-                            onClick={() => onDelete && onDelete(data.id)}
-                            title="Delete bet"
-                          >
-                            <i className="fa fa-trash"></i>
-                          </button>
+                          isBetDeleteAccess && (
+                            <button 
+                              className="btn btn-sm btn-danger"
+                              onClick={() => onDelete && onDelete(data.id)}
+                              title="Delete bet"
+                            >
+                              <i className="fa fa-trash"></i>
+                            </button>
+                          )
                         )}
                       </td>
                     )}
@@ -125,13 +127,15 @@ const MatchedBetTable = ({ mybetModel, type, isAdmin = false, onDelete = null, o
                       <i className="fa fa-undo"></i>
                     </button>
                   ) : (
-                    <button 
-                      className="btn btn-sm btn-danger"
-                      onClick={() => onDelete && onDelete(data)}
-                      title="Delete bet"
-                    >
-                      <i className="fa fa-trash"></i>
-                    </button>
+                    isBetDeleteAccess && (
+                      <button 
+                        className="btn btn-sm btn-danger"
+                        onClick={() => onDelete && onDelete(data)}
+                        title="Delete bet"
+                      >
+                        <i className="fa fa-trash"></i>
+                      </button>
+                    )
                   )}
                 </div>
               )}
