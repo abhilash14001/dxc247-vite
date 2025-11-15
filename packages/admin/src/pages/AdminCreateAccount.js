@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { adminApi } from '@dxc247/shared/utils/adminApi';
 import Notify from '@dxc247/shared/utils/Notify';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 
 const AdminCreateAccount = () => {
   const navigate = useNavigate();
+  const { user: currentAdminUser } = useSelector(state => state.admin);
+  const currentUserRole = String(currentAdminUser?.role || '');
+  
   const [formData, setFormData] = useState({
     // Personal Details
     name: '',
@@ -474,11 +478,43 @@ const AdminCreateAccount = () => {
                         onChange={handleInputChange}
                       >
                         <option value="">Select User Role</option>
-                        <option value="2">Admin</option>
-                        <option value="3">Sub Admin</option>
-                        <option value="4">Super Master</option>
-                        <option value="5">Master</option>
-                        <option value="7">User</option>
+                        {/* If logged-in user is Super Admin (role 6), show all options */}
+                        {currentUserRole === '6' && (
+                          <>
+                            <option value="2">Admin</option>
+                            <option value="3">Sub Admin</option>
+                            <option value="4">Super Master</option>
+                            <option value="5">Master</option>
+                            <option value="7">User</option>
+                          </>
+                        )}
+                        {/* If logged-in user is Admin (role 2), show Sub Admin and all below */}
+                        {currentUserRole === '2' && (
+                          <>
+                            <option value="3">Sub Admin</option>
+                            <option value="4">Super Master</option>
+                            <option value="5">Master</option>
+                            <option value="7">User</option>
+                          </>
+                        )}
+                        {/* If logged-in user is Sub Admin (role 3), show Super Master and all below (not Sub Admin) */}
+                        {currentUserRole === '3' && (
+                          <>
+                            <option value="4">Super Master</option>
+                            <option value="5">Master</option>
+                            <option value="7">User</option>
+                          </>
+                        )}
+                        {/* If logged-in user is not Super Admin, Admin, or Sub Admin, show all options (fallback) */}
+                        {currentUserRole !== '6' && currentUserRole !== '2' && currentUserRole !== '3' && (
+                          <>
+                            <option value="2">Admin</option>
+                            <option value="3">Sub Admin</option>
+                            <option value="4">Super Master</option>
+                            <option value="5">Master</option>
+                            <option value="7">User</option>
+                          </>
+                        )}
                       </select>
                       {errors.role && <div className="invalid-feedback">{errors.role}</div>}
                     </div>
