@@ -107,10 +107,31 @@ const SportsLayout = ({
   };
 
   useEffect(() => {
+    
+    // Initial fetch
     localGetBetListData();
+    
+    // Set up interval for admin users (similar to casino)
 
+
+    // Remove exposure from dependencies - exposure changes shouldn't restart the interval
     // eslint-disable-next-line
   }, [exposure]);
+
+  useEffect(() => {
+    let interval = null;
+
+    if (isAdminRoute() && match_id) {
+      interval = setInterval(() => {
+        localGetBetListData();
+      }, 2000);
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [match_id]);
 
   useEffect(() => {
     setTriggerSocket(true);
