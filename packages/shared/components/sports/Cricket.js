@@ -224,7 +224,7 @@ const Cricket = () => {
       if (Object.values(trackData.current).length === 0) {
         sports_socket.off(socket_game, handleSportData);
 
-        nav(isAdminRoute() ? "/admin" : "/");
+        nav(isAdminRoute() ? "/" : "/");
       }
     }, 10000);
 

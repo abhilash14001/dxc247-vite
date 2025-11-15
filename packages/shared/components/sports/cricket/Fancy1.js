@@ -134,7 +134,7 @@ const Fancy1 = ({
                         const min_value = fancyListValues.length > 0 ? Math.min(...fancyListValues) : null;
 
                         const get_fancy_session_value = betPlaceCheck?.fancy_list ? (
-                            <span className="market-book float-end text-danger">{min_value}</span>
+                            <span className="market-book float-end text-danger">{min_value !== 0 ? min_value : ''}</span>
                         ) : null;
 
                         return (

@@ -238,7 +238,7 @@ const Soccer = ({ isAdmin = false }) => {
 
       emptyCheckTimeout = setTimeout(() => {
         if (Object.values(trackData.current).length === 0) {
-          nav(isAdminRoute() ? "/admin" : "/"); // Redirect if gameSet is empty
+          nav(isAdminRoute() ? "/" : "/"); // Redirect if gameSet is empty
         }
       }, 3000);
 
