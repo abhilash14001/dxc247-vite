@@ -12,24 +12,13 @@ const CommonLayout = ({
   showSportsRightSidebar = false,
   sportsProps = {},
 }) => {
-  const location = useLocation();
+  
   
   // Check if current route is admin route
   
 
   // CSS loading function with useCallback
   const loadAdminCSS = useCallback(() => {
-
-    // Load main style.css
-    // if (!document.getElementById("admin-sports-style")) {
-    //   const styleLink = document.createElement("link");
-    //   styleLink.rel = "stylesheet";
-    //   styleLink.href = "/assets/css/style.css";
-    //   styleLink.id = "admin-sports-style";
-    //   styleLink.onerror = () => console.error('Failed to load admin-sports-style CSS');
-    //   document.head.appendChild(styleLink);
-      
-    // }
 
     // Load responsive.css
     if (!document.getElementById("admin-sports-responsive")) {

@@ -10,26 +10,16 @@ const activeRequests = new Map();
  * @returns {Promise} - API response with all bet types
  */
 const fetchBetDataWithCache = async (match_id) => {
-    const cacheKey = `bet_data_${match_id}_all`;
+    const cacheKey = `bet_data_${match_id}`;
     
-    // Check if we already have cached data (less than 5 seconds old)
-    const cached = betDataCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp) < 5000) {
-        
-        return cached.response;
-    }
-    
-    // Check if there's already an active request for this match_id
+    // Check if there's an active request for this match_id
     if (activeRequests.has(cacheKey)) {
-        
         return activeRequests.get(cacheKey);
     }
     
     // Create new request
     const request = (async () => {
         try {
-            
-            
             // Single API call to get all bet types
             const response = await axiosFetch(`bet_data/${match_id}`, 'get');
             
@@ -39,7 +29,6 @@ const fetchBetDataWithCache = async (match_id) => {
                 response: response,
                 timestamp: Date.now()
             });
-            
             
             return response;
         } catch (error) {

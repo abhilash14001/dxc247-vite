@@ -2639,10 +2639,23 @@ export const useDeleteMatchedBet = () => {
         
         const response = await adminApi(`${ADMIN_BASE_PATH}/delete-matched-bet`, "POST", formData, true);
       
-      if (response && response.data && response.data.success) {
+        
+      if (response && response.success) {
         toast.dismiss(loadingToast);
         toast.success("Bet deleted successfully!");
         
+        // Trigger bet data fetch after successful deletion
+        try {
+          const { getBetListData } = await import("@dxc247/shared/utils/betUtils");
+          // Get match_id from URL
+          const matchId = window.location.pathname.match(/\/(soccer|cricket|tennis|casino)\/(\d+)/)?.[2];
+          if (matchId) {
+            // Fetch fresh bet data (will update cache automatically)
+            getBetListData(matchId).catch(err => console.error("Error fetching bet data after delete:", err));
+          }
+        } catch (error) {
+          console.error("Error importing getBetListData:", error);
+        }
         
         // Call success callback if provided
         if (onSuccess && typeof onSuccess === 'function') {
@@ -2704,9 +2717,22 @@ export const useDeleteMatchedBet = () => {
       
       const response = await adminApi(`${ADMIN_BASE_PATH}/undo-deleted-bet`, "POST", formData, true);
     
-      if (response && response.data && response.data.success) {
+      if (response && response.success) {
         toast.dismiss(loadingToast);
         toast.success("Bet restored successfully!");
+        
+        // Trigger bet data fetch after successful restoration
+        try {
+          const { getBetListData } = await import("@dxc247/shared/utils/betUtils");
+          // Get match_id from URL
+          const matchId = window.location.pathname.match(/\/(soccer|cricket|tennis|casino)\/(\d+)/)?.[2];
+          if (matchId) {
+            // Fetch fresh bet data (will update cache automatically)
+            getBetListData(matchId).catch(err => console.error("Error fetching bet data after restore:", err));
+          }
+        } catch (error) {
+          console.error("Error importing getBetListData:", error);
+        }
         
         // Call success callback if provided
         if (onSuccess && typeof onSuccess === 'function') {
