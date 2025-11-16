@@ -7,7 +7,7 @@ import { AuthContext } from "@dxc247/shared/contexts/AuthContext";
 import { useLoading } from "@dxc247/shared/hooks/useLoading";
 import Notify from "@dxc247/shared/utils/Notify";
 import { loginSuccess } from "@dxc247/shared/store/slices/userSlice";
-import { setLiveModeData, setServerPublicKey, setCommonData, setCommonDataLoading } from "@dxc247/shared/store/slices/commonDataSlice";
+import { setLiveModeData, setServerPublicKey, setCommonData, setCommonDataLoading, setFetching } from "@dxc247/shared/store/slices/commonDataSlice";
 import { setBannerDetails } from "@dxc247/shared/store/slices/userSlice";
 
 function Login() {
@@ -65,12 +65,17 @@ function Login() {
         // Fetch common_detail_data immediately after login (for block market data)
         const fetchCommonDetailData = async () => {
           try {
+            // Clear existing data first to force fresh fetch
+            dispatch(setCommonData(null));
+            dispatch(setFetching(true));
             dispatch(setCommonDataLoading(true));
+            
             // Fetch banner data
             const bannerResponse = await axiosFetch('banner_data', 'get');
             if (bannerResponse && bannerResponse.data) {
               dispatch(setBannerDetails(bannerResponse.data.banner_data));
             }
+            
             // Fetch common detail data (includes blocked_sports, blocked_casinos)
             const response = await axiosFetch('common_detail_data', 'get');
             if (response && response.data) {
@@ -80,6 +85,7 @@ function Login() {
             console.error('Error fetching common detail data:', error);
           } finally {
             dispatch(setCommonDataLoading(false));
+            dispatch(setFetching(false));
           }
         };
         
@@ -152,12 +158,17 @@ function Login() {
       // Fetch common_detail_data immediately after demo login (for block market data)
       const fetchCommonDetailData = async () => {
         try {
+          // Clear existing data first to force fresh fetch
+          dispatch(setCommonData(null));
+          dispatch(setFetching(true));
           dispatch(setCommonDataLoading(true));
+          
           // Fetch banner data
           const bannerResponse = await axiosFetch('banner_data', 'get');
           if (bannerResponse && bannerResponse.data) {
             dispatch(setBannerDetails(bannerResponse.data.banner_data));
           }
+          
           // Fetch common detail data (includes blocked_sports, blocked_casinos)
           const response = await axiosFetch('common_detail_data', 'get');
           if (response && response.data) {
@@ -167,6 +178,7 @@ function Login() {
           console.error('Error fetching common detail data:', error);
         } finally {
           dispatch(setCommonDataLoading(false));
+          dispatch(setFetching(false));
         }
       };
       

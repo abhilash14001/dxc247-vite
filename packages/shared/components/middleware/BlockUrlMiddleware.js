@@ -14,13 +14,16 @@ const BlockUrlMiddleware = ({ children }) => {
   
   // Memoize blocked arrays to prevent unnecessary re-renders
   // These come from common_detail_data API response
+  // Use JSON.stringify to properly detect array changes
   const blockedSports = useMemo(() => {
-    return commonData?.blocked_sports || [];
-  }, [commonData?.blocked_sports]);
+    const sports = commonData?.blocked_sports || [];
+    return Array.isArray(sports) ? sports : [];
+  }, [commonData?.blocked_sports ? JSON.stringify(commonData.blocked_sports) : null]);
   
   const blockedCasinos = useMemo(() => {
-    return commonData?.blocked_casinos || [];
-  }, [commonData?.blocked_casinos]);
+    const casinos = commonData?.blocked_casinos || [];
+    return Array.isArray(casinos) ? casinos : [];
+  }, [commonData?.blocked_casinos ? JSON.stringify(commonData.blocked_casinos) : null]);
 
   useEffect(() => {
     // Only check if we have commonData (data is loaded)

@@ -24,10 +24,23 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
 
     useEffect(() => {
         // Check if token changed (new login)
-        const tokenChanged = previousTokenRef.current !== currentToken;
+        const tokenChanged = previousTokenRef.current !== currentToken && previousTokenRef.current !== null;
         
         // Update previous token reference
         previousTokenRef.current = currentToken;
+        
+        // Only fetch if we have a token
+        if (!currentToken) {
+            return;
+        }
+        
+        // If token changed (new login), always refetch - clear existing data first
+        if (tokenChanged) {
+            dispatch(setCommonData(null));
+            // Reset fetching flags to allow new fetch
+            isApiCallInProgress = false;
+            dispatch(setFetching(false));
+        }
         
         // If we already have data and not refetching and token hasn't changed, use it
         if (commonDataState.data && !refetch && !tokenChanged) {
@@ -37,20 +50,9 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
             return;
         }
      
-          // If already fetching or loading, don't make another request
-          if (commonDataState.isFetching || commonDataState.loading || isApiCallInProgress) {
-            
+        // If already fetching or loading, don't make another request (unless token changed)
+        if (!tokenChanged && (commonDataState.isFetching || commonDataState.loading || isApiCallInProgress)) {
             return;
-        }
-        
-        // Only fetch if we have a token
-        if (!currentToken) {
-            return;
-        }
-        
-        // If token changed (new login), clear existing data to force refetch
-        if (tokenChanged && commonDataState.data) {
-            dispatch(setCommonData(null));
         }
 
         
@@ -80,12 +82,13 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
                 }
                 
             } catch (error) {
-                throw error;
                 console.error('Error fetching common data:', error);
                 dispatch(setCommonDataError(error.message));
             } finally {
-                // Reset global flag when done
+                // Reset global flag and loading state when done
                 isApiCallInProgress = false;
+                dispatch(setFetching(false));
+                dispatch(setCommonDataLoading(false));
             }
         };
 
