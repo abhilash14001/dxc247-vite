@@ -11,7 +11,7 @@ import { store } from "../../store";
 export const UserAuthProvider = (props) => {
     const nav = useNavigate();
     const dispatch = useDispatch();
-    
+    const token = store.getState().user.token;
     // Get user data from Redux state
     const userBalance = useSelector(state => state.user.balance);
     const exposure = useSelector(state => state.user.exposure);
@@ -57,7 +57,7 @@ export const UserAuthProvider = (props) => {
 
     const getBalance = () => {
         try {
-            const token = store.getState().user.token;
+            
             if (token !== null) {
                 return axiosFetch('user_balance', 'get')
                     .then((res) => {
@@ -87,10 +87,13 @@ export const UserAuthProvider = (props) => {
 
     useEffect(() => {
         getBalance();
+        console.log('balance interval is ', balanceInterval.current)
         if (balanceInterval.current == null) {
+            console.log('balance interval is set')
             balanceInterval.current = setInterval(async () => {
                 try {
                     const response = await getBalance();
+                    console.log('response is balance ', response)
                     if (response && response.data) {
                         // Continue to next interval on success
                         return;
@@ -100,6 +103,7 @@ export const UserAuthProvider = (props) => {
                         balanceInterval.current = null;
                     }
                 } catch (error) {
+                    console.log('balance error is ', error)
                     // Stop interval on error
                     clearInterval(balanceInterval.current);
                     balanceInterval.current = null;
@@ -110,7 +114,7 @@ export const UserAuthProvider = (props) => {
             clearInterval(balanceInterval.current);
             balanceInterval.current = null;
         };
-    }, []); // Removed exposure from dependencies to prevent infinite loop
+    }, [token]); // Removed exposure from dependencies to prevent infinite loop
 
     useEffect(() => {
         if(showPopupAfterRedirect){
