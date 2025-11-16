@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { createRoot } from 'react-dom/client';
+import React, { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Modal, Button } from "react-bootstrap";
 
 const ToastConfirm = ({
   title = "Confirm Action",
@@ -9,100 +9,97 @@ const ToastConfirm = ({
   cancelText = "No",
   onConfirm,
   onCancel,
-  type = "warning" // warning, danger, info
+  type = "warning", // warning, danger, info
 }) => {
-  const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm();
-    }
-  };
-
-  const handleCancel = () => {
-    if (onCancel) {
-      onCancel();
-    }
-  };
-
   const getIcon = () => {
     switch (type) {
-      case 'danger':
-        return '🗑️';
-      case 'info':
-        return 'ℹ️';
-      case 'warning':
+      case "danger":
+        return "🗑️";
+      case "info":
+        return "ℹ️";
+      case "warning":
       default:
-        return '⚠️';
+        return "⚠️";
     }
+  };
+
+  const getVariant = () => {
+    if (type === "danger") return "danger";
+    if (type === "warning") return "warning";
+    if (type === "info") return "info";
+    return "primary";
   };
 
   const confirmModal = () => {
-    const modalElement = document.createElement('div');
-    modalElement.id = 'toast-confirm-modal';
+    // Create modal container
+    const modalElement = document.createElement("div");
+    modalElement.id = "toast-confirm-modal";
     document.body.appendChild(modalElement);
 
     const ModalContent = () => {
+      const [show, setShow] = useState(true);
+
       useEffect(() => {
         const handleEscape = (e) => {
-          if (e.key === 'Escape') {
+          if (e.key === "Escape") {
             handleCancel();
           }
         };
 
-        document.addEventListener('keydown', handleEscape);
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        document.addEventListener("keydown", handleEscape);
+        document.body.style.overflow = "hidden"; // block background scroll
 
         return () => {
-          document.removeEventListener('keydown', handleEscape);
-          document.body.style.overflow = 'unset';
+          document.removeEventListener("keydown", handleEscape);
+          document.body.style.overflow = "unset";
         };
       }, []);
 
-      return createPortal(
-        <div className="toast-confirm-overlay" onClick={handleCancel}>
-          <div className="toast-confirm-container" data-type={type} onClick={(e) => e.stopPropagation()}>
-            <div className="toast-confirm-header">
-              <div className="toast-confirm-header-left">
-                <span className="toast-confirm-icon">{getIcon()}</span>
-                <span className="toast-confirm-title">{title}</span>
-              </div>
-              <button 
-                className="toast-confirm-close"
-                onClick={handleCancel}
-                type="button"
-              >
-                ×
-              </button>
-            </div>
-            <div className="toast-confirm-message">{message}</div>
-            <div className="toast-confirm-actions">
-              <button
-                className={`btn btn-${type === 'danger' ? 'danger' : type === 'warning' ? 'warning' : type === 'info' ? 'info' : 'primary'}`}
-                onClick={handleConfirm}
-              >
-                {confirmText}
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={handleCancel}
-              >
-                {cancelText}
-              </button>
-            </div>
-          </div>
-        </div>,
-        modalElement
+      const handleCancel = () => {
+        setShow(false);
+        onCancel?.();
+      };
+
+      const handleConfirm = () => {
+        setShow(false);
+        onConfirm?.();
+      };
+
+      return (
+        <Modal
+          show={show}
+          onHide={handleCancel}
+          centered
+          backdrop="static"
+          keyboard={true}
+        >
+          <Modal.Header>
+            <Modal.Title>
+              {getIcon()} {title}
+            </Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>{message}</Modal.Body>
+
+          <Modal.Footer>
+            <Button variant={getVariant()} onClick={handleConfirm}>
+              {confirmText}
+            </Button>
+            <Button variant="secondary" onClick={handleCancel}>
+              {cancelText}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       );
     };
 
-    // Clean up function
+    // Cleanup
     const cleanup = () => {
-      const modal = document.getElementById('toast-confirm-modal');
-      if (modal) {
-        document.body.removeChild(modal);
-      }
+      const modal = document.getElementById("toast-confirm-modal");
+      if (modal) document.body.removeChild(modal);
     };
 
-    // Render the modal
+    // Render modal
     const root = createRoot(modalElement);
     root.render(<ModalContent />);
 
@@ -112,34 +109,29 @@ const ToastConfirm = ({
   return { show: confirmModal };
 };
 
-// Hook for easier usage
+// Keep EXACT SAME EXPORT
+export default ToastConfirm;
+
+// Hook remains same
 export const useToastConfirm = () => {
   const showConfirm = (options) => {
     return new Promise((resolve) => {
       let cleanupFunction = null;
-      
+
       const { show } = ToastConfirm({
         ...options,
         onConfirm: () => {
-          if (options.onConfirm) {
-            options.onConfirm();
-          }
-          if (cleanupFunction) {
-            cleanupFunction();
-          }
+          options.onConfirm?.();
+          cleanupFunction?.();
           resolve(true);
         },
         onCancel: () => {
-          if (options.onCancel) {
-            options.onCancel();
-          }
-          if (cleanupFunction) {
-            cleanupFunction();
-          }
+          options.onCancel?.();
+          cleanupFunction?.();
           resolve(false);
-        }
+        },
       });
-      
+
       const result = show();
       cleanupFunction = result.cleanup;
     });
@@ -147,5 +139,3 @@ export const useToastConfirm = () => {
 
   return { showConfirm };
 };
-
-export default ToastConfirm;

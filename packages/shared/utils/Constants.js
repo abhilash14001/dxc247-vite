@@ -5,6 +5,7 @@ import { setIsSubmitDisabled } from "../store/slices/casinoSlice";
 import { store } from "../store";
 import { toast } from "react-toastify";
 import { useToastConfirm } from "../components/ui/ToastConfirm";
+import { adminApi } from "./adminApi";
 import CryptoJS from 'crypto-js';
 import JSEncrypt from 'jsencrypt';
 let globalTimer = null;
@@ -2636,7 +2637,7 @@ export const useDeleteMatchedBet = () => {
         const formData = new FormData();
         formData.append('bet_id', betId);
         
-        const response = await adminApi(`${ADMIN_BASE_PATH}/delete-matched-bet`, "POST", formData);
+        const response = await adminApi(`${ADMIN_BASE_PATH}/delete-matched-bet`, "POST", formData, true);
       
       if (response && response.data && response.data.success) {
         toast.dismiss(loadingToast);
@@ -2701,7 +2702,7 @@ export const useDeleteMatchedBet = () => {
       const formData = new FormData();
       formData.append('bet_id', betId);
       
-      const response = await adminApi(`${ADMIN_BASE_PATH}/undo-deleted-bet`, "POST", formData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/undo-deleted-bet`, "POST", formData, true);
     
       if (response && response.data && response.data.success) {
         toast.dismiss(loadingToast);

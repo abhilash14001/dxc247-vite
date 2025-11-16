@@ -122,14 +122,14 @@ const SportsLayout = ({
     let interval = null;
 
     if (isAdminRoute() && match_id) {
-      alert('working')
+      
       interval = setInterval(() => {
         localGetBetListData();
       }, 2000);
     }
     return () => {
       if (interval && match_id) {
-        alert('cleared')
+        
         clearInterval(interval);
       }
     };

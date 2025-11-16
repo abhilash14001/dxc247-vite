@@ -297,7 +297,7 @@ function AdminUsers() {
       return;
     }
 
-    const confirmed = await showConfirm({
+    await showConfirm({
       title: "Delete User",
       message: "Are you sure you want to delete this user? This action cannot be undone.",
       confirmText: "Yes, Delete",
