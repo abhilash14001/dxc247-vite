@@ -16,7 +16,7 @@ const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dispatch = useDispatch();
-  const { user: adminUser, token } = useSelector(state => state.admin);
+  const { user: adminUser, token, isAuthenticated } = useSelector(state => state.admin);
   const { logout } = useContext(AuthContext);
   
   // Check if user has role 6 (admin role)
@@ -41,8 +41,7 @@ const AdminLayout = ({ children }) => {
   } = useAdminPasswordMiddleware();
 
   useEffect(() => {
-        
-    
+  
     
         
         // Only run when matchesData is available and has sidebar_data

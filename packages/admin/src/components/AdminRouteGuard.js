@@ -14,16 +14,26 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
     const isPublicPath = publicPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
     
     if (isPublicPath) {
+      
       return;
     }
 
     // Wait for loading to complete before making decisions
     if (loading) {
+      if (!isAuthenticated || !token) {
+      
+        // Only navigate if not already on login page to prevent infinite loops
+        if (location.pathname !== '/login') {
+          navigate('/login', { replace: true });
+        }
+        return;
+      }
       return;
     }
   
     // Check if user is not authenticated
     if (!isAuthenticated || !token) {
+      
       // Only navigate if not already on login page to prevent infinite loops
       if (location.pathname !== '/login') {
         navigate('/login', { replace: true });
