@@ -77,8 +77,8 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
   };
 
   return (
-    <div className="col-md-12 d-flex overflow-x" ref={dropdownRef}>
-      <div className="dropdown market-btn width-btn" style={{ display: 'block' }}>
+    <div className="col-md-12 d-flex overflow-x" ref={dropdownRef} style={{ position: 'relative', overflow: 'visible' }}>
+      <div className="dropdown market-btn width-btn" style={{ display: 'block', position: 'relative', zIndex: 1000 }}>
         <button 
           className="btn btn-back dropdown-toggle margin-button width-btn-100" 
           type="button" 
@@ -88,7 +88,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
           <span className="caret"></span>
         </button>
         {openDropdowns.oddsLock && (
-         <ul className="dropdown-menu" style={{ top: '100%', position: 'absolute', display: 'block' }}>
+         <ul className="dropdown-menu" style={{ top: '100%', left: 0, position: 'absolute', display: 'block', zIndex: 9999, minWidth: '150px' }}>
          <li><button className="btn btn-link p-0 text-decoration-none" onClick={() => handleMatchLock('ODDS', 1)}>Lock</button></li>
          <li><button className="btn btn-link p-0 text-decoration-none" onClick={() => handleMatchLock('ODDS', 0)}>UnLock</button></li>
          
@@ -103,7 +103,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
         B.M Book
       </button>
 
-      <div className="dropdown market-btn width-btn">
+      <div className="dropdown market-btn width-btn" style={{ position: 'relative', zIndex: 1000 }}>
         <button 
           className="btn btn-back dropdown-toggle margin-button width-btn-100" 
           type="button" 
@@ -112,7 +112,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
           B.M Lock<span className="caret"></span>
         </button>
         {openDropdowns.bmLock && (
-          <ul className="dropdown-menu" style={{ top: '100%', position: 'absolute', display: 'block' }}>
+          <ul className="dropdown-menu" style={{ top: '100%', left: 0, position: 'absolute', display: 'block', zIndex: 9999, minWidth: '150px' }}>
             <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('BOOKMAKER', 1); }}>Lock</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('BOOKMAKER', 0); }}>UnLock</a></li>
             
@@ -120,7 +120,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
           </ul>
         )}
       </div>
-      <div className="dropdown market-btn width-btn">
+      <div className="dropdown market-btn width-btn" style={{ position: 'relative', zIndex: 1000 }}>
         <button 
           className="btn btn-back dropdown-toggle margin-button width-btn-100" 
           type="button" 
@@ -130,7 +130,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
           <span className="caret"></span>
         </button>
         {openDropdowns.fancyLock && (
-           <ul className="dropdown-menu" style={{ top: '100%', position: 'absolute', display: 'block' }}>
+           <ul className="dropdown-menu" style={{ top: '100%', left: 0, position: 'absolute', display: 'block', zIndex: 9999, minWidth: '150px' }}>
            <li><button className="btn btn-link p-0 text-decoration-none" onClick={() => handleMatchLock('FANCY', 1)}>Lock</button></li>
            <li><button className="btn btn-link p-0 text-decoration-none" onClick={() => handleMatchLock('FANCY', 0)}>UnLock</button></li>
            
@@ -139,7 +139,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
         )}
       </div>
 
-      <div className="dropdown market-btn width-btn" style={{ display: 'block' }}>
+      <div className="dropdown market-btn width-btn" style={{ display: 'block', position: 'relative', zIndex: 1000 }}>
         <button 
           className="btn btn-back dropdown-toggle margin-button width-btn-100" 
           type="button" 
@@ -149,7 +149,7 @@ const AdminSportsControlPanel = ({ sportId, sportName, matchId }) => {
           <span className="caret"></span>
         </button>
         {openDropdowns.matchSuspend && (
-          <ul className="dropdown-menu" style={{ top: '100%', position: 'absolute', display: 'block' }}>
+          <ul className="dropdown-menu" style={{ top: '100%', left: 0, position: 'absolute', display: 'block', zIndex: 9999, minWidth: '180px' }}>
             <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPEND', 1); }}>Suspend</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPEND', 0); }}>UnSuspend</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); handleMatchLock('SUSPENDODDS', 1); }}>Odds Suspend</a></li>
