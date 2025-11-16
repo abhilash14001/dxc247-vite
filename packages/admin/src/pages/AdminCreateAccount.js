@@ -501,8 +501,8 @@ const AdminCreateAccount = () => {
                         value={formData.role}
                         onChange={handleInputChange}
                       >
-                        <option value="">Select User Role</option>
-                        {/* If logged-in user is Super Admin (role 6), show all options */}
+                        <option value="">Select Role</option>
+                        {/* Super Admin (role 6) can create all roles below it */}
                         {currentUserRole === '6' && (
                           <>
                             <option value="2">Admin</option>
@@ -512,7 +512,7 @@ const AdminCreateAccount = () => {
                             <option value="7">User</option>
                           </>
                         )}
-                        {/* If logged-in user is Admin (role 2), show Sub Admin and all below */}
+                        {/* Admin (role 2) can create all roles below it */}
                         {currentUserRole === '2' && (
                           <>
                             <option value="3">Sub Admin</option>
@@ -521,7 +521,7 @@ const AdminCreateAccount = () => {
                             <option value="7">User</option>
                           </>
                         )}
-                        {/* If logged-in user is Sub Admin (role 3), show Super Master and all below (not Sub Admin) */}
+                        {/* Sub Admin (role 3) can create all roles below it */}
                         {currentUserRole === '3' && (
                           <>
                             <option value="4">Super Master</option>
@@ -529,13 +529,16 @@ const AdminCreateAccount = () => {
                             <option value="7">User</option>
                           </>
                         )}
-                        {/* If logged-in user is not Super Admin, Admin, or Sub Admin, show all options (fallback) */}
-                        {currentUserRole !== '6' && currentUserRole !== '2' && currentUserRole !== '3' && (
+                        {/* Super Master (role 4) can create all roles below it */}
+                        {currentUserRole === '4' && (
                           <>
-                            <option value="2">Admin</option>
-                            <option value="3">Sub Admin</option>
-                            <option value="4">Super Master</option>
                             <option value="5">Master</option>
+                            <option value="7">User</option>
+                          </>
+                        )}
+                        {/* Master (role 5) can create only Users */}
+                        {currentUserRole === '5' && (
+                          <>
                             <option value="7">User</option>
                           </>
                         )}

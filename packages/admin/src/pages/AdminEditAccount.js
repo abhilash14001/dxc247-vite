@@ -111,6 +111,7 @@
       // Transaction Password
       master_password: ''
     });
+    const [parentPartnership, setParentPartnership] = useState(null);
 
     useEffect(() => {
       if (isEditMode && userId) {
@@ -146,6 +147,7 @@
         const response = await adminApi(`${ADMIN_BASE_PATH}/user/details/${userId}`, 'GET', {}, true);
         if (response.success && response.data) {
           const userData = response.data;
+          setParentPartnership(userData.parent_partnership);
           setFormData(prev => ({
             ...prev,
             name: userData.name || '',
@@ -695,6 +697,7 @@
                           <th>MAX ODDS</th>
                           <th>Bet Status</th>
                           <th>DOWN LINE PARTNERSHIP</th>
+                          <th>OVER DOWN LINE PARTNERSHIP</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -758,6 +761,11 @@
                             <input className="form-control partnership mt-10" type="text" name="bookmaker_partnership" id="bookmaker_partnership" data-partnership="100" readOnly placeholder="0" value={formData.bookmaker_partnership} />
                             <input className="form-control partnership mt-10" type="text" name="session_partnership" id="session_partnership" data-partnership="100" readOnly placeholder="0" value={formData.session_partnership} />
                           </td>
+                          <td>
+                            <input className="form-control partnership" type="text" name="cricket_over_partnership" id="cricket_over_partnership" data-partnership="100" readOnly placeholder="0" value={parentPartnership ? parentPartnership.cricket_partnership - formData.cricket_partnership : 0} />
+                            <input className="form-control partnership mt-10" type="text" name="bookmaker_over_partnership" id="bookmaker_over_partnership" data-partnership="100" readOnly placeholder="0" value={parentPartnership ? parentPartnership.bookmaker_partnership - formData.bookmaker_partnership : 0} />
+                            <input className="form-control partnership mt-10" type="text" name="session_over_partnership" id="session_over_partnership" data-partnership="100" readOnly placeholder="0" value={parentPartnership ? parentPartnership.session_partnership - formData.session_partnership : 0} />
+                          </td>
                         </tr>
                         <tr>
                           <th>Soccer</th>
@@ -790,6 +798,9 @@
                           </td>
                           <td>
                             <input className="form-control partnership" type="text" name="soccer_partnership" id="soccer_partnership" data-partnership="100" readOnly placeholder="0" value={formData.soccer_partnership} />
+                          </td>
+                          <td>
+                            <input className="form-control partnership" type="text" name="soccer_over_partnership" id="soccer_over_partnership" data-partnership="100" readOnly placeholder="0" value={parentPartnership ? parentPartnership.soccer_partnership - formData.soccer_partnership : 0} />
                           </td>
                         </tr>
                         <tr>
@@ -824,6 +835,9 @@
                           <td>
                             <input className="form-control partnership" type="text" name="tennis_partnership" id="tennis_partnership" data-partnership="100" readOnly placeholder="0" value={formData.tennis_partnership} />
                           </td>
+                          <td>
+                            <input className="form-control partnership" type="text" name="tennis_over_partnership" id="tennis_over_partnership" data-partnership="100" readOnly placeholder="0" value={parentPartnership ? parentPartnership.tennis_partnership - formData.tennis_partnership : 0} />
+                          </td>
                         </tr>
                         <tr>
                           <th>Casino</th>
@@ -856,6 +870,9 @@
                           </td>
                           <td>
                             <input className="form-control partnership" type="text" name="casino_partnership" id="casino_partnership" data-partnership="100" readOnly placeholder="0" value={formData.casino_partnership} />
+                          </td>
+                          <td>
+                            <input className="form-control partnership" type="text" name="casino_over_partnership" id="casino_over_partnership" data-partnership="100" readOnly placeholder="0" value={parentPartnership ? parentPartnership.casino_partnership - formData.casino_partnership : 0} />
                           </td>
                         </tr>
                       </tbody>
