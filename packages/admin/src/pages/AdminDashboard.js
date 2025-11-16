@@ -28,14 +28,14 @@ function AdminDashboard() {
   const { isAuthenticated } = useSelector(state => state.admin);
   const navigate = useNavigate();
 
-  // Authentication check
-  useEffect(() => {
-    
-    if(!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-  }, [isAuthenticated, navigate]);
+  // Authentication check - AdminRouteGuard handles this, so we don't need to redirect here
+  // This check is redundant and can cause redirect loops
+  // useEffect(() => {
+  //   if(!isAuthenticated) {
+  //     navigate('/login');
+  //     return;
+  //   }
+  // }, [isAuthenticated, navigate]);
 
   // Debounced search effect
   useEffect(() => {

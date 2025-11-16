@@ -173,7 +173,14 @@ function Login() {
 
         const response = await axiosFetch("admin/domain-details", "GET");
         if (response && response.data) {
-          dispatch(setLiveModeData(response.data?.data || response.data));
+          const data = response.data?.data || response.data;
+          dispatch(setLiveModeData(data));
+          
+          // Check for maintenance mode
+          if (data.maintenance_mode === 1) {
+            // Maintenance mode is handled by MaintenanceModeGuard middleware
+            return;
+          }
         }
       } catch (error) {
         console.error("Error fetching live mode data:", error);

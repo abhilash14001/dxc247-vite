@@ -14,6 +14,7 @@ import ProtectedRoute from "@dxc247/shared/components/ProtectedRoute";
 import withPageLoading from "@dxc247/shared/components/hoc/withPageLoading";
 import LiveModeGuard from "@dxc247/shared/components/middleware/LiveModeGuard";
 import BlockUrlMiddleware from "@dxc247/shared/components/middleware/BlockUrlMiddleware";
+import MaintenanceModeGuard from "@dxc247/shared/components/middleware/MaintenanceModeGuard";
 import FaviconUpdater from "@dxc247/shared/components/FaviconUpdater";
 import NavigationListener from "@dxc247/shared/components/NavigationListener";
 import RouteChangeListener from "@dxc247/shared/components/RouteChangeListener";
@@ -40,6 +41,7 @@ const FantasyGame = lazy(() => import("./pages/FantasyGame"));
 const Rules = lazy(() => import("./pages/Rules"));
 const AviatorList = lazy(() => import("@dxc247/shared/components/AviatorList"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const MaintenanceMode = lazy(() => import("./pages/MaintenanceMode"));
 
 // Wrap components with page loading
 const HomeWithLoading = withPageLoading(Home);
@@ -71,13 +73,15 @@ root.render(
             <AuthProvider>
               <BlockUrlMiddleware>
                 <LiveModeGuard>
-                  <SportsProvider>
-                    <StakeProvider>
-                      <CasinoProvider>
-                        <UserThemeWrapper>
-                          <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/transaction-password" element={<TransactionPasswordSuccess />} />
+                  <MaintenanceModeGuard>
+                    <SportsProvider>
+                      <StakeProvider>
+                        <CasinoProvider>
+                          <UserThemeWrapper>
+                            <Routes>
+                              <Route path="/maintenance" element={<MaintenanceMode />} />
+                              <Route path="/login" element={<Login />} />
+                              <Route path="/transaction-password" element={<TransactionPasswordSuccess />} />
                             <Route path="/*" element={
                               <ProtectedRoute>
                                 <Routes>
@@ -108,9 +112,10 @@ root.render(
                       </CasinoProvider>
                     </StakeProvider>
                   </SportsProvider>
-                </LiveModeGuard>
-              </BlockUrlMiddleware>
-            </AuthProvider>
+                </MaintenanceModeGuard>
+              </LiveModeGuard>
+            </BlockUrlMiddleware>
+          </AuthProvider>
             
 
           </Suspense>

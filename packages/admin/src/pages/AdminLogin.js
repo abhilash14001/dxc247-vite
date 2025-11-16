@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +28,7 @@ function AdminLogin() {
     role: "1",
   });
   const [cssLoaded, setCssLoaded] = useState(false);
+  const redirectingRef = useRef(false);
 
   useEffect(() => {
     
@@ -75,69 +76,123 @@ function AdminLogin() {
 
   useEffect(() => {
     // Simplified initialization - fetch public key and live mode data
+    // Only run once on mount, not when dependencies change
+    let isMounted = true;
+    
     const initializePage = async () => {
-      dispatch(setAuthLoading(false));
-
       try {
         
         // Fetch public key if not already stored
         if (!serverPublicKey) {
           const keyResponse = await adminApi('/p-key-get', 'GET');
           
-          
-          if (keyResponse && keyResponse.publicKey) {
+          if (isMounted && keyResponse && keyResponse.publicKey) {
             dispatch(setServerPublicKey(keyResponse.publicKey));
-          } else {
+          } else if (isMounted) {
             console.warn("⚠️ Failed to fetch public key, will use fallback");
           }
-        } else {
         }
 
-        // Fetch live mode data
-        if(liveModeData && liveModeData.length > 0) return;
-        const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
-        if (liveModeResponse) {
-          dispatch(setLiveModeData(liveModeResponse));
+        // Fetch live mode data - check if already exists (handle both object and array)
+        const hasLiveModeData = liveModeData && (
+          (Array.isArray(liveModeData) && liveModeData.length > 0) ||
+          (!Array.isArray(liveModeData) && Object.keys(liveModeData).length > 0)
+        );
+        
+        if (!hasLiveModeData) {
+          const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
+          if (isMounted && liveModeResponse) {
+            dispatch(setLiveModeData(liveModeResponse));
+          }
         }
       } catch (error) {
         console.error('Failed to initialize page:', error);
         // Don't block page if initialization fails
+      } finally {
+        // Always set loading to false after initialization completes
+        if (isMounted) {
+          dispatch(setAuthLoading(false));
+        }
       }
     };
 
     initializePage();
-  }, []);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array - only run once on mount
 
   // Check authentication and token validity
   useEffect(() => {
-    // Only redirect if authenticated AND token is valid AND currently on login page
-    if (isAuthenticated && token && tokenExpiresAt && location.pathname === '/login') {
+    // Only run this effect when we're actually on the login page
+    if (location.pathname !== '/login') {
+      redirectingRef.current = false; // Reset redirect flag when not on login page
+      return;
+    }
+
+    // Wait for loading to complete before making redirect decisions
+    if (loading) {
+      return;
+    }
+
+    // Prevent multiple simultaneous redirects
+    if (redirectingRef.current) {
+      return;
+    }
+
+    // Only redirect if authenticated AND token is valid AND we have all required data
+    if (isAuthenticated && token && tokenExpiresAt && user) {
       const now = Date.now();
       const expiration = parseInt(tokenExpiresAt);
       
       // Check if token is still valid
       if (now < expiration) {
+        let timeoutId = null;
+        
         // Check for password change requirements first
-        if (user?.change_password === 1) {
-          navigate('/change-password', { replace: true });
-          return;
+        if (user.change_password === 1) {
+          // Only navigate if not already on the target page to prevent loops
+          if (location.pathname !== '/change-password') {
+            redirectingRef.current = true;
+            navigate('/change-password', { replace: true });
+            // Reset after navigation completes
+            timeoutId = setTimeout(() => { redirectingRef.current = false; }, 500);
+          }
+        }
+        else if (user.change_password === 0 && user.change_transaction_password === 1) {
+          // Only navigate if not already on the target page to prevent loops
+          if (location.pathname !== '/transaction-password') {
+            redirectingRef.current = true;
+            navigate('/transaction-password', { replace: true });
+            // Reset after navigation completes
+            timeoutId = setTimeout(() => { redirectingRef.current = false; }, 500);
+          }
+        }
+        else {
+          // If no password changes needed, redirect to dashboard
+          // Only navigate if not already on dashboard to prevent loops
+          if (location.pathname !== '/' && location.pathname !== '/dashboard') {
+            redirectingRef.current = true;
+            navigate('/', { replace: true });
+            // Reset after navigation completes
+            timeoutId = setTimeout(() => { redirectingRef.current = false; }, 500);
+          }
         }
         
-        if (user?.change_password === 0 && user?.change_transaction_password === 1) {
-          navigate('/transaction-password', { replace: true });
-          return;
-        }
-        
-        // If no password changes needed, redirect to dashboard
-        navigate('/', { replace: true });
-        return;
+        // Cleanup timeout on unmount
+        return () => {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+        };
       } else {
         // Token expired - dispatch logout to clear state
         dispatch(logout());
       }
     }
     
-  }, [isAuthenticated, token, tokenExpiresAt, user, navigate, dispatch, location.pathname]);
+  }, [isAuthenticated, token, tokenExpiresAt, user, navigate, dispatch, location.pathname, loading]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

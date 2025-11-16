@@ -24,7 +24,10 @@ const AdminRouteGuard = ({ children, requiredPermission }) => {
   
     // Check if user is not authenticated
     if (!isAuthenticated || !token) {
-      navigate('/login', { replace: true });
+      // Only navigate if not already on login page to prevent infinite loops
+      if (location.pathname !== '/login') {
+        navigate('/login', { replace: true });
+      }
       return;
     }
 
