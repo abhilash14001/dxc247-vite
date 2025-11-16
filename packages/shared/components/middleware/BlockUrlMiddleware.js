@@ -1,20 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 /**
  * Simple URL Blocking Middleware
  * Blocks URLs containing blocked sports or casino games
+ * This middleware depends on common_detail_data API which is fetched on every login
  */
 const BlockUrlMiddleware = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const commonData = useSelector(state => state.commonData?.data);
   
-  const blockedSports = commonData?.blocked_sports || [];
-  const blockedCasinos = commonData?.blocked_casinos || [];
+  // Memoize blocked arrays to prevent unnecessary re-renders
+  // These come from common_detail_data API response
+  const blockedSports = useMemo(() => {
+    return commonData?.blocked_sports || [];
+  }, [commonData?.blocked_sports]);
+  
+  const blockedCasinos = useMemo(() => {
+    return commonData?.blocked_casinos || [];
+  }, [commonData?.blocked_casinos]);
 
   useEffect(() => {
+    // Only check if we have commonData (data is loaded)
+    if (!commonData) {
+      return;
+    }
+    
     const currentUrl = (location.pathname + location.search).toLowerCase();
     
     // Check for blocked sports
@@ -34,7 +47,7 @@ const BlockUrlMiddleware = ({ children }) => {
         return;
       }
     }
-  }, [location, blockedSports, blockedCasinos, navigate]);
+  }, [location, blockedSports, blockedCasinos, navigate, commonData]);
 
   return children;
 };

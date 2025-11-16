@@ -627,7 +627,7 @@ function AdminUsers() {
                                 </label>
                               </td>
                               <td>0</td>
-                              <td>90%</td>
+                              <td>{user?.partnership ? parseFloat(user.partnership).toLocaleString() : '0'}%</td>
                               <td>{user.type}</td>
                               <td className="actions text-center">
                                 <a

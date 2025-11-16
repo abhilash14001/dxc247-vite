@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axiosFetch, { getCurrentToken } from '../utils/Constants';
 import { setCommonData, setCommonDataLoading, setCommonDataError, setFetching } from '../store/slices/commonDataSlice';
@@ -20,10 +20,17 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
     };
 
     const currentToken = getCurrentToken();
+    const previousTokenRef = useRef(currentToken);
 
     useEffect(() => {
-        // If we already have data and not refetching, use it
-        if (commonDataState.data && !refetch) {
+        // Check if token changed (new login)
+        const tokenChanged = previousTokenRef.current !== currentToken;
+        
+        // Update previous token reference
+        previousTokenRef.current = currentToken;
+        
+        // If we already have data and not refetching and token hasn't changed, use it
+        if (commonDataState.data && !refetch && !tokenChanged) {
             if (setValue && commonDataState.data) {
                 getStakeValue(setValue, commonDataState.data);
             }
@@ -39,6 +46,11 @@ const useCommonData = (token = null, setShowLoader = null, setValue = null, refe
         // Only fetch if we have a token
         if (!currentToken) {
             return;
+        }
+        
+        // If token changed (new login), clear existing data to force refetch
+        if (tokenChanged && commonDataState.data) {
+            dispatch(setCommonData(null));
         }
 
         

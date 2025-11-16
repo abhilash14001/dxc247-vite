@@ -7,7 +7,8 @@ import { AuthContext } from "@dxc247/shared/contexts/AuthContext";
 import { useLoading } from "@dxc247/shared/hooks/useLoading";
 import Notify from "@dxc247/shared/utils/Notify";
 import { loginSuccess } from "@dxc247/shared/store/slices/userSlice";
-import { setLiveModeData, setServerPublicKey } from "@dxc247/shared/store/slices/commonDataSlice";
+import { setLiveModeData, setServerPublicKey, setCommonData, setCommonDataLoading } from "@dxc247/shared/store/slices/commonDataSlice";
+import { setBannerDetails } from "@dxc247/shared/store/slices/userSlice";
 
 function Login() {
   const nav = useNavigate();
@@ -61,6 +62,29 @@ function Login() {
 
         updateLocalStorage(res);
 
+        // Fetch common_detail_data immediately after login (for block market data)
+        const fetchCommonDetailData = async () => {
+          try {
+            dispatch(setCommonDataLoading(true));
+            // Fetch banner data
+            const bannerResponse = await axiosFetch('banner_data', 'get');
+            if (bannerResponse && bannerResponse.data) {
+              dispatch(setBannerDetails(bannerResponse.data.banner_data));
+            }
+            // Fetch common detail data (includes blocked_sports, blocked_casinos)
+            const response = await axiosFetch('common_detail_data', 'get');
+            if (response && response.data) {
+              dispatch(setCommonData(response.data));
+            }
+          } catch (error) {
+            console.error('Error fetching common detail data:', error);
+          } finally {
+            dispatch(setCommonDataLoading(false));
+          }
+        };
+        
+        // Fetch common_detail_data immediately (don't wait)
+        fetchCommonDetailData();
 
         // Use setTimeout to ensure Redux state is updated before making API calls
         setTimeout(() => {
@@ -125,10 +149,29 @@ function Login() {
       );
       updateLocalStorage(demoLoginResponse);
 
-      // Fetch banner details after successful demo login
+      // Fetch common_detail_data immediately after demo login (for block market data)
+      const fetchCommonDetailData = async () => {
+        try {
+          dispatch(setCommonDataLoading(true));
+          // Fetch banner data
+          const bannerResponse = await axiosFetch('banner_data', 'get');
+          if (bannerResponse && bannerResponse.data) {
+            dispatch(setBannerDetails(bannerResponse.data.banner_data));
+          }
+          // Fetch common detail data (includes blocked_sports, blocked_casinos)
+          const response = await axiosFetch('common_detail_data', 'get');
+          if (response && response.data) {
+            dispatch(setCommonData(response.data));
+          }
+        } catch (error) {
+          console.error('Error fetching common detail data:', error);
+        } finally {
+          dispatch(setCommonDataLoading(false));
+        }
+      };
       
-
-      // Dispatch loginSuccess FIRST to update Redux state with new token
+      // Fetch common_detail_data immediately (don't wait)
+      fetchCommonDetailData();
 
       // Use setTimeout to ensure Redux state is updated before making API calls
       setTimeout(() => {
