@@ -573,7 +573,7 @@ function AdminUsers() {
                             <th>U St</th>
                             <th>B St</th>
                             <th>Exposure Limit</th>
-                            <th>Default (%)</th>
+                            <th>Partnership (%)</th>
                             <th>Account Type</th>
                             <th className="noExport text-center">Action</th>
             </tr>
@@ -626,7 +626,7 @@ function AdminUsers() {
                                   <span className="checkmark"></span>
                                 </label>
                               </td>
-                              <td>0</td>
+                              <td>{user?.exposure_limit || 0}</td>
                               <td>{user?.partnership ? parseFloat(user.partnership).toLocaleString() : '0'}%</td>
                               <td>{user.type}</td>
                               <td className="actions text-center">
@@ -660,7 +660,14 @@ function AdminUsers() {
                                 >
                                   <span>W</span>
                                 </a>
-                                <a href="#" onClick={(e) => e.preventDefault()} title="Exposure">
+                                <a 
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleExposureLimit(user.id, user.exposure_limit || 0);
+                                  }}
+                                  title="Exposure Limit"
+                                >
                                   <span>L</span>
                                 </a>
                                 <a 
@@ -762,7 +769,7 @@ function AdminUsers() {
                             <th>U St</th>
                             <th>B St</th>
                             <th>Exposure Limit</th>
-                            <th>Default (%)</th>
+                            <th>Partnership (%)</th>
                             <th>Account Type</th>
                             <th className="noExport text-center">Action</th>
                           </tr>
@@ -849,7 +856,14 @@ function AdminUsers() {
                                 >
                                   <span>W</span>
                                 </a>
-                                <a href="#" onClick={(e) => e.preventDefault()} title="Exposure">
+                                <a 
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleExposureLimit(user.id, user.exposure_limit || 0);
+                                  }}
+                                  title="Exposure Limit"
+                                >
                                   <span>L</span>
                                 </a>
                                 <a 

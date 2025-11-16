@@ -232,8 +232,10 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
         break;
 
       case 'exposureLimit':
-        if (formData.exposure_limit < 0) {
+        if (!formData.exposure_limit || formData.exposure_limit === '') {
           newErrors.exposure_limit = 'Please enter a valid exposure limit amount';
+        } else if (formData.exposure_limit < 0) {
+          newErrors.exposure_limit = 'Exposure limit cannot be negative';
         }
         if (!formData.empassword || formData.empassword.length < 1) {
           newErrors.empassword = 'Transaction password is required';
@@ -660,9 +662,15 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                 <label>Old Limit</label>
               </div>
               <div className="col-md-8">
-                <span className="popup-box popup-box-full" id="old-limit">
-                  {formData.old_limit || 'Loading..'}
-                </span>
+                <input
+                  type="number"
+                  className="popup-box popup-box-full"
+                  id="old-limit"
+                  value={formData.old_limit || 0}
+                  disabled
+                  readOnly
+                  style={{ backgroundColor: '#e9ecef', cursor: 'not-allowed' }}
+                />
               </div>
             </div>
             <div className="row m-b-20">

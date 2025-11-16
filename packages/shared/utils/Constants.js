@@ -2652,6 +2652,8 @@ export const useDeleteMatchedBet = () => {
           if (matchId) {
             // Fetch fresh bet data (will update cache automatically)
             getBetListData(matchId).catch(err => console.error("Error fetching bet data after delete:", err));
+            // Dispatch event to trigger callTeamDatas
+            window.dispatchEvent(new CustomEvent('refreshExposureData'));
           }
         } catch (error) {
           console.error("Error importing getBetListData:", error);
@@ -2727,8 +2729,11 @@ export const useDeleteMatchedBet = () => {
           // Get match_id from URL
           const matchId = window.location.pathname.match(/\/(soccer|cricket|tennis|casino)\/(\d+)/)?.[2];
           if (matchId) {
+            
             // Fetch fresh bet data (will update cache automatically)
             getBetListData(matchId).catch(err => console.error("Error fetching bet data after restore:", err));
+            // Dispatch event to trigger callTeamDatas
+            window.dispatchEvent(new CustomEvent('refreshExposureData'));
           }
         } catch (error) {
           console.error("Error importing getBetListData:", error);

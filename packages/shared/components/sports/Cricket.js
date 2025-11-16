@@ -7,7 +7,7 @@ import React, {
   lazy,
 } from "react";
 import {
-  getExByTeamNameForCricket,
+  
   getExByTeamNameForAllBetTypes,
   showCricketSessionBook,
   isAdminRoute,
@@ -440,6 +440,20 @@ const Cricket = () => {
 
     // eslint-disable-next-line
   }, [ar_lengt, expsoure, showLoader, sportListLength]);
+
+  // Listen for exposure data refresh event
+  useEffect(() => {
+    const handleRefreshExposure = () => {
+      if (ar_lengt > 0 && !showLoader && sportListLength > 0) {
+        callTeamDatas();
+      }
+    };
+
+    window.addEventListener('refreshExposureData', handleRefreshExposure);
+    return () => {
+      window.removeEventListener('refreshExposureData', handleRefreshExposure);
+    };
+  }, [ar_lengt, showLoader, sportListLength]);
 
   useEffect(() => {
     if (sportsSocketScoreboard) {
