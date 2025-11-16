@@ -21,6 +21,8 @@ const AdminLayout = ({ children }) => {
   
   // Check if user has role 6 (admin role)
   const isAdminRole = adminUser?.role === 6;
+  // Check if user is superadmin (role === 1)
+  const isSuperAdmin = adminUser?.role === 1;
   const { liveModeData } = useSelector(state => state.commonData);
   const { navLinks, activeLink,setNavLinks } = useContext(SportsContext);
   
@@ -254,7 +256,7 @@ const AdminLayout = ({ children }) => {
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   {settingsMenuItems.map((item, index) => (
-                    ((item.permission === 'block-market' || hasPermission(adminUser, item.permission))) && (
+                    ((item.permission === 'block-market' || item.permission === 'manage-privilege' || hasPermission(adminUser, item.permission))) && (
                       <li key={index}>
                         <a 
                           href="#"
@@ -365,17 +367,19 @@ const AdminLayout = ({ children }) => {
       </div>
       </div>
       
-      {/* Admin Password Verification Modal */}
-      <AdminPasswordModal
-        show={showPasswordModal}
-        password={password}
-        setPassword={setPassword}
-        loading={passwordLoading}
-        error={passwordError}
-        onSubmit={handlePasswordSubmit}
-        onClose={closeModal}
-        onClearError={clearError}
-      />
+      {/* Admin Password Verification Modal - Only for superadmin */}
+      {isSuperAdmin && (
+        <AdminPasswordModal
+          show={showPasswordModal}
+          password={password}
+          setPassword={setPassword}
+          loading={passwordLoading}
+          error={passwordError}
+          onSubmit={handlePasswordSubmit}
+          onClose={closeModal}
+          onClearError={clearError}
+        />
+      )}
     </AdminRouteGuard>
   );
 };

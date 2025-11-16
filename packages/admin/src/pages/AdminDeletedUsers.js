@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { adminApi } from '@dxc247/shared/utils/adminApi';
 import Notify from '@dxc247/shared/utils/Notify';
 import CenteredSpinner from '@dxc247/shared/components/ui/CenteredSpinner';
@@ -9,9 +10,12 @@ import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 
 const AdminDeletedUsers = () => {
   const { modal: confirmModal, showConfirm, hideModal } = useConfirmModal();
+  const { user: adminUser } = useSelector(state => state.admin);
+  const isSuperAdmin = adminUser?.role === 1;
   const [deletedUsers, setDeletedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [restoring, setRestoring] = useState({});
+  const [permanentlyDeleting, setPermanentlyDeleting] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({
@@ -108,6 +112,41 @@ const AdminDeletedUsers = () => {
     });
   };
 
+  const handlePermanentDelete = async (userId) => {
+    const user = deletedUsers.find(u => u.id === userId);
+    const userName = user ? (user.name || user.username || 'this user') : 'this user';
+
+    await showConfirm({
+      title: "Permanently Delete User",
+      message: `Are you absolutely sure you want to permanently delete ${userName}? This action CANNOT be undone and will permanently remove all user data from the system.`,
+      confirmText: "Yes, Delete Permanently",
+      cancelText: "Cancel",
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          setPermanentlyDeleting(prev => ({ ...prev, [userId]: true }));
+          const response = await adminApi(`${ADMIN_BASE_PATH}/client/permanent-delete/${userId}`, 'DELETE', {}, true);
+
+          if (response && response.success) {
+            Notify(response.message || 'User permanently deleted successfully', null, null, 'success');
+            fetchDeletedUsers(currentPage, searchTerm);
+          } else {
+            Notify(response.message || 'Failed to permanently delete user', null, null, 'danger');
+          }
+        } catch (error) {
+          console.error('Error permanently deleting user:', error);
+          if (error.response?.data?.message) {
+            Notify(error.response.data.message, null, null, 'danger');
+          } else {
+            Notify('Error permanently deleting user', null, null, 'danger');
+          }
+        } finally {
+          setPermanentlyDeleting(prev => ({ ...prev, [userId]: false }));
+        }
+      }
+    });
+  };
+
   if (loading) {
     return (
       <div className="row">
@@ -172,21 +211,42 @@ const AdminDeletedUsers = () => {
                           <td>{user.username || user.user_id || 'N/A'}</td>
                           <td>{user.name || user.full_name || 'N/A'}</td>
                           <td>
-                            <button
-                              className="btn btn-success btn-xs"
-                              onClick={() => handleRestore(user.id)}
-                              disabled={restoring[user.id]}
-                              title="Restore this user"
-                            >
-                              {restoring[user.id] ? (
-                                <>
-                                  <CenteredSpinner size="12px" color="#ffffff" style={{ marginRight: '5px' }} />
-                                  Restoring...
-                                </>
-                              ) : (
-                                'Restore'
+                            <div style={{ display: 'flex', gap: '5px' }}>
+                              <button
+                                className="btn btn-success btn-xs"
+                                onClick={() => handleRestore(user.id)}
+                                disabled={restoring[user.id] || permanentlyDeleting[user.id]}
+                                title="Restore this user"
+                              >
+                                {restoring[user.id] ? (
+                                  <>
+                                    <CenteredSpinner size="12px" color="#ffffff" style={{ marginRight: '5px' }} />
+                                    Restoring...
+                                  </>
+                                ) : (
+                                  'Restore'
+                                )}
+                              </button>
+                              {isSuperAdmin && (
+                                <button
+                                  className="btn btn-danger btn-xs"
+                                  onClick={() => handlePermanentDelete(user.id)}
+                                  disabled={restoring[user.id] || permanentlyDeleting[user.id]}
+                                  title="Permanently delete this user (Superadmin only)"
+                                >
+                                  {permanentlyDeleting[user.id] ? (
+                                    <>
+                                      <CenteredSpinner size="12px" color="#ffffff" style={{ marginRight: '5px' }} />
+                                      Deleting...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <i className="fas fa-trash-alt"></i> Delete
+                                    </>
+                                  )}
+                                </button>
                               )}
-                            </button>
+                            </div>
                           </td>
                         </tr>
                       ))
