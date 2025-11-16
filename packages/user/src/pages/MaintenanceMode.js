@@ -55,13 +55,25 @@ const MaintenanceMode = () => {
                 <h2 className="text-center mb-3" style={{ color: '#333' }}>
                   Site Under Maintenance
                 </h2>
-                <p className="text-muted mb-4" style={{ fontSize: '16px', lineHeight: '1.6' }}>
-                  We're currently performing scheduled maintenance to improve your experience.
-                  Please check back soon.
-                </p>
-                <p className="text-muted" style={{ fontSize: '14px' }}>
-                  Thank you for your patience.
-                </p>
+                {liveModeData?.maintenance_message ? (
+                  <div className="mb-4">
+                    <p 
+                      className="text-muted" 
+                      style={{ fontSize: '16px', lineHeight: '1.6', whiteSpace: 'pre-line' }}
+                      dangerouslySetInnerHTML={{ __html: liveModeData.maintenance_message }}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-muted mb-4" style={{ fontSize: '16px', lineHeight: '1.6' }}>
+                      We're currently performing scheduled maintenance to improve your experience.
+                      Please check back soon.
+                    </p>
+                    <p className="text-muted" style={{ fontSize: '14px' }}>
+                      Thank you for your patience.
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
