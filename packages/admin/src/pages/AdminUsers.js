@@ -387,6 +387,7 @@ function AdminUsers() {
               style={{ display: showBalanceBar ? "block" : "none" }}
             >
               <ul className="row">
+                {isSuperAdmin && (
                 <li className="col-md-12">
                   <label className="col-md-8 text-left">
                     <a
@@ -401,6 +402,7 @@ function AdminUsers() {
                     </a>
                   </label>
                 </li>
+                )}
 {/* 
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
