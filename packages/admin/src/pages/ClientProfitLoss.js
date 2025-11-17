@@ -54,7 +54,7 @@ function ClientProfitLoss() {
         const response = await adminApi(
           `${ADMIN_BASE_PATH}/client-profit-loss`,
           "POST",
-          params
+          params, true
         );
 
         if (response.success) {

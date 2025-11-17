@@ -9,6 +9,7 @@ const AdminCreateAccount = () => {
   const navigate = useNavigate();
   const { user: currentAdminUser } = useSelector(state => state.admin);
   const currentUserRole = String(currentAdminUser?.role || '');
+  const currentUserPartnership = parseFloat(currentAdminUser?.partnership) || 100;
   
   const [formData, setFormData] = useState({
     // Personal Details
@@ -18,8 +19,8 @@ const AdminCreateAccount = () => {
     password_confirmation: '',
     city: '',
     phone: '',
-    downline_partnership: '100',
-    over_partnership: '0',
+    downline_partnership: currentUserPartnership.toString(),
+    over_partnership: '0', // Calculated as currentUserPartnership - downline_partnership
     expiry_date: '02-10-2035',
     
     // Account Details
@@ -133,6 +134,34 @@ const AdminCreateAccount = () => {
     fetchPrefixes();
   }, []);
 
+  // Update downline_partnership when prefix is selected
+  useEffect(() => {
+    if (formData.prefix_domain && formData.role === '2' && prefixes.length > 0) {
+      const selectedPrefix = prefixes.find(p => String(p.id) === String(formData.prefix_domain));
+      if (selectedPrefix && selectedPrefix.user_partnership !== undefined) {
+        const prefixPartnership = parseFloat(selectedPrefix.user_partnership) || 0;
+        
+        // Set downline_partnership to prefix's user_partnership, but don't exceed current admin user's partnership
+        const downlineValue = Math.min(Math.max(prefixPartnership, 0), currentUserPartnership);
+        
+        // Calculate over_partnership: current admin user's partnership - downline
+        const overValue = currentUserPartnership - downlineValue;
+        
+        setFormData(prev => ({
+          ...prev,
+          downline_partnership: downlineValue.toString(),
+          over_partnership: Math.max(overValue, 0).toString(),
+          cricket_partnership: downlineValue.toString(),
+          bookmaker_partnership: downlineValue.toString(),
+          session_partnership: downlineValue.toString(),
+          soccer_partnership: downlineValue.toString(),
+          tennis_partnership: downlineValue.toString(),
+          casino_partnership: downlineValue.toString()
+        }));
+      }
+    }
+  }, [formData.prefix_domain, formData.role, prefixes, currentUserPartnership]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     let newValue = type === 'checkbox' ? checked : value;
@@ -156,20 +185,21 @@ const AdminCreateAccount = () => {
     }
   };
 
-  const setPartnershipToAll = (value, defaultValue = '100') => {
-    const partnershipValue = value || defaultValue;
-    const numValue = parseInt(partnershipValue) || 0;
+  const setPartnershipToAll = (value, defaultValue = null) => {
+    const defaultPartnership = defaultValue || currentUserPartnership.toString();
+    const partnershipValue = value || defaultPartnership;
+    const numValue = parseFloat(partnershipValue) || 0;
     
-    // Ensure downline_partnership doesn't exceed 100
-    const downlineValue = Math.min(Math.max(numValue, 0), 100);
+    // Ensure downline_partnership doesn't exceed current admin user's partnership
+    const downlineValue = Math.min(Math.max(numValue, 0), currentUserPartnership);
     
-    // Calculate over_partnership: 100 - downline_partnership
-    const overValue = 100 - downlineValue;
+    // Calculate over_partnership: current admin user's partnership - downline_partnership
+    const overValue = currentUserPartnership - downlineValue;
     
     setFormData(prev => ({
       ...prev,
       downline_partnership: downlineValue.toString(),
-      over_partnership: overValue.toString(),
+      over_partnership: Math.max(overValue, 0).toString(),
       cricket_partnership: downlineValue.toString(),
       bookmaker_partnership: downlineValue.toString(),
       session_partnership: downlineValue.toString(),
@@ -198,11 +228,11 @@ const AdminCreateAccount = () => {
     
     // Downline Partnership Validation
     if (formData.role && formData.role !== '7') {
-      const downlineValue = parseInt(formData.downline_partnership) || 0;
+      const downlineValue = parseFloat(formData.downline_partnership) || 0;
       if (downlineValue < 0) {
         newErrors.downline_partnership = 'Downline Partnership cannot be less than 0';
-      } else if (downlineValue > 100) {
-        newErrors.downline_partnership = 'Downline Partnership cannot exceed 100';
+      } else if (downlineValue > currentUserPartnership) {
+        newErrors.downline_partnership = `Downline Partnership cannot exceed your partnership (${currentUserPartnership})`;
       }
     }
     
@@ -244,7 +274,12 @@ const AdminCreateAccount = () => {
           city: '',
           phone: '',
           role: '',
+          prefix_domain: '',
           credit_reference: '',
+          account_limit: '',
+          exposure_limit: '',
+          downline_partnership: currentUserPartnership.toString(),
+          over_partnership: '0',
           master_password: ''
         }));
         
@@ -426,36 +461,49 @@ const AdminCreateAccount = () => {
                     </div>
                   </div>
 
-                  {formData.role && formData.role !== '7' && (
-                    <div className="col-md-6 col-sm-12 hide_partner">
-                      <div className="form-group">
-                        <label htmlFor="downline_partnership">Down Line Partnership</label>
-                        <input 
-                          className={`form-control partnerships ${errors.downline_partnership ? 'is-invalid' : ''}`}
-                          type="number" 
-                          name="downline_partnership" 
-                          id="downline_partnership" 
-                          min="0"
-                          max="100"
-                          value={formData.downline_partnership}
-                          onInput={(e) => {
-                            const value = e.target.value;
-                            // Prevent values over 100
-                            if (value && parseInt(value) > 100) {
-                              e.target.value = '100';
-                              setPartnershipToAll('100', '100');
-                            } else {
-                              setPartnershipToAll(value, '100');
-                            }
-                          }}
-                          onChange={handleInputChange}
-                        />
-                        {errors.downline_partnership && (
-                          <div className="invalid-feedback">{errors.downline_partnership}</div>
-                        )}
+                  {formData.role && formData.role !== '7' && (() => {
+                    // Calculate max partnership based on selected prefix and current admin user's partnership
+                    let maxPartnership = currentUserPartnership;
+                    if (formData.prefix_domain && formData.role === '2' && prefixes.length > 0) {
+                      const selectedPrefix = prefixes.find(p => String(p.id) === String(formData.prefix_domain));
+                      if (selectedPrefix && selectedPrefix.user_partnership !== undefined) {
+                        const prefixPartnership = parseFloat(selectedPrefix.user_partnership) || currentUserPartnership;
+                        // Can't exceed the prefix's user_partnership, but also can't exceed current admin user's partnership
+                        maxPartnership = Math.min(prefixPartnership, currentUserPartnership);
+                      }
+                    }
+                    
+                    return (
+                      <div className="col-md-6 col-sm-12 hide_partner">
+                        <div className="form-group">
+                          <label htmlFor="downline_partnership">Down Line Partnership</label>
+                          <input 
+                            className={`form-control partnerships ${errors.downline_partnership ? 'is-invalid' : ''}`}
+                            type="number" 
+                            name="downline_partnership" 
+                            id="downline_partnership" 
+                            min="0"
+                            max={maxPartnership}
+                            value={formData.downline_partnership}
+                            onInput={(e) => {
+                              const value = e.target.value;
+                              // Prevent values over max partnership (prefix limit or current user partnership, whichever is lower)
+                              if (value && parseFloat(value) > maxPartnership) {
+                                e.target.value = maxPartnership.toString();
+                                setPartnershipToAll(maxPartnership.toString(), maxPartnership.toString());
+                              } else {
+                                setPartnershipToAll(value, maxPartnership.toString());
+                              }
+                            }}
+                            onChange={handleInputChange}
+                          />
+                          {errors.downline_partnership && (
+                            <div className="invalid-feedback">{errors.downline_partnership}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                   {formData.role && formData.role !== '7' && (
                     <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
                       <div className="form-group">
@@ -503,9 +551,19 @@ const AdminCreateAccount = () => {
                       >
                         <option value="">Select Role</option>
                         {/* Super Admin (role 6) can create all roles below it */}
-                        {currentUserRole === '6' && (
+
+                        {currentUserRole === '1'  &&  (
                           <>
                             <option value="2">Admin</option>
+                            <option value="3">Sub Admin</option>
+                            <option value="4">Super Master</option>
+                            <option value="5">Master</option>
+                            <option value="7">User</option>
+                          </>
+                        )}
+                        {currentUserRole === '6'&&  (
+                          <>
+                            
                             <option value="3">Sub Admin</option>
                             <option value="4">Super Master</option>
                             <option value="5">Master</option>
