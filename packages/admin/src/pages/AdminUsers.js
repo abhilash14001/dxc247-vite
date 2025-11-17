@@ -401,7 +401,7 @@ function AdminUsers() {
                     </a>
                   </label>
                 </li>
-
+{/* 
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
                     Upper Level Credit Reference :{" "}
@@ -413,14 +413,15 @@ function AdminUsers() {
                     balanceData.upper_level_credit_reference.toLocaleString()
                   )}
                 </span>
-                </li>
+                </li> */}
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
-                    Down level Occupy Balance :{" "}
+                    {/* Down level Occupy Balance :{" "} */}
+                    Down Line :{" "}
                   </label>
                 <span className="text-right col-md-4">{balanceData.down_level_occupy_balance.toLocaleString()}</span>
                 </li>
-                <li className="col-md-4">
+                {/* <li className="col-md-4">
                   <label className="col-md-8 text-left">
                     Down Level Credit Reference :{" "}
                   </label>
@@ -431,25 +432,28 @@ function AdminUsers() {
                     parseFloat(balanceData.down_level_credit_reference).toLocaleString()
                   )}
                 </span>
-                </li>
+                </li> */}
 
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
-                    Total Master Balance :{" "}
+                    {/* Total Master Balance :{" "} */}
+                    Given bal :{" "}
                   </label>
                 <span className="text-right col-md-4">{parseFloat(balanceData.total_master_balance).toLocaleString()}</span>
                 </li>
                 <li className="col-md-4">
-                  <label className="col-md-8 text-left">Upper Level : </label>
+                  {/* <label className="col-md-8 text-left">Upper Level : </label> */}
+                   <label className="col-md-8 text-left">Up Line : </label> 
                 <span className="text-right col-md-4">{balanceData.upper_level.toLocaleString()}</span>
                 </li>
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
-                    Down Level Profit/Loss :{" "}
+                    {/* Down Level Profit/Loss :{" "} */}
+                     Current P&L :{" "}
                   </label>
                 <span className="text-right col-md-4">{balanceData.down_level_profit_loss.toLocaleString()}</span>
                 </li>
-
+{/* 
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
                     Available Balance :{" "}
@@ -461,10 +465,11 @@ function AdminUsers() {
                     balanceData.available_balance.toLocaleString()
                   )}
                 </span>
-                </li>
+                </li> */}
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
-                    Available Balance With Profit/Loss :{" "}
+                    {/* Available Balance With Profit/Loss :{" "} */}
+                    Available bal :{" "}
                   </label>
                 <span className="text-right col-md-4">{balanceData.available_balance_with_profit_loss.toLocaleString()}</span>
                 </li>
