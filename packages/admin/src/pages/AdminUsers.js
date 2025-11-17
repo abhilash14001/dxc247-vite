@@ -601,7 +601,7 @@ function AdminUsers() {
                               </td>
                               <td>{user.credit_reference ? parseFloat(user.credit_reference).toLocaleString() : '0'}</td>
                               <td>{user.totalBalance ? parseFloat(user.totalBalance).toLocaleString() : '0'}</td>
-                              <td>{user.p_l ? parseFloat(user.p_l).toLocaleString() : '0'}</td>
+                              <td>{user.profit_loss ? parseFloat(user.profit_loss).toLocaleString() : '0'}</td>
                               <td>{user.exposure ? parseFloat(user.exposure).toLocaleString() : '0'}</td>
                               <td>{user.balance ? parseFloat(user.balance).toLocaleString() : '0'}</td>
                               <td className="ustatus">
