@@ -84,7 +84,7 @@ function AdminSportsList() {
         const transformedData = response.data.map(game => ({
           id: game.id,
           match_name: game.match_name,
-          match_date: game.created_at ? new Date(game.created_at).toLocaleDateString('en-US', {
+          match_date: game.match_date_time ? new Date(game.match_date_time).toLocaleDateString('en-US', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
