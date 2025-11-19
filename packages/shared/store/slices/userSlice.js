@@ -35,6 +35,8 @@ const userSlice = createSlice({
       state.exposure = 0;
       state.isAuthenticated = false;
       state.loading = false;
+      localStorage.clear();
+
     },
     setBalance: (state, action) => {
       state.balance = action.payload;

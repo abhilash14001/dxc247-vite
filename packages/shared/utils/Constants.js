@@ -661,12 +661,16 @@ function handleUnauthorized() {
     // For admin routes, dispatch admin logout
     import('../store/admin/adminSlice').then(({ logout }) => {
       store.dispatch(logout());
+      localStorage.clear();
+
       window.location.href = '/admin/login';
     });
   } else {
     // For regular user routes, dispatch user logout
     import('../store/slices/userSlice').then(({ logout }) => {
       store.dispatch(logout());
+      
+      localStorage.clear();
       window.location.href = '/login';
     });
   }
