@@ -147,17 +147,12 @@ const BallByBall = () => {
 
     } = useContext(SportsContext)
     const {getBalance} = useContext(AuthContext)
-    const {mybetModel} = useContext(CasinoContext)
-
+    
     const [hideLoading, setHideLoading] = useState(true)
     const [data, setData] = useState([]);
-    const [playerA, setPlayerA] = useState(0); // Example player A value
+    
     const [playerStatuses, setPlayerStatuses] = useState({});
-    const [playerA_Back, setPlayerA_Back] = useState(0);
-    const [playerB_Back, setPlayerB_Back] = useState(0);
-    const [playerA_Lay, setPlayerA_Lay] = useState(0);
-    const [playerB, setPlayerB] = useState(0); // Example player B value
-    const [playerB_Lay, setPlayerB_Lay] = useState(0);
+    
     
     // BallByBall runs betting options state
     const [runsOdds, setRunsOdds] = useState([]);
@@ -183,7 +178,7 @@ const BallByBall = () => {
                 visible: item.visible,
                 min: item.min,
                 max: item.max,
-                amounts: runsOdds.find(run => run.nat === item.nat)?.amounts || 0
+                amounts: runsOdds.find(run => run.nat === item.nat)?.amounts === 0 ? null : runsOdds.find(run => run.nat === item.nat)?.amounts || null
             }));
             setRunsOdds(runsData);
         }
@@ -336,7 +331,7 @@ const BallByBall = () => {
             getExBySingleTeamNameCasino(sportList.id, roundId, runOption.nat, match_id, betTypeForExposure).then(res => {
                 setRunsOdds(prev => {
                     const updated = [...prev];
-                    updated[index] = { ...updated[index], amounts: res.data || 0 };
+                    updated[index] = { ...updated[index], amounts: res.data === 0 ? null : res.data || null };
                     return updated;
                 });
             }).catch(error => {
@@ -461,6 +456,7 @@ const BallByBall = () => {
                                     <div className="market-row">
                                         <div className="market-nation-detail">
                                             <span className="market-nation-name pointer">{runOption.nat}</span>
+                                            <span className={`market-book float-end  ${runOption.amounts <=0 ? 'text-danger' : 'text-success'}`}>{runOption.amounts}</span>
                                         </div>
                                         <div className={`blb-box ${runOption.status === 'SUSPENDED' ? 'suspended-box' : ''}`}>
                                             <div className="market-odd-box back"
