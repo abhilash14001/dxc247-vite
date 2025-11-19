@@ -7,7 +7,7 @@ import {
      handleCashoutLogic,
      exposureCheck
 } from "@dxc247/shared/utils/Constants";
-// import {handleCashoutLogic} from "../../../Common_Functions/CashoutLogic";
+
 import {getActiveBets} from "@dxc247/shared/utils/betUtils";
 import React, {useContext, useEffect, useMemo, useState} from "react";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
@@ -32,10 +32,7 @@ function MatchOdds({
                    }) {
 
     const {runnerRowDefault, rootClassDefault, setBetType, setBetTypeFromArray, stakeValue,
-        loss,
-        profit,
-        profitData,
-
+        
     } = useContext(SportsContext);
     
     // Redux hook for setting cashout team
@@ -84,15 +81,9 @@ setBetOddValue(0);
             setDefaultTeamName,
             stakeValue,
             setPopupDisplay,
-            teamNames,
             teamNameCurrentBets,
-            loss,
-            profit,
-            profitData,
-            placingBets,
-            
-            
-            defaultBetType: 'ODDS'
+            runnerRowDefault,
+            defaultBetType: 'match_odds'
         });
         
         if (!success) {

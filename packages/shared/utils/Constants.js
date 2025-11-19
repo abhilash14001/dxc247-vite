@@ -62,13 +62,11 @@ export const handleCashoutLogic = async (params) => {
       setDefaultTeamName,
       stakeValue,
       setPopupDisplay,
-      teamNames,
+      
       teamNameCurrentBets,
-      loss,
-      profit,
-      profitData,
-      placingBets,
-      defaultBetType = "ODDS",
+      
+      runnerRowDefault,
+      defaultBetType = "match_odds",
     } = params;
 
     
@@ -136,9 +134,6 @@ export const handleCashoutLogic = async (params) => {
       });
     }
 
-    // Calculate total bet amount sum for this betType
-    const totalBetAmount = recentBets.reduce((sum, bet) => sum + (parseFloat(bet.stake) || 0), 0);
-    
     // Get stake values from Redux store or params if available
     const stakeValues = params.stakeValues || store.getState()?.commonData?.stake_values || {};
     
@@ -146,7 +141,7 @@ export const handleCashoutLogic = async (params) => {
     const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues);
 
     if (!smartCashoutResult) {
-      alert("No valid hedge found");
+      Notify("You are not eligible for cashout", null, null, "danger");
       return false;
     }
 
@@ -180,10 +175,14 @@ export const handleCashoutLogic = async (params) => {
 
     // setup UI
     setBetType(betType);
+    
     setBetTypeFromArray(defaultBetType);
+    
     setBetOddValue(firstBet.hedgeOdds);
     setbackOrLay(firstBet.hedgeSide);
-    setTeam(defaultBetType === "ODDS" ? "MATCH_ODDS" : defaultBetType.toUpperCase());
+    runnerRowDefault.current = firstBet.hedgeSide.toLowerCase() === 'back' ? 2 : 0;
+    
+    setTeam(defaultBetType === "match_odds" ? "MATCH_ODDS" : defaultBetType.toUpperCase());
     setDefaultTeamName.current = firstBet.team;
     setPopupDisplay(true);
 

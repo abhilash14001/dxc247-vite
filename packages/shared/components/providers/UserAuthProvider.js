@@ -93,7 +93,7 @@ export const UserAuthProvider = (props) => {
             balanceInterval.current = setInterval(async () => {
                 try {
                     const response = await getBalance();
-                    console.log('response is balance ', response)
+                    
                     if (response && response.data) {
                         // Continue to next interval on success
                         return;

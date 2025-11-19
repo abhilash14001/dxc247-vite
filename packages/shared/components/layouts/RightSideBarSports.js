@@ -327,15 +327,19 @@ const RightSideBarSports = ({
 
     let betTypeis = betTypeFromArray;
 
+
     const globalMatch = globalMname
       ? Object.values(changeDataRef.current).find(
           (item) => item.mname === globalMname
         )
       : null;
-
+    
     const findTeamGlobal = globalMatch
       ? globalMatch?.section.find((item) => item.nat.trim() === teamm.trim())
       : null;
+      
+
+
     return (
       changeDataRef.current[betTypeis]?.section.find(
         (item) => item.nat.trim() === teamm.trim()
@@ -355,6 +359,8 @@ const RightSideBarSports = ({
           ? "odd"
           : "even"
         : backOrLay;
+
+        
     let match_odd = datafound?.[backOrLay]?.[runnerRowDefault.current];
 
     const minMaxCheck = () => {
@@ -437,9 +443,14 @@ const RightSideBarSports = ({
               : "even"
             : backOrLay;
 
+            
         const match_odd = {
-          ...datafound[backOrLay]?.[runnerRowDefault.current],
+          ...datafound?.[backOrLay]?.[runnerRowDefault.current],
+
         };
+
+
+        
 
         if (datafound?.gstatus === "SUSPENDED" && datafound?.gstatus !== "") {
           Notify("Bet not Confirm. Game Suspended", null, null, "danger");
@@ -448,6 +459,7 @@ const RightSideBarSports = ({
           return false;
         }
 
+        
         if (match_odd) {
           if (backOrLay === "back" && odds > match_odd.odds) {
             Notify("Odds Value change, Bet not Confirm!", null, null, "danger");

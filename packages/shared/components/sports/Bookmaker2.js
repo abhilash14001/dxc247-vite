@@ -3,7 +3,6 @@ import {
     getSize,
     organiseOdds,
     getExByColor,
-    handleShowRules,
     generateBackAndLayFunction,
     handleCashoutLogic,
     exposureCheck
@@ -21,23 +20,21 @@ function Bookmaker2({
     oddsChange,
     setBetOddValue,
     setbackOrLay,
-    teamNames,
+    
     setDefaultTeamName,
     teamNameCurrentBets = {},
     setPopupDisplay,
     bookmakerTeamData,
-    placingBets = {},
+    teamNames,
     setMaxValue = null,
     setMinValue = null,
     
 }) {
-    const { runnerRowDefault, rootClassDefault, setBetType,
+    const { rootClassDefault, setBetType,
         setBetTypeFromArray,
-        loss,
-        profit,
-        profitData,
         stakeValue,
-        betType, // Add this to see current state
+        
+        runnerRowDefault,
     } = useContext(SportsContext);
                     
     
@@ -86,12 +83,8 @@ function Bookmaker2({
             setDefaultTeamName,
             stakeValue,
             setPopupDisplay,
-            teamNames,
             teamNameCurrentBets,
-            loss,
-            profit,
-            profitData,
-            placingBets,
+            runnerRowDefault,
             
             defaultBetType: 'BOOKMAKER2',
             

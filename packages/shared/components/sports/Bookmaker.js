@@ -90,13 +90,10 @@ function Bookmaker({
       setDefaultTeamName,
       stakeValue,
       setPopupDisplay,
-      teamNames,
+      
       teamNameCurrentBets,
-      loss,
-      profit,
-      profitData,
-      placingBets,
-
+      runnerRowDefault,
+      
       defaultBetType: "BOOKMAKER",
     });
 

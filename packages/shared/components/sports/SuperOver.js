@@ -31,9 +31,7 @@ function SuperOver({
                    }) {
 
     const {runnerRowDefault, rootClassDefault, setBetType, setBetTypeFromArray, stakeValue,
-        loss,
-        profit,
-        profitData,
+        
 
     } = useContext(SportsContext);
     
@@ -81,12 +79,8 @@ setBetOddValue(0);
             setDefaultTeamName,
             stakeValue,
             setPopupDisplay,
-            teamNames,
             teamNameCurrentBets,
-            loss,
-            profit,
-            profitData,
-            placingBets,
+            runnerRowDefault,
             
             
             defaultBetType: 'SUPER_OVER'

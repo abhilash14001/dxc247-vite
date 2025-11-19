@@ -83,13 +83,9 @@ const TiedMatch = ({
             setDefaultTeamName,
             stakeValue,
             setPopupDisplay,
-            teamNames,
+            
             teamNameCurrentBets,
-            loss,
-            profit,
-            profitData,
-            placingBets,
-
+            runnerRowDefault,
             defaultBetType: 'TIED_MATCH',
 
         });
