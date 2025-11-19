@@ -67,7 +67,7 @@ const AdminMatchHistory = () => {
         const response = await adminApi(
           `${ADMIN_BASE_PATH}/sports-history`,
           "POST",
-          params
+          params, true
         );
 
         if (response.success) {
@@ -124,7 +124,7 @@ const AdminMatchHistory = () => {
       const response = await adminApi(
         `${ADMIN_BASE_PATH}/rollback-sports-result`,
         "POST",
-        { sport_id: sportId }
+        { sport_id: sportId }, true
       );
 
       if (response.success) {
