@@ -163,7 +163,7 @@ export const handleCashoutLogic = async (params) => {
       if (marketTeam) {
         hedgeOddsDisplay = marketTeam.odds;
       } else {
-        alert("Unable to get display odds for hedge bet");
+        Notify("You are not eligible for cashout", null, null, "danger");
         return false;
       }
     }
@@ -702,7 +702,8 @@ export const getSize = (number = "", isConvert = false) => {
 };
 
 export const getExByColor = (amount, returnZero = false) => {
-  if (amount > 0) {
+  
+  if (amount >= 0) {
     return (
       <b>
         <span className="teamEx" style={{ color: "green" }}>
@@ -959,7 +960,7 @@ export async function getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNames) {
         { 
           id: id, 
           bet_types: betTypes,  // Array of bet types
-          teamnames: teamNames 
+          
         }
       );
       
@@ -1058,29 +1059,43 @@ export async function getExByTeamNameForAllBetTypes(
   
   // Get bet types from setFunctions keys (these are the actual bet types we want to fetch)
   const betTypes = Object.keys(setFunctions);
-  const allTeamNames = new Set();
+  const groupedTeams = {}; // <-- instead of allTeamNames
   
-
-
-  
-  // Transform 'bookmaker 2' key to 'bookmaker2'
+  // --- FIX "bookmaker 2" → "bookmaker2" safely ---
   if (data && data['bookmaker 2']) {
     data.bookmaker2 = data['bookmaker 2'];
     delete data['bookmaker 2'];
+  
+    // Also fix betTypes array (because Object.keys(setFunctions) may still contain "bookmaker 2")
+    const index = betTypes.indexOf('bookmaker 2');
+    if (index !== -1) {
+      betTypes[index] = 'bookmaker2';
+    }
   }
   
-  // Collect all team names from all bet types in the data
+  // --- Collect team names for each betType ---
   betTypes.forEach(betType => {
-    if (data[betType]?.section) {
-      data[betType].section.forEach(oddsArr => {
-        
-        allTeamNames.add(oddsArr.nat.trim());
-      });
-    }
+    groupedTeams[betType] = new Set(); // ← create set for each bet type
+  
+    const section = data?.[betType]?.section;
+    if (!Array.isArray(section)) return;
+  
+    section.forEach(oddsObj => {
+      if (oddsObj?.nat) {
+        groupedTeams[betType].add(String(oddsObj.nat).trim());
+      }
+    });
+  });
+  
+  // Convert Sets → Arrays
+  Object.keys(groupedTeams).forEach(bt => {
+    groupedTeams[bt] = Array.from(groupedTeams[bt]);
   });
   
   
-  const teamNamesArray = Array.from(allTeamNames);
+  
+  
+  const teamNamesArray = Array.from(groupedTeams);
   
   // Initialize data structure for each bet type
   betTypes.forEach(betType => {
@@ -1109,7 +1124,7 @@ export async function getExByTeamNameForAllBetTypes(
 
   try {
     // Make single bulk API call for all .then and bet types
-    const response = await getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNamesArray);
+    const response = await getExByTeamNamesAndBetTypesBulk(id, groupedTeams);
     
     
     // Process the response

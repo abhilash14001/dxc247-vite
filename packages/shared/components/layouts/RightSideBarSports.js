@@ -414,7 +414,7 @@ const RightSideBarSports = ({
       } else if (teamMinValue && teamMinValue > stakeValue.current.value) {
         setHideLoading(true);
 
-        Notify("Min Max Bet Limit Exceed1", null, null, "danger");
+        Notify("Min Max Bet Limit Exceed", null, null, "danger");
         resetAll();
 
         return false;

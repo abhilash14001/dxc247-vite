@@ -416,13 +416,63 @@ function AdminUsers() {
                   )}
                 </span>
                 </li> */}
-                <li className="col-md-4">
+                {/* Row 1 */}
+                <li className="col-md-3">
+                  <label className="col-md-8 text-left">
+                    {/* Total Master Balance :{" "} */}
+                    Given bal :{" "}
+                  </label>
+                <span className="text-right col-md-4">{parseFloat(balanceData.total_master_balance).toLocaleString()}</span>
+                </li>
+                <li className="col-md-3">
+                  {/* <label className="col-md-8 text-left">Upper Level : </label> */}
+                   <label className="col-md-8 text-left">Up Line : </label> 
+                <span className="text-right col-md-4">{balanceData.upper_level.toLocaleString()}</span>
+                </li>
+                <li className="col-md-3">
+                  <label className="col-md-8 text-left">
+                    {/* Down Level Profit/Loss :{" "} */}
+                     Current P&L :{" "}
+                  </label>
+                <span className="text-right col-md-4">{balanceData.down_level_profit_loss.toLocaleString()}</span>
+                </li>
+
+             
+                <li className="col-md-3">
+                  <label className="col-md-8 text-left">
+                    My P&L :{" "}
+                  </label>
+                <span className="text-right col-md-4">{balanceData.my_profit_loss.toLocaleString()}</span>
+                </li>
+               
+                {/* Row 2 */}
+                <li className="col-md-3">
+                  <label className="col-md-8 text-left">
+                    {/* Available Balance With Profit/Loss :{" "} */}
+                    Available :{" "}
+                  </label>
+                <span className="text-right col-md-4">{balanceData.available_balance_with_profit_loss.toLocaleString()}</span>
+                </li>
+
+                <li className="col-md-3">
                   <label className="col-md-8 text-left">
                     {/* Down level Occupy Balance :{" "} */}
                     Down Line :{" "}
                   </label>
                 <span className="text-right col-md-4">{balanceData.down_level_occupy_balance.toLocaleString()}</span>
                 </li>
+                <li className="col-md-3">
+                  <label className="col-md-8 text-left">
+                    Exposure :{" "}
+                  </label>
+                <span className="text-right col-md-4">{balanceData?.child_users_exposure_sum?.toLocaleString()}</span>
+                </li>
+
+              
+                
+
+                   
+             
                 {/* <li className="col-md-4">
                   <label className="col-md-8 text-left">
                     Down Level Credit Reference :{" "}
@@ -435,26 +485,6 @@ function AdminUsers() {
                   )}
                 </span>
                 </li> */}
-
-                <li className="col-md-4">
-                  <label className="col-md-8 text-left">
-                    {/* Total Master Balance :{" "} */}
-                    Given bal :{" "}
-                  </label>
-                <span className="text-right col-md-4">{parseFloat(balanceData.total_master_balance).toLocaleString()}</span>
-                </li>
-                <li className="col-md-4">
-                  {/* <label className="col-md-8 text-left">Upper Level : </label> */}
-                   <label className="col-md-8 text-left">Up Line : </label> 
-                <span className="text-right col-md-4">{balanceData.upper_level.toLocaleString()}</span>
-                </li>
-                <li className="col-md-4">
-                  <label className="col-md-8 text-left">
-                    {/* Down Level Profit/Loss :{" "} */}
-                     Current P&L :{" "}
-                  </label>
-                <span className="text-right col-md-4">{balanceData.down_level_profit_loss.toLocaleString()}</span>
-                </li>
 {/* 
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
@@ -468,20 +498,9 @@ function AdminUsers() {
                   )}
                 </span>
                 </li> */}
-                <li className="col-md-4">
-                  <label className="col-md-8 text-left">
-                    {/* Available Balance With Profit/Loss :{" "} */}
-                    Available bal :{" "}
-                  </label>
-                <span className="text-right col-md-4">{balanceData.available_balance_with_profit_loss.toLocaleString()}</span>
-                </li>
-                <li className="col-md-4">
-                  <label className="col-md-8 text-left">
-                    My Profit/Loss :{" "}
-                  </label>
-                <span className="text-right col-md-4">{balanceData.my_profit_loss.toLocaleString()}</span>
-                </li>
               </ul>
+            
+              
             </div>
           </div>
         </div>
@@ -572,14 +591,15 @@ function AdminUsers() {
           <thead>
             <tr>
                             <th>User Name</th>
-                            <th>Credit Reference</th>
+                            
                             <th>Total Balance</th>
                             <th>Client(P/L)</th>
                             <th>Exposure</th>
                             <th>Available Balance</th>
+                            <th>Exposure Limit</th>
+
                             <th>U St</th>
                             <th>B St</th>
-                            <th>Exposure Limit</th>
                             <th>Partnership (%)</th>
                             <th>Account Type</th>
                             <th className="noExport text-center">Action</th>
@@ -606,11 +626,13 @@ function AdminUsers() {
                                   {user.username}
                                 </a>
                               </td>
-                              <td>{user.credit_reference ? parseFloat(user.credit_reference).toLocaleString() : '0'}</td>
+                              {/* <td>{user.credit_reference ? parseFloat(user.credit_reference).toLocaleString() : '0'}</td> */}
                               <td>{user.totalBalance ? parseFloat(user.totalBalance).toLocaleString() : '0'}</td>
                               <td>{user.profit_loss ? parseFloat(user.profit_loss).toLocaleString() : '0'}</td>
                               <td>{user.exposure ? parseFloat(user.exposure).toLocaleString() : '0'}</td>
                               <td>{user.balance ? parseFloat(user.balance).toLocaleString() : '0'}</td>
+                              <td>{user?.exposure_limit || 0}</td>
+
                               <td className="ustatus">
                                 <label className="form-check-label">
                                   <input
@@ -633,7 +655,6 @@ function AdminUsers() {
                                   <span className="checkmark"></span>
                                 </label>
                               </td>
-                              <td>{user?.exposure_limit || 0}</td>
                               <td>{user?.partnership ? parseFloat(user.partnership).toLocaleString() : '0'}%</td>
                               <td>{user.type}</td>
                               <td className="actions text-center">

@@ -236,7 +236,7 @@ setBetOddValue(0);
                                         }
 
                                         const runnerRow = `table-row-${sportList.match_id}-${key}`;
-                                        const teamEx = oddsTeamData?.[teamName] ?? 0;
+                                        const teamEx = oddsTeamData?.[teamName] ?? null;
                                         
 
                                         // Organize odds only if they exist
@@ -348,7 +348,7 @@ setBetOddValue(0);
                                                     <span className="market-nation-name">{teamName}</span>
                                                     <div className="market-nation-book">
                                                         <span className={`teamEx`}>
-                                                            {getExByColor(teamEx, true)}
+                                                            {getExByColor(teamEx)}
                                                         </span>
                                                         <span
                                                             className={`${placingBets?.['ODDS']?.[teamName] < 0 ? 'market-live-book d-none d-xl-block text-danger' : 'market-live-book d-none d-xl-block text-success '} `}>

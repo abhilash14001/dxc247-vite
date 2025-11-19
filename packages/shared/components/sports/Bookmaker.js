@@ -394,7 +394,7 @@ function Bookmaker({
               const teamName = oddsArr.nat.trim() || "";
               teamNames.current["BOOKMAKER"][teamName] = teamName;
 
-              const teamEx = bookmakerTeamData?.[teamName] ?? 0;
+              const teamEx = bookmakerTeamData?.[teamName] ?? null;
 
               if (!allTeamName.current["BOOKMAKER"]) {
                 allTeamName.current["BOOKMAKER"] = [];

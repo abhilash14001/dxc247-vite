@@ -117,6 +117,7 @@ const Teen9 = () => {
             keys.forEach((playerName) => {
                 getExBySingleTeamNameCasino(sportList.id, data.mid, playerName, match_id, getPlayerNameSuffix(playerName))
                     .then(res => {
+                        
                         // Update playerAmounts based on the response
                         setPlayerAmounts(prev => ({
                             ...prev,
@@ -350,6 +351,21 @@ const Teen9 = () => {
         return { min: 100, max: 100000 }; // Default fallback
     };
 
+    // Helper function to get player amount and determine color class
+    const getPlayerAmount = (team, status) => {
+        const key = `${team} ${status}`;
+        const amount = playerAmounts[key];
+        if (amount === '' || amount === null || amount === undefined) {
+            return { value: '', className: '' };
+        }
+        const numValue = parseFloat(amount);
+        if (numValue === 0) {
+            return { value: '', className: '' };
+        }
+        const className = numValue >= 0 ? 'text-success' : 'text-danger';
+        return { value: numValue.toLocaleString(), className };
+    };
+
     return (
         <CasinoLayout ruleImage={ruleImage} hideLoading={hideLoading} isBack={backOrLay} teamname={teamname} handleStakeChange={casinoBetDataNew} odds={odds}
                       stakeValue={stakeValue} setOdds={setOdds} placeBet={placeBet}
@@ -379,12 +395,24 @@ const Teen9 = () => {
                                     </div>
                                     <div className={`casino-odds-box back ${playerStatuses[`Tiger ${status}`]}`} onClick={() => openPopup('back', "Tiger " + status, oddsData[status]?.Tiger, status, 'Tiger')}>
                                         <span className="casino-odds">{oddsData[status]?.Tiger}</span>
+                                        {(() => {
+                                            const { value, className } = getPlayerAmount('Tiger', status);
+                                            return value ? <div className={`casino-nation-book ${className}`}>{value}</div> : null;
+                                        })()}
                                     </div>
                                     <div className={`casino-odds-box back ${playerStatuses[`Lion ${status}`]}`} onClick={() => openPopup('back', "Lion " + status, oddsData[status]?.Lion, status, 'Lion')}>
                                         <span className="casino-odds">{oddsData[status]?.Lion}</span>
+                                        {(() => {
+                                            const { value, className } = getPlayerAmount('Lion', status);
+                                            return value ? <div className={`casino-nation-book ${className}`}>{value}</div> : null;
+                                        })()}
                                     </div>
                                     <div className={`casino-odds-box back ${playerStatuses[`Dragon ${status}`]}`} onClick={() => openPopup('back', "Dragon " + status, oddsData[status]?.Dragon, status, 'Dragon')}>
                                         <span className="casino-odds">{oddsData[status]?.Dragon}</span>
+                                        {(() => {
+                                            const { value, className } = getPlayerAmount('Dragon', status);
+                                            return value ? <div className={`casino-nation-book ${className}`}>{value}</div> : null;
+                                        })()}
                                     </div>
                                 </div>
                             ))}

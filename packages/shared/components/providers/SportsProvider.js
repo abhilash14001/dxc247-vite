@@ -66,6 +66,7 @@ export const SportsProvider = (props) => {
       const storedData = localStorage.getItem(storageKey);
       const arrayjson = storedData ? JSON.parse(storedData) : {};
 
+      
       switch (value) {
         case "ODDS":
           if (Object.keys(arrayjson).length > 0) {
