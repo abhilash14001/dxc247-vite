@@ -87,9 +87,9 @@ export const UserAuthProvider = (props) => {
 
     useEffect(() => {
         getBalance();
-        console.log('balance interval is ', balanceInterval.current)
+        
         if (balanceInterval.current == null) {
-            console.log('balance interval is set')
+            
             balanceInterval.current = setInterval(async () => {
                 try {
                     const response = await getBalance();

@@ -322,11 +322,13 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   const pushLay = (team) => {
     const other = teams.find(t => t !== team);
     const market = layMap[team];
+    
     if (!market || !other) return;
 
     const dec = displayToDecimal(market.odds);
     const numerator = netIfWin[team] - netIfWin[other];
     const theo = dec > 0 ? numerator / dec : NaN;
+    console.log('theo is ', theo)
     
     if (theo <= 0 || !isFinite(theo)) return;
 
@@ -345,6 +347,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
       diff: Math.abs(netTeamWin - netOtherWin)
     });
   };
+
 
   teams.forEach(t => {
     pushBack(t);
@@ -403,6 +406,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
         });
       }
     }
+    
 
     if (!candidates.length) {
       const netValue = round2(netIfWin[team]);
@@ -461,7 +465,9 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     return avgA - avgB;
   });
 
-  const best = candidates[0];
+
+  const best =  candidates.reduce((min, c) => c.diff < min.diff ? c : min, candidates[0]);
+
   const netTeam = round2(best.resultingNets[teams[0]]);
   const netOther = round2(best.resultingNets[teams[1]]);
   const resultingNetSigned = round2((netTeam + netOther) / 2);

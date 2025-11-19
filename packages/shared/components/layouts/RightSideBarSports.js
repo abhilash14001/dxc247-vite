@@ -472,7 +472,32 @@ const RightSideBarSports = ({
             resetAll();
             return false;
           }
+          // Calculate profit
           calculateProfit(stakeValue.current.value, match_odd.odds);
+
+          // Define and calculate loss
+          // calculateLoss function rewritten to match the loss calculation logic from the reference in file_context_0
+          const calculateLoss = (stake, odds) => {
+            const actualStake = parseFloat(stake);
+            const actualOdds = parseFloat(odds);
+
+            const losslayvalue = (actualOdds * actualStake) / 100;
+            const lossvalue = (actualOdds - 1) * actualStake;
+
+            if (backOrLay === "back") {
+              // For "back" bet: loss is the stake
+              return parseFloat(setdecimalPoint(actualStake));
+            } else if (backOrLay === "lay" && betType === "ODDS") {
+              // For "lay" bet in "ODDS" type: loss is (odds - 1) * stake
+              return parseFloat(setdecimalPoint(lossvalue));
+            } else {
+              // For "lay" in other types: (odds * stake) / 100
+              return parseFloat(setdecimalPoint(losslayvalue));
+            }
+          };
+           loss.current = calculateLoss(stakeValue.current.value, match_odd.odds);
+          
+          // (Optional) Use `loss` value if needed, for display or further logic
           odds = match_odd.odds;
         }
         return true;
