@@ -20,12 +20,13 @@ function Bookmaker2({
     oddsChange,
     setBetOddValue,
     setbackOrLay,
-    
+    teamNames,
     setDefaultTeamName,
     teamNameCurrentBets = {},
     setPopupDisplay,
     bookmakerTeamData,
-    teamNames,
+    placingBets = [],
+  
     setMaxValue = null,
     setMinValue = null,
     
