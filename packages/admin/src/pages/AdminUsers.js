@@ -440,10 +440,12 @@ function AdminUsers() {
                   </label>
                 <span className="text-right col-md-4">{parseFloat(balanceData.total_master_balance).toLocaleString()}</span>
                 </li>
+                {!isSuperAdmin && (
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">Upper Level : </label>
                 <span className="text-right col-md-4">{balanceData.upper_level.toLocaleString()}</span>
                 </li>
+                )}
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
                     Down Level Profit/Loss :{" "}
@@ -609,7 +611,7 @@ function AdminUsers() {
 
                               {/* <td>{user.credit_reference ? parseFloat(user.credit_reference).toLocaleString() : '0'}</td> */}
                               <td>{user.totalBalance ? parseFloat(user.totalBalance).toLocaleString() : '0'}</td>
-                              <td>{user.profit_loss ? parseFloat(user.profit_loss).toLocaleString() : '0'}</td>
+                              <td>{parseFloat(user.totalBalance) - parseFloat(user.credit_reference)}</td>
                               <td>{user.exposure ? parseFloat(user.exposure).toLocaleString() : '0'}</td>
                               <td>{user.balance ? parseFloat(user.balance).toLocaleString() : '0'}</td>
                               <td>{user?.exposure_limit || 0}</td>
