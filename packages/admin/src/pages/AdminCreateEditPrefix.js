@@ -571,7 +571,7 @@ const AdminCreateEditPrefix = () => {
                     type="password"
                     placeholder="Transaction Password"
                     name="master_password"
-                    className="form-control"
+                    className="form-control text-right"
                     value={formData.master_password}
                     onChange={(e) => handleInputChange('master_password', e.target.value)}
                     required

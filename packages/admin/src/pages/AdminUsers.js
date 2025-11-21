@@ -440,12 +440,16 @@ function AdminUsers() {
                   </label>
                 <span className="text-right col-md-4">{parseFloat(balanceData.total_master_balance).toLocaleString()}</span>
                 </li>
-                {!isSuperAdmin && (
+                {/* {!isSuperAdmin && (
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">Upper Level : </label>
                 <span className="text-right col-md-4">{balanceData.upper_level.toLocaleString()}</span>
                 </li>
-                )}
+                )} */}
+                    <li className="col-md-4">
+                  <label className="col-md-8 text-left">Upper Level : </label>
+                <span className="text-right col-md-4">{balanceData.upper_level.toLocaleString()}</span>
+                </li>
                 <li className="col-md-4">
                   <label className="col-md-8 text-left">
                     Down Level Profit/Loss :{" "}

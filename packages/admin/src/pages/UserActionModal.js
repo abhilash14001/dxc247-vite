@@ -462,7 +462,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                   id="credit_password"
                   value={formData.transaction_password || ''}
                   onChange={handleInputChange}
-                  className={`${errors.transaction_password ? 'is-invalid' : ''}`}
+                  className={`text-right ${errors.transaction_password ? 'is-invalid' : ''}`}
                   maxLength="15"
                   placeholder="Enter transaction password"
                   required
@@ -554,7 +554,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                   id="mpassword"
                   value={formData.mpassword || ''}
                   onChange={handleInputChange}
-                  className={errors.mpassword ? 'is-invalid' : ''}
+                  className={`text-right ${errors.mpassword ? 'is-invalid' : ''}`}
                   required
                 />
                 {errors.mpassword && (
@@ -643,7 +643,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                   id="wmpassword"
                   value={formData.wmpassword || ''}
                   onChange={handleInputChange}
-                  className={errors.wmpassword ? 'is-invalid' : ''}
+                  className={`text-right ${errors.wmpassword ? 'is-invalid' : ''}`}
                   required
                 />
                 {errors.wmpassword && (
@@ -705,7 +705,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                   id="empassword"
                   value={formData.empassword || ''}
                   onChange={handleInputChange}
-                  className={errors.empassword ? 'is-invalid' : ''}
+                  className={`text-right ${errors.empassword ? 'is-invalid' : ''}`}
                   required
                 />
                 {errors.empassword && (
@@ -772,6 +772,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                   id="pmpassword"
                   value={formData.pmpassword || ''}
                   onChange={handleInputChange}
+                  className="text-right"
                   required
                 />
                 {errors.pmpassword && (
@@ -885,6 +886,7 @@ const UserActionModal = ({ modal, onClose, onSuccess }) => {
                   id="smpassword" 
                   value={formData.smpassword || ''}
                   onChange={handleInputChange}
+                  className="text-right"
                   required 
                 />
                 {errors.smpassword && (

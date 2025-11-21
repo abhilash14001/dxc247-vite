@@ -108,7 +108,7 @@ const AccountStatement = () => {
             cr: extractNumericValue(row.credit),
             dr: extractNumericValue(row.debit),
             balance: extractNumericValue(row.balance),
-            from_to: row['From-To'] || row.from_to,
+            
           }));
           
           setData(transformedData);
@@ -340,7 +340,7 @@ const AccountStatement = () => {
                       <th>Debit</th>
                       <th>Description</th>
                       <th>Balance</th>
-                      <th>From-To</th>
+                      {/* <th>From-To</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -382,7 +382,7 @@ const AccountStatement = () => {
                               {formatCurrency(row.balance)}
                             </span>
                           </td>
-                          <td>{row.from_to || '-'}</td>
+                          
                         </tr>
                       ))
                     ) : (

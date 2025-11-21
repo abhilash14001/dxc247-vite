@@ -20,7 +20,7 @@ const AdminCreateAccount = () => {
     city: '',
     phone: '',
     downline_partnership: currentUserPartnership.toString(),
-    over_partnership: '0', // Calculated as currentUserPartnership - downline_partnership
+    over_partnership: '0', // Will be calculated as 100 - upperLevelPartnership - downline_partnership
     expiry_date: '02-10-2035',
     
     // Account Details
@@ -111,6 +111,54 @@ const AdminCreateAccount = () => {
   const [loading, setLoading] = useState(false);
   const [prefixes, setPrefixes] = useState([]);
   const [loadingPrefixes, setLoadingPrefixes] = useState(false);
+  const [upperLevelPartnership, setUpperLevelPartnership] = useState(100); // Default to 100, will be fetched from API
+
+  // Fetch current admin user's details to get parent partnership (upper level)
+  useEffect(() => {
+    // Super Admin (role 1) doesn't have upper level partnership - they're at the top
+    if (currentUserRole === '1') {
+      setUpperLevelPartnership(0);
+      return;
+    }
+    
+    const fetchCurrentUserDetails = async () => {
+      if (currentAdminUser?.id) {
+        try {
+          const response = await adminApi(`${ADMIN_BASE_PATH}/user/details/${currentAdminUser.id}`, 'GET', {}, true);
+          if (response.success && response.data) {
+            const userData = response.data;
+            
+            // Get parent partnership - this is the upper level partnership
+            if (userData?.settings?.Cricket) {
+              const parentPartnership = userData?.settings?.Cricket?.partnership;
+              
+              if (parentPartnership !== undefined && parentPartnership !== null) {
+                const parsedValue = parseFloat(parentPartnership);
+                if (!isNaN(parsedValue)) {
+                  setUpperLevelPartnership(parsedValue);
+                } else {
+                  console.warn('Parent partnership value is not a valid number:', parentPartnership);
+                  setUpperLevelPartnership(100);
+                }
+              } else {
+                console.warn('Parent partnership found but no valid partnership value');
+                setUpperLevelPartnership(100);
+              }
+            } else {
+              // If no parent partnership, default to 100
+              console.warn('No parent_partnership found in user data');
+              setUpperLevelPartnership(100);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching current user details:', error);
+          setUpperLevelPartnership(100); // Default to 100 on error
+        }
+      }
+    };
+    
+    fetchCurrentUserDetails();
+  }, [currentAdminUser?.id, currentUserRole]);
 
   // Fetch prefixes on component mount
   useEffect(() => {
@@ -134,6 +182,20 @@ const AdminCreateAccount = () => {
     fetchPrefixes();
   }, []);
 
+  // Calculate over_partnership whenever downline_partnership changes
+  // Formula: Up Line + Down Line + Our = 100
+  // So: Our = 100 - Up Line - Down Line
+  useEffect(() => {
+    if (formData.role && formData.role !== '7') {
+      const downlineValue = parseFloat(formData.downline_partnership) || 0;
+      const overValue = 100 - upperLevelPartnership - downlineValue;
+      setFormData(prev => ({
+        ...prev,
+        over_partnership: overValue.toString()
+      }));
+    }
+  }, [formData.downline_partnership, formData.role, upperLevelPartnership]);
+
   // Update downline_partnership when prefix is selected
   useEffect(() => {
     if (formData.prefix_domain && formData.role === '2' && prefixes.length > 0) {
@@ -141,16 +203,17 @@ const AdminCreateAccount = () => {
       if (selectedPrefix && selectedPrefix.user_partnership !== undefined) {
         const prefixPartnership = parseFloat(selectedPrefix.user_partnership) || 0;
         
-        // Set downline_partnership to prefix's user_partnership, but don't exceed current admin user's partnership
-        const downlineValue = Math.min(Math.max(prefixPartnership, 0), currentUserPartnership);
+        // Restrict downline so Our doesn't go negative
+        // Our = 100 - Up Line - Down Line, so Down Line max = 100 - Up Line
+        const maxDownline = 100 - upperLevelPartnership;
+        const downlineValue = Math.min(Math.max(prefixPartnership, 0), maxDownline);
         
-        // Calculate over_partnership: current admin user's partnership - downline
-        const overValue = currentUserPartnership - downlineValue;
-        
+        // Our = 100 - Up Line - Down Line
+        const overValue = 100 - upperLevelPartnership - downlineValue;
         setFormData(prev => ({
           ...prev,
           downline_partnership: downlineValue.toString(),
-          over_partnership: Math.max(overValue, 0).toString(),
+          over_partnership: overValue.toString(),
           cricket_partnership: downlineValue.toString(),
           bookmaker_partnership: downlineValue.toString(),
           session_partnership: downlineValue.toString(),
@@ -160,7 +223,7 @@ const AdminCreateAccount = () => {
         }));
       }
     }
-  }, [formData.prefix_domain, formData.role, prefixes, currentUserPartnership]);
+  }, [formData.prefix_domain, formData.role, prefixes, upperLevelPartnership]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -190,16 +253,18 @@ const AdminCreateAccount = () => {
     const partnershipValue = value || defaultPartnership;
     const numValue = parseFloat(partnershipValue) || 0;
     
-    // Ensure downline_partnership doesn't exceed current admin user's partnership
-    const downlineValue = Math.min(Math.max(numValue, 0), currentUserPartnership);
+    // Restrict downline so Our doesn't go negative
+    // Our = 100 - Up Line - Down Line, so Down Line max = 100 - Up Line
+    const maxDownline = 100 - upperLevelPartnership;
+    const downlineValue = Math.min(Math.max(numValue, 0), maxDownline);
     
-    // Calculate over_partnership: current admin user's partnership - downline_partnership
-    const overValue = currentUserPartnership - downlineValue;
+    // Our = 100 - Up Line - Down Line
+    const overValue = 100 - upperLevelPartnership - downlineValue;
     
     setFormData(prev => ({
       ...prev,
       downline_partnership: downlineValue.toString(),
-      over_partnership: Math.max(overValue, 0).toString(),
+      over_partnership: overValue.toString(),
       cricket_partnership: downlineValue.toString(),
       bookmaker_partnership: downlineValue.toString(),
       session_partnership: downlineValue.toString(),
@@ -227,12 +292,19 @@ const AdminCreateAccount = () => {
     if (!formData.credit_reference) newErrors.credit_reference = 'Credit Reference is required';
     
     // Downline Partnership Validation
+    // Formula: Up Line + Down Line + Our = 100
     if (formData.role && formData.role !== '7') {
       const downlineValue = parseFloat(formData.downline_partnership) || 0;
+      const upperLevelValue = upperLevelPartnership;
+      
+      // Calculate: Our = 100 - Up Line - Down Line
+      const calculatedOur = 100 - upperLevelValue - downlineValue;
+      
       if (downlineValue < 0) {
         newErrors.downline_partnership = 'Downline Partnership cannot be less than 0';
-      } else if (downlineValue > currentUserPartnership) {
-        newErrors.downline_partnership = `Downline Partnership cannot exceed your partnership (${currentUserPartnership})`;
+      } else if (calculatedOur < 0) {
+        const maxAllowed = 100 - upperLevelValue;
+        newErrors.downline_partnership = `Downline Partnership too high. Maximum allowed: ${maxAllowed} (100 - Up Line ${upperLevelValue})`;
       }
     }
     
@@ -462,14 +534,18 @@ const AdminCreateAccount = () => {
                   </div>
 
                   {formData.role && formData.role !== '7' && (() => {
-                    // Calculate max partnership based on selected prefix and current admin user's partnership
-                    let maxPartnership = currentUserPartnership;
+                    // Max downline = 100 - Up Line (so Our doesn't go negative)
+                    let maxPartnership = 100 - upperLevelPartnership;
+                    
+                    // Also consider prefix limit if role is Admin (role 2)
                     if (formData.prefix_domain && formData.role === '2' && prefixes.length > 0) {
                       const selectedPrefix = prefixes.find(p => String(p.id) === String(formData.prefix_domain));
                       if (selectedPrefix && selectedPrefix.user_partnership !== undefined) {
-                        const prefixPartnership = parseFloat(selectedPrefix.user_partnership) || currentUserPartnership;
-                        // Can't exceed the prefix's user_partnership, but also can't exceed current admin user's partnership
-                        maxPartnership = Math.min(prefixPartnership, currentUserPartnership);
+                        const prefixPartnership = parseFloat(selectedPrefix.user_partnership);
+                        if (prefixPartnership) {
+                          // Take the minimum of prefix limit and (100 - Up Line)
+                          maxPartnership = Math.min(prefixPartnership, maxPartnership);
+                        }
                       }
                     }
                     
@@ -487,7 +563,7 @@ const AdminCreateAccount = () => {
                             value={formData.downline_partnership}
                             onInput={(e) => {
                               const value = e.target.value;
-                              // Prevent values over max partnership (prefix limit or current user partnership, whichever is lower)
+                              // Restrict to max so Our doesn't go negative
                               if (value && parseFloat(value) > maxPartnership) {
                                 e.target.value = maxPartnership.toString();
                                 setPartnershipToAll(maxPartnership.toString(), maxPartnership.toString());
@@ -515,6 +591,23 @@ const AdminCreateAccount = () => {
                           className="form-control partnerships" 
                           id="over_partnership" 
                           value={formData.over_partnership}
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {/* Hide Upper Level Partnership for Super Admin (role 1) */}
+                  {formData.role && formData.role !== '7' && currentUserRole !== '1' && (
+                    <div className="col-md-6 col-sm-12 partnership upper_level_partnership_form hide_partner">
+                      <div className="form-group">
+                        <label htmlFor="upper_level_partnership">UPPER LEVEL PARTNERSHIP</label>
+                        <input 
+                          type="number" 
+                          name="upper_level_partnership" 
+                          readOnly 
+                          className="form-control partnerships" 
+                          id="upper_level_partnership" 
+                          value={upperLevelPartnership}
                           required
                         />
                       </div>
@@ -1412,7 +1505,7 @@ const AdminCreateAccount = () => {
                     id="master_password" 
                     value={formData.master_password}
                     type="password" 
-                    className={`form-control ${errors.master_password ? 'is-invalid' : ''}`}
+                    className={`form-control text-right ${errors.master_password ? 'is-invalid' : ''}`}
                     onChange={handleInputChange}
                   />
                   {errors.master_password && <div className="invalid-feedback">{errors.master_password}</div>}

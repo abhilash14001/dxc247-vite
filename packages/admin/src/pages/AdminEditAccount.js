@@ -275,28 +275,6 @@
       }
     };
 
-    const setPartnershipToAll = (value, defaultValue = '100') => {
-      const partnershipValue = value || defaultValue;
-      const numValue = parseInt(partnershipValue) || 0;
-      
-      // Ensure downline_partnership doesn't exceed 100
-      const downlineValue = Math.min(Math.max(numValue, 0), 100);
-      
-      // Calculate over_partnership: 100 - downline_partnership
-      const overValue = 100 - downlineValue;
-      
-      setFormData(prev => ({
-        ...prev,
-        downline_partnership: downlineValue.toString(),
-        over_partnership: overValue.toString(),
-        cricket_partnership: downlineValue.toString(),
-        bookmaker_partnership: downlineValue.toString(),
-        session_partnership: downlineValue.toString(),
-        soccer_partnership: downlineValue.toString(),
-        tennis_partnership: downlineValue.toString(),
-        casino_partnership: downlineValue.toString()
-      }));
-    };
 
     const validateForm = () => {
       const newErrors = {};
@@ -312,23 +290,6 @@
         newErrors.password_confirmation = 'Passwords do not match';
       }
       // City and Phone are optional - no validation needed
-      
-      // Account Details Validation
-      if (!formData.role) newErrors.role = 'Role is required';
-      if (formData.role === '2' && !formData.prefix_domain) newErrors.prefix_domain = 'Prefix Domain is required';
-      if (!formData.credit_reference) newErrors.credit_reference = 'Credit Reference is required';
-      if (formData.role === '2' && !formData.account_limit) newErrors.account_limit = 'Account Limit is required';
-      if (formData.role === '7' && !formData.exposure_limit) newErrors.exposure_limit = 'Exposure Limit is required';
-      
-      // Downline Partnership Validation
-      if (formData.role && formData.role !== '7') {
-        const downlineValue = parseInt(formData.downline_partnership) || 0;
-        if (downlineValue < 0) {
-          newErrors.downline_partnership = 'Downline Partnership cannot be less than 0';
-        } else if (downlineValue > 100) {
-          newErrors.downline_partnership = 'Downline Partnership cannot exceed 100';
-        }
-      }
       
       // Transaction Password Validation
       if (!formData.master_password.trim()) {
@@ -368,7 +329,7 @@
             isEditMode ? 'User updated successfully!' : 'User created successfully!',
             null, null, 'success'
           );
-          navigate('/client/list');
+          navigate('/users');
         } else {
           Notify(response.message || 'Operation failed', null, null, 'danger');
         }
@@ -499,52 +460,6 @@
                       </div>
                     </div>
 
-                    {formData.role && formData.role !== '7' && formData.role !== 7 && (
-                      <div className="col-md-6 col-sm-12 hide_partner">
-                        <div className="form-group">
-                          <label htmlFor="downline_partnership">Down Line Partnership</label>
-                          <input 
-                            className={`form-control partnerships ${errors.downline_partnership ? 'is-invalid' : ''}`}
-                            type="number" 
-                            name="downline_partnership" 
-                            id="downline_partnership" 
-                            min="0"
-                            max="100"
-                            value={formData.downline_partnership}
-                            onInput={(e) => {
-                              const value = e.target.value;
-                              // Prevent values over 100
-                              if (value && parseInt(value) > 100) {
-                                e.target.value = '100';
-                                setPartnershipToAll('100', '100');
-                              } else {
-                                setPartnershipToAll(value, '100');
-                              }
-                            }}
-                            onChange={handleInputChange}
-                          />
-                          {errors.downline_partnership && (
-                            <div className="invalid-feedback">{errors.downline_partnership}</div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {formData.role && formData.role !== '7' && formData.role !== 7 && (
-                      <div className="col-md-6 col-sm-12 partnership over_partnership_form hide_partner">
-                        <div className="form-group">
-                          <label htmlFor="over_partnership">OVER PARTNERSHIP</label>
-                          <input 
-                            type="number" 
-                            name="over_partnership" 
-                            readOnly 
-                            className="form-control partnerships" 
-                            id="over_partnership" 
-                            value={formData.over_partnership}
-                            required
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     <div className="col-md-6 col-sm-12 d-none">
                       <div className="form-group">
@@ -564,33 +479,43 @@
                 <div className="col-md-6 account-detail">
                   <h4 className="m-b-20 col-md-12">Account Detail</h4>
                   <div className="row">
-                    <input type="hidden" name="role" value={formData.role} />
+                    {/* User Role - Read only in edit mode */}
+                    <div className="col-md-6 col-sm-12">
+                      <div className="form-group">
+                        <label htmlFor="role">User Role/Type</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="role"
+                          name="role"
+                          value={
+                            formData.role === '2' || formData.role === 2 ? 'Admin' :
+                            formData.role === '3' || formData.role === 3 ? 'Sub Admin' :
+                            formData.role === '4' || formData.role === 4 ? 'Super Master' :
+                            formData.role === '5' || formData.role === 5 ? 'Master' :
+                            formData.role === '7' || formData.role === 7 ? 'User' : ''
+                          }
+                          readOnly
+                          disabled
+                        />
+                        <input type="hidden" name="role" value={formData.role} />
+                      </div>
+                    </div>
+                    
+                    {/* Prefix Domain - Read only in edit mode */}
                     {(formData.role === '2' || formData.role === 2) && (
                       <div className="col-md-6 col-sm-12 prefix_domain">
                         <div className="form-group">
-                          <label>Select Prefix</label>
-                          <select
-                            className={`form-control ${errors.prefix_domain ? 'is-invalid' : ''}`}
-                            id="prefix_domain"
-                            name="prefix_domain"
-                            value={formData.prefix_domain}
-                            onChange={handleInputChange}
-                            required
-                          >
-                            <option value="">Select Prefix</option>
-                            {loadingPrefixes ? (
-                              <option value="" disabled>Loading prefixes...</option>
-                            ) : (
-                              prefixes.map((prefix) => (
-                                <option key={prefix.id} value={prefix.id}>
-                                  {prefix.domain_name}
-                                </option>
-                              ))
-                            )}
-                          </select>
-                          {errors.prefix_domain && (
-                            <div className="invalid-feedback">{errors.prefix_domain}</div>
-                          )}
+                          <label>Prefix Domain</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="prefix_domain_display"
+                            value={prefixes.find(p => String(p.id) === String(formData.prefix_domain))?.domain_name || 'N/A'}
+                            readOnly
+                            disabled
+                          />
+                          <input type="hidden" name="prefix_domain" value={formData.prefix_domain} />
                         </div>
                       </div>
                     )}
@@ -894,7 +819,7 @@
                       value={formData.master_password}
                       onChange={handleInputChange}
                       type="password"
-                      className={`form-control ${errors.master_password ? 'is-invalid' : ''}`}
+                      className={`form-control text-right ${errors.master_password ? 'is-invalid' : ''}`}
                     />
                     {errors.master_password && (
                       <span id="master_password-error" className="error">{errors.master_password}</span>
