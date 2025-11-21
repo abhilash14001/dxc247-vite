@@ -141,8 +141,8 @@ const AccountStatement = () => {
   // ----- lifecycle -----
   useEffect(() => {
     loadUserDropdown();
-    loadAccountStatementData(1);
-  }, [loadUserDropdown, loadAccountStatementData]);
+    
+  }, [loadUserDropdown]);
 
   // ----- handlers -----
   const handleUserSearchChange = (e) => {
