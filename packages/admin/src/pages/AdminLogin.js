@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
+import { ADMIN_BASE_PATH, fetchDomainDetails } from "@dxc247/shared/utils/Constants";
 import {
   faUser,
   faLock,
@@ -100,7 +100,7 @@ function AdminLogin() {
         );
         
         if (!hasLiveModeData) {
-          const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
+          const liveModeResponse = await fetchDomainDetails();
           if (isMounted && liveModeResponse) {
             dispatch(setLiveModeData(liveModeResponse));
           }

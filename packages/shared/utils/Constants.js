@@ -652,6 +652,38 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
     throw err;
   }
 }
+
+/**
+ * Fetch domain details (live mode data) - unified function for both admin and user contexts
+ * @returns {Promise<Object|null>} - Domain details data or null on error
+ */
+export const fetchDomainDetails = async () => {
+  try {
+    const isAdmin = isAdminRoute();
+    const domainName = window.location.hostname;
+    const requestData = { domain_name: domainName };
+    
+    if (isAdmin) {
+      // Admin context - use adminApi
+      const response = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'POST', requestData);
+      // adminApi returns data directly
+      return response || null;
+    } else {
+      // User context - use axiosFetch
+      const response = await axiosFetch("admin/domain-details", "POST", requestData);
+      
+      if (response && response.data) {
+        return response.data?.data || response.data;
+      }
+      
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching domain details:", error);
+    return null;
+  }
+};
+
 // Function to handle unauthorized access (401 errors)
 function handleUnauthorized() {
   // Check if we're in admin context

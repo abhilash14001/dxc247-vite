@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { adminApi } from '@dxc247/shared/utils/adminApi';
-import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
+import { ADMIN_BASE_PATH, fetchDomainDetails } from '@dxc247/shared/utils/Constants';
 import { setLiveModeData } from '@dxc247/shared/store/slices/commonDataSlice';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -172,7 +172,7 @@ const AdminCreateEditPrefix = () => {
         
         // Refresh liveModeData to update login theme
         try {
-          const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
+          const liveModeResponse = await fetchDomainDetails();
           if (liveModeResponse) {
             dispatch(setLiveModeData(liveModeResponse));
           }
