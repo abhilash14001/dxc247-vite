@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import axiosFetch from "@dxc247/shared/utils/Constants";
+import { fetchDomainDetails } from "@dxc247/shared/utils/Constants";
 import { setLiveModeData } from "@dxc247/shared/store/slices/commonDataSlice";
 
 const MaintenanceMode = () => {
@@ -13,9 +13,8 @@ const MaintenanceMode = () => {
   useEffect(() => {
     const checkMaintenanceStatus = async () => {
       try {
-        const response = await axiosFetch("admin/domain-details", "GET");
-        if (response && response.data) {
-          const data = response.data?.data || response.data;
+        const data = await fetchDomainDetails();
+        if (data) {
           dispatch(setLiveModeData(data));
           
           // If maintenance mode is turned off, redirect to login

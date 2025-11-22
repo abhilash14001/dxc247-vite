@@ -1,5 +1,5 @@
 import axios from "axios";
-import axiosFetch from "@dxc247/shared/utils/Constants";
+import axiosFetch, { fetchDomainDetails } from "@dxc247/shared/utils/Constants";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -226,9 +226,8 @@ function Login() {
           dispatch(setServerPublicKey(response.data.publicKey)); 
         }
 
-        const response = await axiosFetch("admin/domain-details", "GET");
-        if (response && response.data) {
-          const data = response.data?.data || response.data;
+        const data = await fetchDomainDetails();
+        if (data) {
           dispatch(setLiveModeData(data));
           
           // Check for maintenance mode

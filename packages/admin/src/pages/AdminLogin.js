@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ADMIN_BASE_PATH } from "@dxc247/shared/utils/Constants";
+import { ADMIN_BASE_PATH, fetchDomainDetails } from "@dxc247/shared/utils/Constants";
 import {
   faUser,
   faLock,
@@ -34,7 +34,7 @@ function AdminLogin() {
     
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/assets/css/AdminLogin.css';
+    link.href = 'assets/css/AdminLogin.css';
     link.media = 'all';
     link.crossOrigin = 'anonymous';
     
@@ -51,7 +51,7 @@ function AdminLogin() {
     // Preload for faster loading
     const preloadLink = document.createElement('link');
     preloadLink.rel = 'preload';
-    preloadLink.href = '/assets/css/AdminLogin.css';
+    preloadLink.href = 'assets/css/AdminLogin.css';
     preloadLink.as = 'style';
     preloadLink.onload = () => {
       document.head.appendChild(link);
@@ -100,7 +100,7 @@ function AdminLogin() {
         );
         
         if (!hasLiveModeData) {
-          const liveModeResponse = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'GET');
+          const liveModeResponse = await fetchDomainDetails();
           if (isMounted && liveModeResponse) {
             dispatch(setLiveModeData(liveModeResponse));
           }
