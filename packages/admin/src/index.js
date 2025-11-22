@@ -97,7 +97,7 @@ root.render(
       <AdminThemeWrapper>
         <CommonProvider>
           <SportsProvider>
-            <Router>
+            <Router basename="/admin">
               <AdminStateManager>
                 <AuthProvider>
                   

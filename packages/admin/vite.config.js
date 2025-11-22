@@ -17,6 +17,7 @@ const htmlEnvPlugin = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/admin/',
   plugins: [
     react({
       include: /\.(jsx?|js)$/,

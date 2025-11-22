@@ -34,7 +34,7 @@ function AdminLogin() {
     
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/assets/css/AdminLogin.css';
+    link.href = 'assets/css/AdminLogin.css';
     link.media = 'all';
     link.crossOrigin = 'anonymous';
     
@@ -51,7 +51,7 @@ function AdminLogin() {
     // Preload for faster loading
     const preloadLink = document.createElement('link');
     preloadLink.rel = 'preload';
-    preloadLink.href = '/assets/css/AdminLogin.css';
+    preloadLink.href = 'assets/css/AdminLogin.css';
     preloadLink.as = 'style';
     preloadLink.onload = () => {
       document.head.appendChild(link);
