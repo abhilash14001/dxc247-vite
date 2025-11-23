@@ -493,6 +493,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
 // Utility function to get the correct token based on current route
 export function getCurrentToken() {
   
+  
   if (isAdminRoute()) {
     
     // For admin routes, use admin token from Redux
@@ -660,17 +661,15 @@ export async function axiosFetch(url, method, setList = null, data = {}, params 
 export const fetchDomainDetails = async () => {
   try {
     const isAdmin = isAdminRoute();
-    const domainName = window.location.hostname;
-    const requestData = { domain_name: domainName };
-    
+        
     if (isAdmin) {
       // Admin context - use adminApi
-      const response = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'POST', requestData);
+      const response = await adminApi(`${ADMIN_BASE_PATH}/domain-details`, 'POST');
       // adminApi returns data directly
       return response || null;
     } else {
       // User context - use axiosFetch
-      const response = await axiosFetch("admin/domain-details", "POST", requestData);
+      const response = await axiosFetch("admin/domain-details", "POST");
       
       if (response && response.data) {
         return response.data?.data || response.data;

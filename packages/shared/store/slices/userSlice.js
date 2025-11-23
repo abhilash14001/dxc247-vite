@@ -17,7 +17,9 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
+      
       const { token, user, balance, exposure, bannerDetails } = action.payload;
+      
       state.token = token;
       state.user = user;
       state.balance = balance;
@@ -28,6 +30,7 @@ const userSlice = createSlice({
       state.showModal = true; // Show banner popup after login
     },
     logout: (state) => {
+      
       
       state.token = null;
       state.user = null;

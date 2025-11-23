@@ -141,6 +141,7 @@ function Login() {
       const demoLoginResponse = await demoLogin();
       
       
+      console.log('resposneis demo login ', demoLoginResponse);
         
       if(!serverPublicKey){
         const response = await axios.get(import.meta.env.VITE_API_URL + "/p-key-get");
