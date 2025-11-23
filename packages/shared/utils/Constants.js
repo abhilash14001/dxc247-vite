@@ -422,7 +422,8 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
     }
 
     candidates.sort((a, b) => a.diff - b.diff);
-    const best = candidates[0];
+    
+    const best = candidates.reduce((min, c) => c.diff < min.diff ? c : min, candidates[0]);
     const netWin1 = round2(best.resultingNets.win);
     const netLose1 = round2(best.resultingNets.lose);
     const resultingNet1 = round2((netWin1 + netLose1) / 2);
@@ -466,6 +467,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   });
 
 
+  console.log('candidates are ', candidates)
   const best =  candidates.reduce((min, c) => c.diff < min.diff ? c : min, candidates[0]);
 
   const netTeam = round2(best.resultingNets[teams[0]]);
@@ -852,6 +854,11 @@ export const generateBackAndLayFunction = (
       
       
         const onClickHandler = () => {
+          // Reset stakeValue if provided in params
+          if (params[5] && params[5].current) {
+            params[5].current.value = "";
+          }
+
           if (params[2] !== undefined) {
             odds.odds = params[2];
           }

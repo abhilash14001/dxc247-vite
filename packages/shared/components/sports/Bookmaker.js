@@ -186,7 +186,8 @@ function Bookmaker({
               "bookmaker",
               undefined,
               undefined,
-              clearTeam
+              clearTeam,
+              stakeValue
             );
             const value_price = back?.odds || "-";
             const value_size = tot === 0 ? "" : getSize(back?.size || "");
@@ -250,7 +251,8 @@ function Bookmaker({
               "bookmaker",
               undefined,
               undefined,
-              clearTeam
+              clearTeam,
+              stakeValue
             );
 
             // Initialize oddsChange if it doesn't exist to prevent initial yellow class

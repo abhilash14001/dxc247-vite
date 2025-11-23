@@ -168,7 +168,7 @@ function Bookmaker2({
                             const back = backOdds[0];
                             const backFunction = generateBackAndLayFunction(
                                 tot, oddsArr, 'back', teamName, runnerRow, key11, 'BOOKMAKER2', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType,
-                                null, setBetTypeFromArray, 'bookmaker 2', undefined, undefined, clearTeam
+                                null, setBetTypeFromArray, 'bookmaker 2', undefined, undefined, clearTeam, stakeValue
                             );
                             const value_price = tot === 0 ? '-' : back?.odds || '-';
                             const value_size = tot === 0 ? '' : getSize(back?.size || '');
@@ -200,7 +200,7 @@ function Bookmaker2({
                             const lay = layOdds[0];
                             const layFunction = generateBackAndLayFunction(
                                 tot, oddsArr, 'lay', teamName, runnerRow, 0, 'BOOKMAKER2', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, null,
-                                setBetTypeFromArray, 'bookmaker 2', undefined, undefined, clearTeam
+                                setBetTypeFromArray, 'bookmaker 2', undefined, undefined, clearTeam, stakeValue
                             );
                             const value_price = tot === 0 ? '-' : lay?.odds || '-';
                             const value_size = tot === 0 ? '' : getSize(lay?.size || '');

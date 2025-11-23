@@ -255,7 +255,8 @@ setBetOddValue(0);
                                                 setBetTypeFromArray, 'match_odds',
                                                 undefined,
                                                 undefined,
-                                                clearTeam
+                                                clearTeam,
+                                                stakeValue
                                             );
 
 
@@ -306,7 +307,8 @@ setBetOddValue(0);
                                                 setBetTypeFromArray, 'match_odds',
                                                 undefined,
                                                 undefined,
-                                                clearTeam
+                                                clearTeam,
+                                                stakeValue
                                             );
 
                                             // Determine the lay class based on position

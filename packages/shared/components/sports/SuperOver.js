@@ -251,7 +251,8 @@ setBetOddValue(0);
                                                 setBetTypeFromArray, 'super_over',
                                                 undefined,
                                                 undefined,
-                                                clearTeam
+                                                clearTeam,
+                                                stakeValue
                                             );
 
 
@@ -302,7 +303,8 @@ setBetOddValue(0);
                                                 setBetTypeFromArray, 'super_over',
                                                 undefined,
                                                 undefined,
-                                                clearTeam
+                                                clearTeam,
+                                                stakeValue
                                             );
 
                                             // Determine the lay class based on position

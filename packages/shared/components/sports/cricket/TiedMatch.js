@@ -207,7 +207,7 @@ const TiedMatch = ({
                                             const reverseKey = backOdds.length - 1;
                                             const value_price = tot === 0 ? "-" : (back?.odds ? parseFloat(back.odds) : "-");
                                             const value_size = tot === 0 ? "" : (back?.size ? getSize(parseFloat(back.size), false) : "");
-                                            const backFunction = generateBackAndLayFunction(tot, oddsArr, 'back', teamName, runnerRow, reverseKey, 'TIED_MATCH', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, null, setBetTypeFromArray, 'tied match', back?.odds || '', back?.size || '', undefined, undefined, clearTeam);
+                                            const backFunction = generateBackAndLayFunction(tot, oddsArr, 'back', teamName, runnerRow, reverseKey, 'TIED_MATCH', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, null, setBetTypeFromArray, 'tied match', back?.odds || '', back?.size || '', undefined, undefined, clearTeam, stakeValue);
                                             
                                             return (
                                                 <div className="market-odd-box back"
@@ -233,7 +233,7 @@ const TiedMatch = ({
                                             const value_price = tot === 0 ? "-" : (lay?.odds ? parseFloat(lay.odds) : "-");
                                             const value_size = tot === 0 ? "" : (lay?.size ? getSize(parseFloat(lay.size), false) : "");
                                             const n_key = model.match_id + "-" + key + "-" + (layOdds.length - 1);
-                                            const layFunction = generateBackAndLayFunction(tot, oddsArr, 'lay', teamName, runnerRow, n_key, 'TIED_MATCH', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, null, setBetTypeFromArray, 'tied match', lay?.odds || '', lay?.size || '', undefined, undefined, clearTeam);
+                                            const layFunction = generateBackAndLayFunction(tot, oddsArr, 'lay', teamName, runnerRow, n_key, 'TIED_MATCH', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, null, setBetTypeFromArray, 'tied match', lay?.odds || '', lay?.size || '', undefined, undefined, clearTeam, stakeValue);
                                             
                                             return (
                                                 <div className="market-odd-box lay"

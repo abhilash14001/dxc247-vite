@@ -27,6 +27,7 @@ const OddEven = ({
     setBetType,
     oddsk,
     setBetTypeFromArray,
+    stakeValue,
   } = useContext(SportsContext);
   const betEvenCalculation = useRef([]);
 
@@ -234,7 +235,11 @@ const OddEven = ({
                         setBetTypeFromArray,
                         "oddeven",
                         back,
-                        backk
+                        backk,
+                        undefined,
+                        undefined,
+                        undefined,
+                        stakeValue
                       );
 
                       const layFunctionSes = generateBackAndLayFunction(
@@ -257,7 +262,11 @@ const OddEven = ({
                         setBetTypeFromArray,
                         "oddeven",
                         lay,
-                        layk
+                        layk,
+                        undefined,
+                        undefined,
+                        undefined,
+                        stakeValue
                       );
 
                       if (back > 0) {

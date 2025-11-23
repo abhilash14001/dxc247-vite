@@ -26,7 +26,7 @@ const OverByOver = ({
     const fancyHideStatus = useFancyHideStatus(model, gameData);
 
     const [closePopup, setClosePopup] = useState(false)
-    const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray} = useContext(SportsContext);
+    const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, stakeValue} = useContext(SportsContext);
     const { clearTeam } = useSetCashoutTeam();
 
     const [fancyData, setFancyData] = useState(null)
@@ -150,9 +150,9 @@ const OverByOver = ({
                                     isSuspendedClass = 'suspended suspend_box';
                                 }
 
-                                const backFunctionSes = generateBackAndLayFunction(total, oddsArr, 'back', teamName, 0, key, 'OVER_BY_OVER', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'over by over', back, backk, undefined, undefined, clearTeam);
+                                const backFunctionSes = generateBackAndLayFunction(total, oddsArr, 'back', teamName, 0, key, 'OVER_BY_OVER', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'over by over', back, backk, undefined, undefined, clearTeam, stakeValue);
 
-                                const layFunctionSes = generateBackAndLayFunction(total, oddsArr, 'lay', teamName, 0, key, 'OVER_BY_OVER', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'over by over', lay, layk, undefined, undefined, clearTeam);
+                                const layFunctionSes = generateBackAndLayFunction(total, oddsArr, 'lay', teamName, 0, key, 'OVER_BY_OVER', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'over by over', lay, layk, undefined, undefined, clearTeam, stakeValue);
 
                                 back = back > 0 ? parseFloat(back) : "-";
                                 backk = backk > 0 ? parseFloat(backk) : "";

@@ -33,6 +33,7 @@ function CPLCupBookmaker({
     setBetType,
     setGlobalMname,
     globalMname,
+    stakeValue,
   } = useContext(SportsContext);
   const { clearTeam } = useSetCashoutTeam();
 
@@ -121,7 +122,8 @@ function CPLCupBookmaker({
               "cup",
               undefined,
               undefined,
-              clearTeam
+              clearTeam,
+              stakeValue
             );
             const value_price = tot === 0 ? "-" : back?.odds || "-";
             const value_size =
@@ -193,7 +195,8 @@ function CPLCupBookmaker({
                 "cup",
                 undefined,
                 undefined,
-                clearTeam
+                clearTeam,
+                stakeValue
               );
 
               // Initialize oddsChange if it doesn't exist to prevent initial yellow class

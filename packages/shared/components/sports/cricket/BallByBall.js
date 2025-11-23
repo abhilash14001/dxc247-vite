@@ -25,7 +25,7 @@ const BallByBall = ({
                         setMinValue
                     }) => {
     const fancyHideStatus = useFancyHideStatus(sportList, data);
-    const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray} = useContext(SportsContext);
+    const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, stakeValue} = useContext(SportsContext);
     const [fancyData, setFancyData] = useState(null)
     const [closePopup, setClosePopup] = useState(false)
 
@@ -133,9 +133,9 @@ const BallByBall = ({
                         const n_key_back = key;
 
                         let backFunctionSes = [], layFunctionSes = [];
-                        backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, 0, n_key_back, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', back, backk);
+                        backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, 0, n_key_back, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', back, backk, undefined, undefined, undefined, stakeValue);
 
-                        layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, n_key_lay, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', lay, layk);
+                        layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, n_key_lay, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', lay, layk, undefined, undefined, undefined, stakeValue);
 
                         const betPlaceCheck = betPlaceStatus?.current?.[teamName];
                         

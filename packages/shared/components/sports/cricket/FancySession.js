@@ -26,7 +26,7 @@ const FancySession = ({
                           oddsChange
                       }) => {
     const fancyHideStatus = useFancyHideStatus(sportList, data);
-    const {runnerRowDefault, oddsk, rootClassDefault, setBetType, setBetTypeFromArray} = useContext(SportsContext);
+    const {runnerRowDefault, oddsk, rootClassDefault, setBetType, setBetTypeFromArray, stakeValue} = useContext(SportsContext);
 
     const [fancyData, setFancyData] = useState(null)
     const [closePopup, setClosePopup] = useState(false)
@@ -146,9 +146,9 @@ const FancySession = ({
                                         isSuspendedClass = 'suspended suspend_box';
                                     }
 
-                                    const backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', back, backk);
+                                    const backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', back, backk, undefined, undefined, undefined, stakeValue);
 
-                                    const layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', lay, layk);
+                                    const layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', lay, layk, undefined, undefined, undefined, stakeValue);
 
                                     // Initialize and update oddsChange for blink functionality
                                     if (oddsChange?.current) {

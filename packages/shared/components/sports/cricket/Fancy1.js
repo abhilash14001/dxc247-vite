@@ -22,7 +22,7 @@ const Fancy1 = ({
                     setMinValue
                 }) => {
     const fancyHideStatus = useFancyHideStatus(sportList, data);
-    const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray} = useContext(SportsContext);
+    const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, stakeValue} = useContext(SportsContext);
     const { clearTeam } = useSetCashoutTeam();
     
     // Move hooks before early return
@@ -124,9 +124,9 @@ const Fancy1 = ({
                         }
 
                         let backFunctionSes = [], layFunctionSes = [];
-                        backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, 0, key, 'fancy1', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'fancy1', back, backk, clearTeam);
+                        backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, 0, key, 'fancy1', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'fancy1', back, backk, clearTeam, stakeValue);
 
-                        layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, key, 'fancy1', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'fancy1', lay, layk, clearTeam);
+                        layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, key, 'fancy1', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'fancy1', lay, layk, clearTeam, stakeValue);
 
                         const betPlaceCheck = betPlaceStatus?.current?.[teamName];
                         const fancyListValues = Object.values(betPlaceCheck?.fancy_list || []);
