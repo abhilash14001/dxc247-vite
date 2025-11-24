@@ -93,7 +93,37 @@ const CurrentBets = () => {
   // };
 
   const initDatatable = () => {
-    const columns = [
+    // Ensure the table element exists first
+    const tableElement = $("#current_bets_list");
+    if (tableElement.length === 0) {
+      console.error("Table element #current_bets_list not found");
+      return null;
+    }
+
+    // Clear any existing DataTable instance first
+    if ($.fn.DataTable.isDataTable("#current_bets_list")) {
+      try {
+        tableElement.DataTable().destroy();
+      } catch (e) {
+        console.warn("Error destroying existing DataTable:", e);
+      }
+    }
+
+    // Only clear tbody, not the entire table (to preserve thead structure)
+    tableElement.find("tbody").empty();
+
+    const columns = [];
+    
+    // Add Sports column at the beginning if selectedGtype is "sports"
+    if (selectedGtype && selectedGtype.toLowerCase() === "sports") {
+      columns.push({
+        data: "game_name",
+        name: "game_name",
+      });
+    }
+    
+    // Add other columns
+    columns.push(
       { data: "bet_type", name: "bet_type" },
       { data: "team_name", name: "team_name" },
       {
@@ -117,23 +147,47 @@ const CurrentBets = () => {
                         </div>
                     </div>`;
         },
-      },
-    ];
+      }
+    );
 
- 
-    const table = $("#current_bets_list").DataTable({
-      pagingType: "full_numbers",
-      lengthMenu: [10, 20, 30, 40, 50],
-      pageLength: pageLength,
-      processing: true,
-      serverSide: true,
-      orderable: false,
-      sortable: false,
-      dom: "rt", // Remove default controls, we'll use custom ones
+    // Verify table structure is intact
+    if (tableElement.find("thead").length === 0) {
+      console.error("Table thead is missing. Cannot initialize DataTable.");
+      return null;
+    }
+
+    // Verify header structure matches columns before initializing
+    const headerThs = tableElement.find("thead th").length;
+    if (headerThs !== columns.length) {
+      console.error(`Header columns (${headerThs}) don't match DataTable columns (${columns.length}). Cannot initialize.`);
+      console.log("Expected columns:", columns.map(c => c.name || c.data));
+      console.log("Header structure:", tableElement.find("thead th").map((i, el) => $(el).text()).get());
+      return null;
+    }
+
+    try {
+      const table = tableElement.DataTable({
+        pagingType: "full_numbers",
+        lengthMenu: [10, 20, 30, 40, 50],
+        pageLength: pageLength,
+        processing: true,
+        serverSide: true,
+        orderable: false,
+        sortable: false,
+        dom: "rt", // Remove default controls, we'll use custom ones
       ajax: async function (dtParams, callback) {
-        try {
-          
+        // Don't trigger API if no report type is selected
+        if (!selectedGtype || selectedGtype === "") {
+          callback({
+            draw: dtParams.draw,
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: [],
+          });
+          return;
+        }
 
+        try {
           const decryptedJSON = await secureDatatableFetch(
             "current_bets",
             dtParams,
@@ -200,53 +254,117 @@ const CurrentBets = () => {
         setDisplayStart(info.start + 1);
         setDisplayEnd(info.end);
       },
-    });
+      });
 
-    // Store table reference
-    setDataTable(table);
+      // Store table reference
+      setDataTable(table);
 
-    // Add click event for bet details
-    $("#current_bets_list tbody").on("click", "td", function (e) {
-      if (!$(e.target).is('input[type="checkbox"]')) {
-        const data = table.row($(this).parents("tr")).data();
-        
-      }
-    });
+      // Add click event for bet details
+      $("#current_bets_list tbody").on("click", "td", function (e) {
+        if (!$(e.target).is('input[type="checkbox"]')) {
+          const data = table.row($(this).parents("tr")).data();
+          
+        }
+      });
 
-    return table;
+      return table;
+    } catch (error) {
+      console.error("Error initializing DataTable:", error);
+      return null;
+    }
   };
 
   useEffect(() => {
-    initDatatable();
+    // Only initialize datatable if a report type is selected
+    if (selectedGtype && selectedGtype !== "") {
+      initDatatable();
+    }
 
     //eslint-disable-next-line
   }, []);
 
   // Auto-refresh table when gtype or filter change
   useEffect(() => {
-    if (dataTable) {
-      // Destroy and recreate table with new parameters
-      $("#current_bets_list tbody").off("click", "td");
-      dataTable.destroy();
-      const table = initDatatable();
+    // Only refresh if a report type is selected
+    if (!selectedGtype || selectedGtype === "") {
+      return;
     }
+    
+    // Remove existing event listeners
+    $("#current_bets_list tbody").off("click", "td");
+    
+    // Properly destroy existing DataTable instance
+    if (dataTable) {
+      try {
+        dataTable.destroy();
+      } catch (e) {
+        console.warn("Error destroying DataTable in useEffect:", e);
+      }
+      setDataTable(null);
+    }
+    
+    // Also check if DataTable exists on the element
+    if ($.fn.DataTable.isDataTable("#current_bets_list")) {
+      try {
+        $("#current_bets_list").DataTable().destroy();
+      } catch (e) {
+        console.warn("Error destroying DataTable from element in useEffect:", e);
+      }
+    }
+    
+    // Clear only tbody, preserve thead structure
+    $("#current_bets_list tbody").empty();
+    
+    // Small delay to ensure React has updated the DOM with new header structure
+    setTimeout(() => {
+      const table = initDatatable();
+      if (table) {
+        setDataTable(table);
+      }
+    }, 100);
     //eslint-disable-next-line
   }, [selectedGtype, selectedFilter]);
 
   const handleGtypeChange = (e) => {
     const newGtype = e.target.value;
-
-    setSelectedGtype(newGtype);
-
-    // Always load data when gtype changes (even if empty)
+    
     // Remove existing event listeners before destroying the table
     $("#current_bets_list tbody").off("click", "td");
+    
+    // Properly destroy existing DataTable instance
     if (dataTable) {
-      dataTable.destroy();
+      try {
+        dataTable.destroy();
+      } catch (e) {
+        console.warn("Error destroying DataTable:", e);
+      }
+      setDataTable(null);
     }
+    
+    // Also check if DataTable exists on the element
+    if ($.fn.DataTable.isDataTable("#current_bets_list")) {
+      try {
+        $("#current_bets_list").DataTable().destroy();
+      } catch (e) {
+        console.warn("Error destroying DataTable from element:", e);
+      }
+    }
+    
+    // Clear only tbody, preserve thead structure
+    $("#current_bets_list tbody").empty();
+    
+    setSelectedGtype(newGtype);
 
-    // Initialize new table with selected gtype
-    const table = initDatatable();
+    // Initialize new table with selected gtype only if a type is selected
+    if (newGtype && newGtype !== "") {
+      // Use setTimeout to ensure React has updated the DOM with new header
+      setTimeout(() => {
+        const table = initDatatable();
+        if (table) {
+          setDataTable(table);
+        }
+      }, 100);
+    }
   };
 
   const handleFilterChange = (e) => {
@@ -298,7 +416,7 @@ const CurrentBets = () => {
                     value={selectedGtype}
                     onChange={handleGtypeChange}
                   >
-                    <option value="" disabled>
+                    <option value="" disabled={selectedGtype !== ""}>
                       Select Report Type
                     </option>
                     <option value="sports">Sports</option>
@@ -400,6 +518,11 @@ const CurrentBets = () => {
                 >
                   <thead>
                     <tr role="row">
+                      {selectedGtype && selectedGtype.toLowerCase() === "sports" && (
+                        <th colSpan="1" role="columnheader">
+                          Sports
+                        </th>
+                      )}
                       <th colSpan="1" role="columnheader">
                         Event Name
                       </th>
