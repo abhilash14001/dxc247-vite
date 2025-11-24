@@ -86,15 +86,14 @@ function Bookmaker({
       setBetTypeFromArray,
       setBetOddValue,
       setbackOrLay,
-      setTeam, // Using Redux setTeam directly
+      setTeam,
       setDefaultTeamName,
       stakeValue,
       setPopupDisplay,
-      
       teamNameCurrentBets,
       runnerRowDefault,
-      
-      defaultBetType: "BOOKMAKER",
+      defaultBetType: "bookmaker",
+      oddsTeamData: bookmakerTeamData
     });
 
     if (!success) {

@@ -86,9 +86,8 @@ function Bookmaker2({
             setPopupDisplay,
             teamNameCurrentBets,
             runnerRowDefault,
-            
             defaultBetType: 'BOOKMAKER2',
-            
+            oddsTeamData: bookmakerTeamData
         });
 
         if (!success) {

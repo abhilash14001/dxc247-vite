@@ -75,7 +75,7 @@ export const handleCashoutLogic = async (params) => {
       (item) => item.gstatus === "SUSPENDED"
     );
     if (isSuspended) {
-      Notify("You are not eligible for cashout", null, null, "danger");
+      Notify("You are not eligible for cashout1", null, null, "danger");
       return false;
     }
 
@@ -133,7 +133,7 @@ export const handleCashoutLogic = async (params) => {
     const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues, oddsTeamData);
 
     if (!smartCashoutResult) {
-      Notify("You are not eligible for cashout", null, null, "danger");
+      Notify("You are not eligible for cashout2", null, null, "danger");
       return false;
     }
 
@@ -150,7 +150,7 @@ export const handleCashoutLogic = async (params) => {
       if (marketTeam) {
         hedgeOddsDisplay = marketTeam.odds;
       } else {
-        Notify("You are not eligible for cashout", null, null, "danger");
+        Notify("You are not eligible for cashout3", null, null, "danger");
         return false;
       }
     }
@@ -263,7 +263,6 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
   });
 
 
-  
   const candidates = [];
 
   const pushBack = (team) => {
@@ -324,7 +323,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     const existingOtherValue = parseFloat(netIfWin[other] || 0);
     const netTeamWin = Math.round((-loss + existingTeamValue) * 100) / 100;
     const netOtherWin = Math.round((profit + existingOtherValue) * 100) / 100;
-
+    
     candidates.push({
       team, side: "lay", 
       decimalOdds: dec,
@@ -418,21 +417,25 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     const netLose1 = round2(best.resultingNets.lose);
     const resultingNet1 = round2((netWin1 + netLose1) / 2);
 
-    return {
+    const finalResult = {
       team: best.team,
       side: best.side,
-      decimalOdds: round2(best.decimalOdds),  // For calculations only
+      decimalOdds: round2(best.decimalOdds),
       stakeRupees: round2(best.stake),
       stakePaise: toPaise(best.stake),
       resultingNet: resultingNet1,
       isCapped: best.isCapped,
-      originalOdds: best.originalDisplayOdds,  // Original display odds for bet placement
+      originalOdds: best.originalDisplayOdds,
       theoreticalStake: round2(best.theoreticalStake),
       resultingNetsIfCapped: {
         win: netWin,
         lose: netLose
       }
     };
+
+    console.log('Cashout Result:', finalResult);
+
+    return finalResult;
   }
 
   if (!candidates.length) return null;
@@ -466,18 +469,20 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
   const finalResult = {
     team: best.team,
     side: best.side,
-    decimalOdds: round2(best.decimalOdds),  // For calculations only
+    decimalOdds: round2(best.decimalOdds),
     stakeRupees: round2(best.stake),
     stakePaise: toPaise(best.stake),
     resultingNet: resultingNetSigned,
     isCapped: best.isCapped,
-    originalOdds: best.originalDisplayOdds || matchData[best.side]?.find(m => m.team === best.team)?.odds,  // Original display odds for bet placement
+    originalOdds: best.originalDisplayOdds || matchData[best.side]?.find(m => m.team === best.team)?.odds,
     theoreticalStake: round2(best.theoreticalStake),
     resultingNetsIfCapped: {
       [teams[0]]: netTeam,
       [teams[1]]: netOther
     }
   };
+
+  console.log('Cashout Result:', finalResult);
 
   return finalResult;
 }

@@ -79,14 +79,14 @@ const TiedMatch = ({
             setBetTypeFromArray,
             setBetOddValue,
             setbackOrLay,
-            setTeam, // Using Redux setTeam directly
+            setTeam,
             setDefaultTeamName,
             stakeValue,
             setPopupDisplay,
-            
             teamNameCurrentBets,
             runnerRowDefault,
             defaultBetType: 'TIED_MATCH',
+            oddsTeamData: tiedMatchData
 
         });
 

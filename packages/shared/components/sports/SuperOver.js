@@ -75,15 +75,14 @@ setBetOddValue(0);
             setBetTypeFromArray,
             setBetOddValue,
             setbackOrLay,
-            setTeam, // Using Redux setTeam directly
+            setTeam,
             setDefaultTeamName,
             stakeValue,
             setPopupDisplay,
             teamNameCurrentBets,
             runnerRowDefault,
-            
-            
-            defaultBetType: 'SUPER_OVER'
+            defaultBetType: 'SUPER_OVER',
+            oddsTeamData
         });
         
         if (!success) {
