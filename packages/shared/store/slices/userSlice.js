@@ -31,7 +31,6 @@ const userSlice = createSlice({
     },
     logout: (state) => {
       
-      
       state.token = null;
       state.user = null;
       state.balance = 0;

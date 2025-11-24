@@ -67,11 +67,10 @@ export const handleCashoutLogic = async (params) => {
       
       runnerRowDefault,
       defaultBetType = "match_odds",
+      oddsTeamData
     } = params;
 
-    
-    
-
+     
     const isSuspended = currentMarketData.every(
       (item) => item.gstatus === "SUSPENDED"
     );
@@ -94,6 +93,7 @@ export const handleCashoutLogic = async (params) => {
       side: bet.bet_side.toLowerCase(), // "BACK" -> "back", "LAY" -> "lay"
     }));
 
+    
     // Transform currentMarketData to matchData format for calculateSmartCashout
     const matchData = {
       back: [],
@@ -125,20 +125,12 @@ export const handleCashoutLogic = async (params) => {
       }
     });
 
-    // Get current P/L from teamNameCurrentBets (negative = loss, positive = profit)
-    // Structure: teamNameCurrentBets.current[betType][teamName] = exposure value
-    const currentPL = {};
-    if (teamNameCurrentBets?.current?.[betType]) {
-      Object.keys(teamNameCurrentBets.current[betType]).forEach((team) => {
-        currentPL[team] = parseFloat(teamNameCurrentBets.current[betType][team] || 0);
-      });
-    }
-
     // Get stake values from Redux store or params if available
     const stakeValues = params.stakeValues || store.getState()?.commonData?.stake_values || {};
     
     // Use smart cashout calculation - returns best hedge option
-    const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues);
+    // Pass oddsTeamData to incorporate existing profit/loss into resultingNets
+    const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues, oddsTeamData);
 
     if (!smartCashoutResult) {
       Notify("You are not eligible for cashout", null, null, "danger");
@@ -206,28 +198,11 @@ export const handleCashoutLogic = async (params) => {
   }
 };
 
-/**
- * Calculate smart cashout stakes based on match data and recent bets
- * Considers exposure, liquidity, and balanced profit/loss scenarios
- * @param {Object} matchData - Match data with back and lay markets
- * @param {Array} matchData.back - Array of back market options with team, odds, volume
- * @param {Array} matchData.lay - Array of lay market options with team, odds, volume
- * @param {Array} recentBets - Array of recent bets with team, odds, stake, side
- * @param {Object} currentPL - Current profit/loss by team (negative = loss, positive = profit)
- * @returns {Array} Array of cashout results sorted by best balance
- */
-/**
- * Find the nearest stake value from available stake values
- * @param {number} targetValue - The value to find nearest to
- * @param {Object} stakeValues - Object with stake values (e.g., {0: {val: 1000}, 1: {val: 2000}})
- * @returns {number} - The nearest stake value
- */
 function findNearestStakeValue(targetValue, stakeValues = {}) {
   if (!stakeValues || Object.keys(stakeValues).length === 0) {
-    return targetValue; // Return original if no stake values available
+    return targetValue;
   }
 
-  // Extract all stake values from stakeValues object
   const availableStakes = Object.values(stakeValues)
     .map(item => parseFloat(item?.val || item || 0))
     .filter(val => val > 0)
@@ -237,7 +212,6 @@ function findNearestStakeValue(targetValue, stakeValues = {}) {
     return targetValue;
   }
 
-  // Find the nearest stake value
   let nearest = availableStakes[0];
   let minDiff = Math.abs(targetValue - nearest);
 
@@ -252,7 +226,16 @@ function findNearestStakeValue(targetValue, stakeValues = {}) {
   return nearest;
 }
 
-export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
+/**
+ * Calculate smart cashout stakes based on match data and recent bets
+ * Considers exposure, liquidity, and balanced profit/loss scenarios
+ * @param {Object} matchData - Match data with back and lay markets
+ * @param {Array} recentBets - Array of recent bets with team, odds, stake, side
+ * @param {Object} stakeValues - Available stake values for rounding
+ * @param {Object} oddsTeamData - Current exposure/profit-loss for each team
+ * @returns {Object|null} Best cashout option with team, side, stake, and resulting nets
+ */
+export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, oddsTeamData = {}) {
   if (!matchData || !Array.isArray(matchData.back)) throw new Error("matchData.back required");
 
   const round2 = r => Math.round(r * 100) / 100;
@@ -261,10 +244,10 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   // Calculate total bet amount sum from recentBets
   const totalBetAmount = recentBets.reduce((sum, bet) => sum + (parseFloat(bet.stake) || 0), 0);
 
-  const teams = Array.from(new Set([
-    ...matchData.back.map(b => b.team),
-    ...matchData.lay.map(l => l.team)
-  ]));
+  
+  const teams = Array.from(new Set(
+    matchData.back.map(b => b.team)
+  ));
 
   const backMap = Object.fromEntries((matchData.back || []).map(b => [b.team, b]));
   const layMap  = Object.fromEntries((matchData.lay  || []).map(l => [l.team, l]));
@@ -272,46 +255,45 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   if (teams.length < 1) throw new Error("matchData must contain at least one team");
 
 
+  // Initialize netIfWin with existing profit/loss from oddsTeamData
   const netIfWin = {};
-  teams.forEach(t => netIfWin[t] = 0);
+  teams.forEach(t => {
+    // Get existing value from oddsTeamData (existing bets exposure)
+    netIfWin[t] = oddsTeamData && oddsTeamData[t] != null ? parseFloat(oddsTeamData[t]) || 0 : 0;
+  });
 
-  for (const bet of (recentBets || [])) {
-    const betDec = displayToDecimal(bet.odds);
-    
-    teams.forEach(teamWin => {
-      if (bet.team === teamWin) {
-        if (bet.side === "back") netIfWin[teamWin] += (betDec - 1) * bet.stake;
-        else if (bet.side === "lay") netIfWin[teamWin] += -((betDec - 1) * bet.stake);
-      } else {
-        if (bet.side === "back") netIfWin[teamWin] += -bet.stake;
-        else if (bet.side === "lay") netIfWin[teamWin] += bet.stake;
-      }
-    });
-  }
 
+  
   const candidates = [];
 
   const pushBack = (team) => {
     const other = teams.find(t => t !== team);
+    if (!other) return;
+
     const market = backMap[team];
-    if (!market || !other) return;
+    if (!market) return;
 
     const dec = displayToDecimal(market.odds);
-    const vol = market.volume || 0;
     const numerator = netIfWin[other] - netIfWin[team];
     const theo = dec > 0 ? numerator / dec : NaN;
     
     if (theo <= 0 || !isFinite(theo)) return;
 
-    // Use the nearest stake value to the theoretical stake (rounded to available stake values)
     const capped = findNearestStakeValue(theo, stakeValues);
-    const netTeamWin = netIfWin[team] + (dec - 1) * capped;
-    const netOtherWin = netIfWin[other] - capped;
+    const displayOdds = parseFloat(market.odds);
+    const parsedStake = parseFloat(capped);
+    const profit = parsedStake * (displayOdds - 1);
+    const loss = parsedStake;
+    
+    const existingTeamValue = parseFloat(netIfWin[team] || 0);
+    const existingOtherValue = parseFloat(netIfWin[other] || 0);
+    const netTeamWin = Math.round((profit + existingTeamValue) * 100) / 100;
+    const netOtherWin = Math.round((-loss + existingOtherValue) * 100) / 100;
 
     candidates.push({
       team, side: "back", 
-      decimalOdds: dec,  // Used for calculations only
-      originalDisplayOdds: market.odds,  // Original display odds for bet placement
+      decimalOdds: dec,
+      originalDisplayOdds: market.odds,
       theoreticalStake: theo, stake: capped,
       isCapped: capped < theo,
       resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
@@ -321,26 +303,32 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
 
   const pushLay = (team) => {
     const other = teams.find(t => t !== team);
+    if (!other) return;
+
     const market = layMap[team];
-    
-    if (!market || !other) return;
+    if (!market) return;
 
     const dec = displayToDecimal(market.odds);
     const numerator = netIfWin[team] - netIfWin[other];
     const theo = dec > 0 ? numerator / dec : NaN;
-    console.log('theo is ', theo)
     
     if (theo <= 0 || !isFinite(theo)) return;
 
-    // Use the nearest stake value to the theoretical stake (rounded to available stake values)
     const capped = findNearestStakeValue(theo, stakeValues);
-    const netTeamWin = netIfWin[team] - (dec - 1) * capped;
-    const netOtherWin = netIfWin[other] + capped;
+    const displayOdds = parseFloat(market.odds);
+    const parsedStake = parseFloat(capped);
+    const profit = parsedStake;
+    const loss = (displayOdds - 1) * parsedStake;
+    
+    const existingTeamValue = parseFloat(netIfWin[team] || 0);
+    const existingOtherValue = parseFloat(netIfWin[other] || 0);
+    const netTeamWin = Math.round((-loss + existingTeamValue) * 100) / 100;
+    const netOtherWin = Math.round((profit + existingOtherValue) * 100) / 100;
 
     candidates.push({
       team, side: "lay", 
-      decimalOdds: dec,  // Used for calculations only
-      originalDisplayOdds: market.odds,  // Original display odds for bet placement
+      decimalOdds: dec,
+      originalDisplayOdds: market.odds,
       theoreticalStake: theo, stake: capped,
       isCapped: capped < theo,
       resultingNets: { [team]: netTeamWin, [other]: netOtherWin },
@@ -376,6 +364,8 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
         const capped = findNearestStakeValue(theo, stakeValues);
         const netWinBack = netWin + (decBack - 1) * capped;
         const netLoseBack = netLose - capped;
+
+      
         candidates.push({
           team, side: "back", 
           decimalOdds: decBack,  // Used for calculations only
@@ -467,7 +457,6 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}) {
   });
 
 
-  console.log('candidates are ', candidates)
   const best =  candidates.reduce((min, c) => c.diff < min.diff ? c : min, candidates[0]);
 
   const netTeam = round2(best.resultingNets[teams[0]]);
@@ -2165,6 +2154,7 @@ export const updatePlacingBetsState = (
   updatedBets,
   globalUpdatePlacingBets = null
 ) => {
+  
   if (setPlacingBets) {
     setPlacingBets((prevState) => {
       const newState = {
@@ -2177,6 +2167,7 @@ export const updatePlacingBetsState = (
   }
 
   if (globalUpdatePlacingBets) {
+    
     globalUpdatePlacingBets.current = updatedBets;
   }
 };
@@ -2914,3 +2905,64 @@ export async function secureDatatableFetch(url, dtParams = {}, extraParams = {})
     };
   }
 }
+
+/**
+ * Calculate resulting nets using the same calculation as calculateUpdatedBets
+ * But works with oddsTeamData and returns nets for the two teams only
+ * @param {string} betType - The type of bet (ODDS, BOOKMAKER, etc.)
+ * @param {string} backOrLay - Whether it's 'back' or 'lay' bet
+ * @param {string} currentTeam - Current team name (team being bet on)
+ * @param {number} profit - Current profit value (calculated from odds and stake)
+ * @param {number} loss - Current loss value (calculated from odds and stake)
+ * @param {Object} oddsTeamData - Current exposure/profit-loss for each team (like teamNameCurrentBets)
+ *                                Must contain exactly 2 teams
+ * @returns {Object} Resulting nets object with team names as keys
+ */
+export const calculateResultingNetsFromOdds = (
+  betType,
+  backOrLay,
+  currentTeam,
+  profit,
+  loss,
+  oddsTeamData = {}
+) => {
+  // Get team names from oddsTeamData keys
+  const teamNames = Object.keys(oddsTeamData || {});
+  
+  if (teamNames.length !== 2) {
+    
+    return {};
+  }
+
+  // Find the other team (the one that's not currentTeam)
+  const otherTeam = teamNames.find(t => t !== currentTeam);
+  
+  if (!otherTeam) {
+    
+    return {};
+  }
+
+  // Get existing values from oddsTeamData (like teamNameCurrentBets[betType][team] in calculateUpdatedBets)
+  const existingCurrentValue = oddsTeamData && oddsTeamData[currentTeam] != null ? parseFloat(oddsTeamData[currentTeam]) || 0 : 0;
+  const existingOtherValue = oddsTeamData && oddsTeamData[otherTeam] != null ? parseFloat(oddsTeamData[otherTeam]) || 0 : 0;
+
+  // Apply calculateUpdatedBets logic exactly (lines 2114-2150)
+  let netCurrentWin, netOtherWin;
+
+  if (backOrLay === "back") {
+    // For BACK bet: current team gets profit + existing, other team gets -loss + existing
+    // This matches calculateUpdatedBets logic exactly (lines 2125-2130 and 2117-2122)
+    netCurrentWin = Math.round((parseFloat(profit) + parseFloat(existingCurrentValue)) * 100) / 100;
+    netOtherWin = Math.round((parseFloat(-loss) + parseFloat(existingOtherValue)) * 100) / 100;
+  } else {
+    // For LAY bet: current team gets -loss + existing, other team gets profit + existing
+    // This matches calculateUpdatedBets logic exactly (lines 2143-2148 and 2135-2140)
+    netCurrentWin = Math.round((parseFloat(-loss) + parseFloat(existingCurrentValue)) * 100) / 100;
+    netOtherWin = Math.round((parseFloat(profit) + parseFloat(existingOtherValue)) * 100) / 100;
+  }
+
+  return {
+    [currentTeam]: netCurrentWin,
+    [otherTeam]: netOtherWin
+  };
+};

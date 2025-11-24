@@ -32,7 +32,7 @@ function MatchOdds({
                    }) {
 
     const {runnerRowDefault, rootClassDefault, setBetType, setBetTypeFromArray, stakeValue,
-        
+        profit, loss
     } = useContext(SportsContext);
     
     // Redux hook for setting cashout team
@@ -83,7 +83,9 @@ setBetOddValue(0);
             setPopupDisplay,
             teamNameCurrentBets,
             runnerRowDefault,
-            defaultBetType: 'match_odds'
+            defaultBetType: 'match_odds',
+            oddsTeamData
+            
         });
         
         if (!success) {

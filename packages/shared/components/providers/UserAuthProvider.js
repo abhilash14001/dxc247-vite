@@ -57,17 +57,21 @@ export const UserAuthProvider = (props) => {
 
     const getBalance = () => {
         try {
-            
             if (token !== null) {
                 return axiosFetch('user_balance', 'get')
                     .then((res) => {
+                        if(res?.data){
                         // Dispatch to Redux for balance and exposure
                         dispatch(setBalance(res.data.balance));
                         dispatch(setExposure(res.data.exposure));
-
                         return res; // Return the response
+
+                    }
+
+                    return res;
                     })
                     .catch((error) => {
+                        
                         if (error.code === 'ERR_NETWORK' || error.response.status === 401) {
                             unAuthorizeHandle();
                             nav('/login');
@@ -178,6 +182,7 @@ export const UserAuthProvider = (props) => {
 
     const logout = () => {
         try {
+            
             axiosFetch('logout', 'post');
 
             // Regular user logout - clear common data
