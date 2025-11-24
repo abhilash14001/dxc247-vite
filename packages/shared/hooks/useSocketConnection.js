@@ -51,6 +51,7 @@ const useSocketConnection = (matchesData, setListData, socketUrl = API_ENDPOINTS
 
   // Initialize socket connection once (only when socketUrl changes)
   useEffect(() => {
+    
     if (!socketUrl) return;
 
     // Disconnect old sockets

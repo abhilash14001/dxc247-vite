@@ -75,7 +75,7 @@ export const handleCashoutLogic = async (params) => {
       (item) => item.gstatus === "SUSPENDED"
     );
     if (isSuspended) {
-      Notify("You are not eligible for cashout1", null, null, "danger");
+      Notify("You are not eligible for cashout", null, null, "danger");
       return false;
     }
 
@@ -133,7 +133,7 @@ export const handleCashoutLogic = async (params) => {
     const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues, oddsTeamData);
 
     if (!smartCashoutResult) {
-      Notify("You are not eligible for cashout2", null, null, "danger");
+      Notify("You are not eligible for cashout", null, null, "danger");
       return false;
     }
 
@@ -150,7 +150,7 @@ export const handleCashoutLogic = async (params) => {
       if (marketTeam) {
         hedgeOddsDisplay = marketTeam.odds;
       } else {
-        Notify("You are not eligible for cashout3", null, null, "danger");
+        Notify("You are not eligible for cashout", null, null, "danger");
         return false;
       }
     }
@@ -433,7 +433,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
       }
     };
 
-    console.log('Cashout Result:', finalResult);
+    
 
     return finalResult;
   }
@@ -482,7 +482,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     }
   };
 
-  console.log('Cashout Result:', finalResult);
+  
 
   return finalResult;
 }
