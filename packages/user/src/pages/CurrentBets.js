@@ -124,8 +124,17 @@ const CurrentBets = () => {
     
     // Add other columns
     columns.push(
+      { 
+        data: selectedGtype && selectedGtype.toLowerCase() === "sports" ? "sport_name" : "team_name", 
+        name: selectedGtype && selectedGtype.toLowerCase() === "sports" ? "sport_name" : "team_name" 
+      },
       { data: "bet_type", name: "bet_type" },
-      { data: "team_name", name: "team_name" },
+      // Add Market name column only for sports
+      ...(selectedGtype && selectedGtype.toLowerCase() === "sports" 
+        ? [{ data: "team_name", name: "team_name" }] 
+        : []),
+      // Use sport_name for sports, team_name for casino
+     
       {
         data: "bet_odds",
         name: "bet_odds",
@@ -526,6 +535,11 @@ const CurrentBets = () => {
                       <th colSpan="1" role="columnheader">
                         Event Name
                       </th>
+                      {selectedGtype && selectedGtype.toLowerCase() === "sports" && (
+                        <th colSpan="1" role="columnheader">
+                          Market name
+                        </th>
+                      )}
                       <th colSpan="1" role="columnheader">
                         Nation
                       </th>
