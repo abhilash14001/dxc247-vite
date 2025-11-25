@@ -7,6 +7,7 @@ import {
     exposureCheck, useFancyHideStatus
 } from "@dxc247/shared/utils/Constants";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
+import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 import FancyBetPopup from "./FancyBetPopup";
 
 
@@ -26,6 +27,10 @@ const BallByBall = ({
                     }) => {
     const fancyHideStatus = useFancyHideStatus(sportList, data);
     const {runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, stakeValue} = useContext(SportsContext);
+    
+    // Redux hook for setting cashout team
+    const { clearTeam } = useSetCashoutTeam();
+    
     const [fancyData, setFancyData] = useState(null)
     const [closePopup, setClosePopup] = useState(false)
 
@@ -133,9 +138,9 @@ const BallByBall = ({
                         const n_key_back = key;
 
                         let backFunctionSes = [], layFunctionSes = [];
-                        backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, 0, n_key_back, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', back, backk, undefined, undefined, undefined, stakeValue);
+                        backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, 0, n_key_back, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', back, backk, undefined, undefined, clearTeam, stakeValue);
 
-                        layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, n_key_lay, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', lay, layk, undefined, undefined, undefined, stakeValue);
+                        layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, 0, n_key_lay, 'BALL_BY_BALL', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'ball by ball', lay, layk, undefined, undefined, clearTeam, stakeValue);
 
                         const betPlaceCheck = betPlaceStatus?.current?.[teamName];
                         

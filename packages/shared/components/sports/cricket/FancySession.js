@@ -7,6 +7,7 @@ import {
     handleShowRules, useFancyHideStatus
 } from "@dxc247/shared/utils/Constants";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
+import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 import FancyBetPopup from "./FancyBetPopup";
 import axios from "axios";
 
@@ -27,6 +28,9 @@ const FancySession = ({
                       }) => {
     const fancyHideStatus = useFancyHideStatus(sportList, data);
     const {runnerRowDefault, oddsk, rootClassDefault, setBetType, setBetTypeFromArray, stakeValue} = useContext(SportsContext);
+    
+    // Redux hook for setting cashout team
+    const { clearTeam } = useSetCashoutTeam();
 
     const [fancyData, setFancyData] = useState(null)
     const [closePopup, setClosePopup] = useState(false)
@@ -146,9 +150,9 @@ const FancySession = ({
                                         isSuspendedClass = 'suspended suspend_box';
                                     }
 
-                                    const backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', back, backk, undefined, undefined, undefined, stakeValue);
+                                    const backFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'back', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', back, backk, clearTeam, stakeValue);
 
-                                    const layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', lay, layk, undefined, undefined, undefined, stakeValue);
+                                    const layFunctionSes = generateBackAndLayFunction(totalOdds, oddsArr, 'lay', teamName, runnerRow, key, 'FANCY_SESSION', setBetOddValue, setbackOrLay, teamNames, setPopupDisplay, setDefaultTeamName, runnerRowDefault, rootClassDefault, setBetType, oddsk, setBetTypeFromArray, 'normal', lay, layk, clearTeam, stakeValue);
 
                                     // Initialize and update oddsChange for blink functionality
                                     if (oddsChange?.current) {

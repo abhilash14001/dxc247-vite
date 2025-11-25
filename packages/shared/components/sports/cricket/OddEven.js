@@ -8,6 +8,7 @@ import axiosFetch, {
   exposureCheck,
 } from "@dxc247/shared/utils/Constants";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
+import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
 
 const OddEven = ({
   gameData,
@@ -29,6 +30,10 @@ const OddEven = ({
     setBetTypeFromArray,
     stakeValue,
   } = useContext(SportsContext);
+  
+  // Redux hook for setting cashout team
+  const { clearTeam } = useSetCashoutTeam();
+  
   const betEvenCalculation = useRef([]);
 
   // Move hooks before early return
@@ -236,9 +241,7 @@ const OddEven = ({
                         "oddeven",
                         back,
                         backk,
-                        undefined,
-                        undefined,
-                        undefined,
+                        clearTeam,
                         stakeValue
                       );
 
@@ -263,9 +266,7 @@ const OddEven = ({
                         "oddeven",
                         lay,
                         layk,
-                        undefined,
-                        undefined,
-                        undefined,
+                        clearTeam,
                         stakeValue
                       );
 
