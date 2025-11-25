@@ -11,12 +11,12 @@ import {
   getExByTeamNameForAllBetTypes,
   showCricketSessionBook,
   isAdminRoute,
-  exposureCheck,
 } from "@dxc247/shared/utils/Constants";
 import { decryptAndVerifyResponse } from "../../utils/decryptAndVerifyResponse";
 
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Loader from "@dxc247/shared/components/Loader";
 import { useIsAdmin } from "../../hooks/useIsAdmin";
 import encryptHybrid from "../../utils/encryptHybrid";
@@ -424,7 +424,8 @@ const Cricket = () => {
     }
   };
 
-  const expsoure = exposureCheck();
+  // Get exposure directly from Redux store
+  const expsoure = useSelector(state => state.user.exposure);
 
   useEffect(() => {
     localGetBetListData();

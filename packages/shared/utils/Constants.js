@@ -44,7 +44,9 @@ export const toPaise = (r) => {
  * @returns {number} - Decimal odds
  */
 export const displayToDecimal = (d, isTiedMatch = false) => {
-  if (isTiedMatch) {
+  
+  if (isTiedMatch && Number.isInteger(d)) {
+    // For tied match, only treat whole numbers (integers) as decimal format
     return d <= 1 ? d : 1 + d / 100;
   }
   return d > 1 && d <= 5 ? d : 1 + d / 100;

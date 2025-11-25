@@ -4,14 +4,14 @@ import {
     handleShowRules,
     organiseOdds,
     generateBackAndLayFunction,
-     handleCashoutLogic,
-     exposureCheck
+     handleCashoutLogic
 } from "@dxc247/shared/utils/Constants";
 
 import {getActiveBets} from "@dxc247/shared/utils/betUtils";
 import React, {useContext, useEffect, useMemo, useState} from "react";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
+import { useSelector } from "react-redux";
 
 function MatchOdds({
                        isAdmin,
@@ -39,7 +39,10 @@ function MatchOdds({
     const { setTeam, clearTeam } = useSetCashoutTeam();
     
     const [hasActiveBets, setHasActiveBets] = useState(false);
-    const exposure = exposureCheck()
+    
+    // Get exposure directly from Redux store
+    const exposure = useSelector(state => state.user.exposure);
+    
     // Check for active bets when component mounts or myBetModel changes
     useEffect(() => {
         const checkActiveBets = async (type = 'ODDS') => {

@@ -5,10 +5,10 @@ import axiosFetch, {
   getSize,
   handleShowRules,
   useFancyHideStatus,
-  exposureCheck,
 } from "@dxc247/shared/utils/Constants";
 import { SportsContext } from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
+import { useSelector } from "react-redux";
 
 const OddEven = ({
   gameData,
@@ -33,6 +33,9 @@ const OddEven = ({
   
   // Redux hook for setting cashout team
   const { clearTeam } = useSetCashoutTeam();
+  
+  // Get exposure directly from Redux store
+  const exposure = useSelector(state => state.user.exposure);
   
   const betEvenCalculation = useRef([]);
 
@@ -114,7 +117,7 @@ const OddEven = ({
       calculateBetevEn();
     }
     // eslint-disable-next-line
-  }, [Object.keys(model).length, exposureCheck(), gameData?.["oddeven"]?.section.length]);
+  }, [Object.keys(model).length, exposure, gameData?.["oddeven"]?.section.length]);
 
   // Early return after all hooks
   if (!gameData || !gameData?.["oddeven"] || !mainValue || !ar_sectionData) return null;

@@ -4,13 +4,12 @@ import {
     organiseOdds,
     getExByColor,
     generateBackAndLayFunction,
-    handleCashoutLogic,
-    exposureCheck
-    
+    handleCashoutLogic
 } from "@dxc247/shared/utils/Constants";
 import {getActiveBets} from "@dxc247/shared/utils/betUtils";
 import {SportsContext} from "@dxc247/shared/contexts/SportsContext";
 import { useSetCashoutTeam } from "@dxc247/shared/store/hooks";
+import { useSelector } from "react-redux";
 
 function Bookmaker2({
     isAdmin,
@@ -44,7 +43,8 @@ function Bookmaker2({
     
     const [hasActiveBets, setHasActiveBets] = useState(false);
 
-    const exposure = exposureCheck();
+    // Get exposure directly from Redux store
+    const exposure = useSelector(state => state.user.exposure);
     // Check for active bets when component mounts
     useEffect(() => {
         const checkActiveBets = async () => {
