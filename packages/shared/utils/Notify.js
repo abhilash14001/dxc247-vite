@@ -11,7 +11,7 @@ const Notify = function(text, callback, close_callback, style) {
         pauseOnHover: true,
         draggable: false,
         onClick: callback,
-        closeButton: false,
+        closeButton: true,
         className: 'custom-toast custom-toast-compact',
         
     };
