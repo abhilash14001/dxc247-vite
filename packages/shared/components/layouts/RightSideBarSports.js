@@ -462,13 +462,13 @@ const RightSideBarSports = ({
         
         if (match_odd) {
           if (backOrLay === "back" && odds > match_odd.odds) {
-            Notify("Odds Value change, Bet not Confirm!", null, null, "danger");
+            Notify("Odds Value change, Bet not Confirm!1", null, null, "danger");
             resetAll();
             return false;
           }
 
           if (backOrLay === "lay" && odds < match_odd.odds) {
-            Notify("Odds Value change, Bet not Confirm!", null, null, "danger");
+            Notify("Odds Value change, Bet not Confirm!2", null, null, "danger");
             resetAll();
             return false;
           }
@@ -523,7 +523,8 @@ const RightSideBarSports = ({
       }
       if (match_odd !== undefined) {
         if (odds !== match_odd.odds) {
-          Notify("Odds Value change, Bet not Confirm!", null, null, "danger");
+          
+          Notify("Odds Value change, Bet not Confirm!3", null, null, "danger");
           resetAll();
 
           return;
@@ -538,7 +539,7 @@ const RightSideBarSports = ({
       }
       if (match_odd !== undefined) {
         if (odds !== match_odd.odds) {
-          Notify("Odds Value change, Bet not Confirm!", null, null, "danger");
+          Notify("Odds Value change, Bet not Confirm!4", null, null, "danger");
           resetAll();
 
           return;

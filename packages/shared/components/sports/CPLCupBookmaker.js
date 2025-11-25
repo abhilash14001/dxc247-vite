@@ -334,16 +334,16 @@ function CPLCupBookmaker({
                   <div className="market-nation-detail">
                     <span className="market-nation-name">{teamName}</span>
                     <div className="market-nation-book">
-                      <span className={`teamEx`}>
-                        {getExByColor(teamEx, true)}
+                      <span className={`market-book ${teamEx < 0 ? 'text-danger' : 'text-success'}`}>
+                        {teamEx ?? ''}
                       </span>
                       {placingBets[normalizedKey]?.[teamName] && (
                         <span
-                          className={
+                          className={`market-live-book d-none d-xl-block ${
                             placingBets[normalizedKey]?.[teamName] < 0
-                              ? "market-live-book text-danger"
-                              : "market-live-book text-success"
-                          }
+                              ? "text-danger"
+                              : "text-success"
+                          }`}
                         >
                           {placingBets[normalizedKey][teamName] % 1 !== 0 &&
                           placingBets[normalizedKey][teamName]

@@ -189,10 +189,12 @@ const TiedMatch = ({
                                         <span className="market-nation-name">{teamName}</span>
                                        
                                         <div className={`market-nation-book`}>
-                                        <span className={`market-book ${teamEx < 0 ? 'text-danger' : 'text-success'} `}>
-                                            {teamEx}
+                                        <span className={`market-book ${teamEx < 0 ? 'text-danger' : 'text-success'}`}>
+                                            {teamEx ?? ''}
                                         </span>
-                                        <div className={`market-live-book ${placingBets?.['TIED_MATCH']?.[teamName] < 0 ? 'text-danger' : 'text-success'} `}>{placingBets?.['TIED_MATCH']?.[teamName] ?? ''}</div>
+                                        <span className={`market-live-book d-none d-xl-block ${placingBets?.['TIED_MATCH']?.[teamName] < 0 ? 'text-danger' : 'text-success'}`}>
+                                            {placingBets?.['TIED_MATCH']?.[teamName] ?? ''}
+                                        </span>
                                         </div>
                                         
                                     </div>

@@ -172,7 +172,52 @@ export const handleCashoutLogic = async (params) => {
     
     setBetOddValue(firstBet.hedgeOdds);
     setbackOrLay(firstBet.hedgeSide);
-    runnerRowDefault.current = firstBet.hedgeSide.toLowerCase() === 'back' ? 2 : 0;
+    
+    // Check if only back1 has data and all other odds are 0
+    const shouldSetToZero = () => {
+      // Find the market data item for the selected team
+      const marketItem = currentMarketData.find(item => item.nat?.trim() === firstBet.team);
+      if (!marketItem) return false;
+      
+      // Get odds array - could be directly in item.odds or need to combine item.back and item.lay
+      let oddsArray = [];
+      if (Array.isArray(marketItem.odds) && marketItem.odds.length > 0) {
+        // Use direct odds array if available
+        oddsArray = marketItem.odds;
+      } else if (Array.isArray(marketItem.back) || Array.isArray(marketItem.lay)) {
+        // Combine back and lay arrays if odds array not available
+        oddsArray = [
+          ...(marketItem.back || []),
+          ...(marketItem.lay || [])
+        ];
+      }
+      
+      // If no odds array, use existing logic
+      if (!Array.isArray(oddsArray) || oddsArray.length === 0) {
+        return false;
+      }
+      
+      // Check if only back1 (tno: 0, otype: "back", oname: "back1") has data
+      const back1 = oddsArray.find(o => o.otype === "back" && o.tno === 0 && o.oname === "back1");
+      const hasBack1Data = back1 && back1.odds > 0 && back1.size > 0;
+      
+      // Check if all other entries have odds: 0 and size: 0
+      const allOthersZero = oddsArray.every(o => {
+        // Skip back1
+        
+        if ((o.otype === "back" && o.tno == 0 && o.oname === "back1")|| o.otype === 'lay') return true;
+        
+        return o.odds === 0 && o.size === 0;
+      });
+      
+      return hasBack1Data && allOthersZero;
+    };
+    
+    
+    // Set to 0 if only back1 has data, otherwise use existing logic
+    runnerRowDefault.current = shouldSetToZero() 
+      ? 0 
+      : (firstBet.hedgeSide.toLowerCase() === 'back' ? 2 : 0);
     
     setTeam(defaultBetType === "match_odds" ? "MATCH_ODDS" : defaultBetType.toUpperCase());
     setDefaultTeamName.current = firstBet.team;
@@ -252,7 +297,10 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
   const backMap = Object.fromEntries((matchData.back || []).map(b => [b.team, b]));
   const layMap  = Object.fromEntries((matchData.lay  || []).map(l => [l.team, l]));
 
-  if (teams.length < 1) throw new Error("matchData must contain at least one team");
+  if (teams.length < 1) {
+    Notify("You are not eligible for cashout", null, null, "danger");
+    return false;
+  }
 
 
   // Initialize netIfWin with existing profit/loss from oddsTeamData

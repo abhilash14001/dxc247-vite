@@ -422,9 +422,9 @@ function Bookmaker({
                   <div className="market-nation-detail">
                     <span className="market-nation-name">{teamName}</span>
                     <div className="market-nation-book">
-                      {getExByColor(teamEx)}
-                    </div>
-                    <div className="market-nation-book">
+                      <span className={`market-book ${teamEx < 0 ? 'text-danger' : 'text-success'}`}>
+                        {teamEx ?? ''}
+                      </span>
                       {placingBets?.["BOOKMAKER"]?.[teamName] && (
                         <span
                           className={`market-live-book d-none d-xl-block ${

@@ -342,11 +342,11 @@ setBetOddValue(0);
                                                 <div className="market-nation-detail">
                                                     <span className="market-nation-name">{teamName}</span>
                                                     <div className="market-nation-book">
-                                                        <span className={`teamEx`}>
-                                                            {getExByColor(teamEx)}
+                                                        <span className={`market-book ${teamEx < 0 ? 'text-danger' : 'text-success'}`}>
+                                                            {teamEx ?? ''}
                                                         </span>
                                                         <span
-                                                            className={`${placingBets?.['ODDS']?.[teamName] < 0 ? 'market-live-book d-none d-xl-block text-danger' : 'market-live-book d-none d-xl-block text-success '} `}>
+                                                            className={`market-live-book d-none d-xl-block ${placingBets?.['ODDS']?.[teamName] < 0 ? 'text-danger' : 'text-success'}`}>
                                                             {placingBets?.['ODDS']?.[teamName] ?? ''}
                                                         </span>
                                                     </div>

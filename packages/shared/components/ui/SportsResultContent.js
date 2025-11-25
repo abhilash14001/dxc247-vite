@@ -84,6 +84,7 @@ const SportsResultContent = ({
   const getWinAmount = (bet) => {
     try {
       const resultData = JSON.parse(bet.result || '{}');
+      
       const winAmount = resultData.win_amount;
       
       if (winAmount === 'N/A' || !isNumeric(winAmount)) {
