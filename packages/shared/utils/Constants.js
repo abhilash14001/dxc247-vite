@@ -37,13 +37,16 @@ export const toPaise = (r) => {
 /**
  * Convert display odds (profit-per-100 format) to decimal odds
  * Display format: 150 means 150 profit per 100 staked (decimal: 2.50)
- * If odds are between 1-10, they are already in decimal format, return as-is
+ * If odds are between 1-10 (or <= 1 for tied match), they are already in decimal format, return as-is
  * Otherwise, convert using formula: decimalOdds = 1 + (displayOdds / 100)
  * @param {number} d - Display odds in profit-per-100 format, or decimal odds if between 1-10
+ * @param {boolean} isTiedMatch - If true, treats odds <= 1 as decimal format (for tied match)
  * @returns {number} - Decimal odds
  */
-export const displayToDecimal = (d) => {
-
+export const displayToDecimal = (d, isTiedMatch = false) => {
+  if (isTiedMatch) {
+    return d <= 1 ? d : 1 + d / 100;
+  }
   return d > 1 && d <= 5 ? d : 1 + d / 100;
 };
 
@@ -100,13 +103,14 @@ export const handleCashoutLogic = async (params) => {
       lay: [],
     };
 
+    
     currentMarketData.forEach((item) => {
       const team = item.nat?.trim();
       if (!team) return;
 
       // Extract back odds with volume (size)
       const backOdds = item.back?.find((o) => o.oname === "back1");
-      if (backOdds && backOdds.odds) {
+      if (backOdds) {
         matchData.back.push({
           team,
           odds: parseFloat(backOdds.odds),
@@ -130,7 +134,9 @@ export const handleCashoutLogic = async (params) => {
     
     // Use smart cashout calculation - returns best hedge option
     // Pass oddsTeamData to incorporate existing profit/loss into resultingNets
-    const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues, oddsTeamData);
+    // Check if this is tied match for proper odds conversion
+    const isTiedMatch = betType === 'TIED_MATCH';
+    const smartCashoutResult = calculateSmartCashout(matchData, recentBets, stakeValues, oddsTeamData, isTiedMatch);
 
     if (!smartCashoutResult) {
       Notify("You are not eligible for cashout", null, null, "danger");
@@ -280,7 +286,7 @@ function findNearestStakeValue(targetValue, stakeValues = {}) {
  * @param {Object} oddsTeamData - Current exposure/profit-loss for each team
  * @returns {Object|null} Best cashout option with team, side, stake, and resulting nets
  */
-export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, oddsTeamData = {}) {
+export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, oddsTeamData = {}, isTiedMatch = false) {
   if (!matchData || !Array.isArray(matchData.back)) throw new Error("matchData.back required");
 
   const round2 = r => Math.round(r * 100) / 100;
@@ -309,6 +315,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     // Get existing value from oddsTeamData (existing bets exposure)
     netIfWin[t] = oddsTeamData && oddsTeamData[t] != null ? parseFloat(oddsTeamData[t]) || 0 : 0;
   });
+  
 
 
   const candidates = [];
@@ -320,7 +327,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     const market = backMap[team];
     if (!market) return;
 
-    const dec = displayToDecimal(market.odds);
+    const dec = displayToDecimal(market.odds, isTiedMatch);
     const numerator = netIfWin[other] - netIfWin[team];
     const theo = dec > 0 ? numerator / dec : NaN;
     
@@ -355,7 +362,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     const market = layMap[team];
     if (!market) return;
 
-    const dec = displayToDecimal(market.odds);
+    const dec = displayToDecimal(market.odds, isTiedMatch);
     const numerator = netIfWin[team] - netIfWin[other];
     const theo = dec > 0 ? numerator / dec : NaN;
     
@@ -371,7 +378,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     const existingOtherValue = parseFloat(netIfWin[other] || 0);
     const netTeamWin = Math.round((-loss + existingTeamValue) * 100) / 100;
     const netOtherWin = Math.round((profit + existingOtherValue) * 100) / 100;
-    
+
     candidates.push({
       team, side: "lay", 
       decimalOdds: dec,
@@ -393,8 +400,8 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     const team = teams[0];
     const back = backMap[team];
     const lay = layMap[team];
-    const decBack = back ? displayToDecimal(back.odds) : null;
-    const decLay = lay ? displayToDecimal(lay.odds) : null;
+    const decBack = back ? displayToDecimal(back.odds, isTiedMatch) : null;
+    const decLay = lay ? displayToDecimal(lay.odds, isTiedMatch) : null;
 
     let netWin = netIfWin[team];
     let netLose = 0;
@@ -428,6 +435,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
     if (decLay) {
       const theo = (netWin - netLose) / decLay;
       if (theo > 0 && isFinite(theo)) {
+        
         // Use the nearest stake value to the theoretical stake (rounded to available stake values)
         const capped = findNearestStakeValue(theo, stakeValues);
         const netWinLay = netWin - (decLay - 1) * capped;
@@ -457,6 +465,7 @@ export function calculateSmartCashout(matchData, recentBets, stakeValues = {}, o
         resultingNetsIfCapped: { [team]: netValue }
       };
     }
+    
 
     candidates.sort((a, b) => a.diff - b.diff);
     
