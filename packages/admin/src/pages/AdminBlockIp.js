@@ -4,7 +4,7 @@ import { adminApi } from '@dxc247/shared/utils/adminApi';
 import { ADMIN_BASE_PATH } from '@dxc247/shared/utils/Constants';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 // ✅ Cleaned ToggleSwitch Component
 const ToggleSwitch = ({ id, checked, onChange, label }) => {
@@ -137,6 +137,42 @@ const AdminBlockIp = () => {
     }
   };
 
+  const handleDelete = async (id, ipAddress) => {
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to delete IP address ${ipAddress}?`)) {
+      return;
+    }
+
+    try {
+      const response = await adminApi(
+        `${ADMIN_BASE_PATH}/block-ip/${id}`,
+        'DELETE',
+        
+        true
+      );
+
+      if (response.success) {
+        toast.success('IP address deleted successfully');
+        loadBlockedIps();
+      } else {
+        toast.error(response.message || 'Failed to delete IP address');
+      }
+    } catch (error) {
+      console.error('Error deleting IP:', error);
+      if (error.response && error.response.status === 422) {
+        const errorData = error.response.data;
+        if (errorData.errors) {
+          const errorMessages = Object.values(errorData.errors).flat();
+          toast.error(errorMessages.join(", "));
+        } else {
+          toast.error(errorData.message || "Validation failed");
+        }
+      } else {
+        toast.error('Failed to delete IP address. Please try again.');
+      }
+    }
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadBlockedIps();
@@ -212,18 +248,19 @@ const AdminBlockIp = () => {
                           <th>Time</th>
                           <th>Status</th>
                           <th>Edit</th>
+                          <th>Delete</th>
                         </tr>
                       </thead>
                       <tbody>
                         {loading ? (
                           <tr>
-                            <td colSpan="5" className="text-center">
+                            <td colSpan="6" className="text-center">
                               <FontAwesomeIcon icon={faSpinner} spin /> Loading...
                             </td>
                           </tr>
                         ) : blockedIps.length === 0 ? (
                           <tr>
-                            <td colSpan="5" className="dataTables_empty text-center">
+                            <td colSpan="6" className="dataTables_empty text-center">
                               No data available in table
                             </td>
                           </tr>
@@ -254,6 +291,15 @@ const AdminBlockIp = () => {
                                 >
                                   <FontAwesomeIcon icon={faEdit} className="text-white" />
                                 </Link>
+                              </td>
+                              <td>
+                                <button
+                                  onClick={() => handleDelete(blockedIp.id, blockedIp.ip)}
+                                  className="btn btn-danger btn-sm"
+                                  title="Delete"
+                                >
+                                  <FontAwesomeIcon icon={faTrash} className="text-white" />
+                                </button>
                               </td>
                             </tr>
                           ))
