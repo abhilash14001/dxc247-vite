@@ -137,64 +137,93 @@ const LiveModeGuard = ({ children }) => {
   }, [liveModeData, currentDomain]);
 
   useEffect(() => {
-    if (!isLiveMode || !inspectRedirectUrl) return;
+    if (!isLiveMode) return;
 
     let detectionIntervals = [];
     let isRedirecting = false;
-    let warningCount = 0;
-    const maxWarnings = 3; // Allow 3 warnings before redirect
+    let consecutiveDetections = 0;
+    const requiredConsecutiveDetections = 3; // Require 3 consecutive detections to avoid false positives
+    let lastWindowSize = { outerHeight: window.outerHeight, outerWidth: window.outerWidth, innerHeight: window.innerHeight, innerWidth: window.innerWidth };
 
-    // Method 1: Window size detection (most reliable)
+    // Method 1: Window size detection - Only for devtools (more specific)
     const windowSizeDetection = () => {
-      const threshold = 160;
+      const threshold = 160; // Devtools typically add at least 160px
       const heightDiff = window.outerHeight - window.innerHeight;
       const widthDiff = window.outerWidth - window.innerWidth;
       
-      if (heightDiff > threshold || widthDiff > threshold) {
-        warningCount++;
-        if (warningCount >= maxWarnings && !isRedirecting) {
+      // Check if window size changed significantly (devtools opened)
+      const sizeChanged = 
+        Math.abs(window.outerHeight - lastWindowSize.outerHeight) > 50 ||
+        Math.abs(window.outerWidth - lastWindowSize.outerWidth) > 50 ||
+        Math.abs(window.innerHeight - lastWindowSize.innerHeight) > 50 ||
+        Math.abs(window.innerWidth - lastWindowSize.innerWidth) > 50;
+      
+      // Only trigger if size difference indicates devtools AND size actually changed
+      if ((heightDiff > threshold || widthDiff > threshold) && sizeChanged) {
+        consecutiveDetections++;
+        lastWindowSize = {
+          outerHeight: window.outerHeight,
+          outerWidth: window.outerWidth,
+          innerHeight: window.innerHeight,
+          innerWidth: window.innerWidth
+        };
+        
+        if (consecutiveDetections >= requiredConsecutiveDetections && !isRedirecting) {
           isRedirecting = true;
-          // Block IP and logout (will redirect to login)
           handleInspectionDetected();
         }
+      } else {
+        // Reset counter if no devtools detected
+        consecutiveDetections = 0;
+        lastWindowSize = {
+          outerHeight: window.outerHeight,
+          outerWidth: window.outerWidth,
+          innerHeight: window.innerHeight,
+          innerWidth: window.innerWidth
+        };
       }
     };
 
-    // Method 2: Console detection
+    // Method 2: Console detection - Specific to devtools
     const consoleDetection = () => {
       let devtools = false;
       const element = new Image();
       Object.defineProperty(element, 'id', {
         get: function() {
           devtools = true;
-          warningCount++;
-          if (warningCount >= maxWarnings && !isRedirecting) {
+          consecutiveDetections++;
+          if (consecutiveDetections >= requiredConsecutiveDetections && !isRedirecting) {
             isRedirecting = true;
-            // Block IP and logout (will redirect to login)
             handleInspectionDetected();
           }
         }
       });
       console.clear();
+      
+      // Reset if no devtools detected
+      if (!devtools) {
+        consecutiveDetections = Math.max(0, consecutiveDetections - 1);
+      }
     };
 
-    // Method 3: Debugger detection
+    // Method 3: Debugger detection - Specific to devtools
     const debuggerDetection = () => {
       const start = performance.now();
       debugger;
       const end = performance.now();
       if (end - start > 100) {
-        warningCount++;
-        if (warningCount >= maxWarnings && !isRedirecting) {
+        consecutiveDetections++;
+        if (consecutiveDetections >= requiredConsecutiveDetections && !isRedirecting) {
           isRedirecting = true;
-          // Block IP and logout (will redirect to login)
           handleInspectionDetected();
         }
+      } else {
+        consecutiveDetections = Math.max(0, consecutiveDetections - 1);
       }
     };
 
     // Start all detection methods
-    detectionIntervals.push(setInterval(windowSizeDetection, 100));
+    detectionIntervals.push(setInterval(windowSizeDetection, 200)); // Slower check to avoid false positives
     detectionIntervals.push(setInterval(consoleDetection, 500));
     detectionIntervals.push(setInterval(debuggerDetection, 1000));
 
@@ -202,11 +231,11 @@ const LiveModeGuard = ({ children }) => {
     return () => {
       detectionIntervals.forEach(interval => clearInterval(interval));
     };
-  }, [isLiveMode, inspectRedirectUrl, handleInspectionDetected]);
+  }, [isLiveMode, handleInspectionDetected]);
 
-  // Additional protection methods
+  // Additional protection methods - Keyboard shortcuts for devtools
   useEffect(() => {
-    if (!isLiveMode || !inspectRedirectUrl) return;
+    if (!isLiveMode) return;
 
     let isRedirecting = false;
 
@@ -269,35 +298,7 @@ const LiveModeGuard = ({ children }) => {
       document.removeEventListener('contextmenu', disableContextMenu);
       document.removeEventListener('keydown', disableKeyboardShortcuts);
     };
-  }, [isLiveMode, inspectRedirectUrl, handleInspectionDetected]);
-
-  // Blur detection (when user switches tabs)
-  useEffect(() => {
-    if (!isLiveMode || !inspectRedirectUrl) return;
-
-    let startTime = Date.now();
-    let isRedirecting = false;
-    
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        startTime = Date.now();
-      } else {
-        const timeDiff = Date.now() - startTime;
-        // If user was away for more than 5 seconds, redirect
-        if (timeDiff > 5000 && !isRedirecting) {
-          isRedirecting = true;
-          // Block IP and logout (will redirect to login)
-          handleInspectionDetected();
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [isLiveMode, inspectRedirectUrl, handleInspectionDetected]);
+  }, [isLiveMode, handleInspectionDetected]);
 
   return children;
 };
