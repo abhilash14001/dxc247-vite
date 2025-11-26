@@ -21,6 +21,9 @@ const Notify = function(text, callback, close_callback, style) {
     } else {
         toast.success(text, toastOptions);
     }
+    setTimeout(() => {
+        toast.dismiss();
+    }, 1000);
 };
 
 export default Notify;

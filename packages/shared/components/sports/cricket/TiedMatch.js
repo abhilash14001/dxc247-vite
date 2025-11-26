@@ -86,7 +86,7 @@ const TiedMatch = ({
             setPopupDisplay,
             teamNameCurrentBets,
             runnerRowDefault,
-            defaultBetType: 'TIED_MATCH',
+            defaultBetType: 'tied match',
             oddsTeamData: tiedMatchData
 
         });

@@ -325,7 +325,7 @@ const RightSideBarSports = ({
       ? teamname.current.split(" - ")[0]
       : teamname.current;
 
-    let betTypeis = betTypeFromArray;
+    let betTypeis = betTypeFromArray.toLowerCase();
 
 
     const globalMatch = globalMname
@@ -338,7 +338,7 @@ const RightSideBarSports = ({
       ? globalMatch?.section.find((item) => item.nat.trim() === teamm.trim())
       : null;
       
-
+      
 
     return (
       changeDataRef.current[betTypeis]?.section.find(

@@ -15,7 +15,7 @@ export { store };
 export const ADMIN_BASE_PATH = "/admin";
 export const isAdminRoute = () => {
   
-  return store.getState().admin?.isAdmin;
+  return store.getState().admin?.isAdmin && window.location.pathname.includes(ADMIN_BASE_PATH);
 };
 
 /**
@@ -44,12 +44,12 @@ export const toPaise = (r) => {
  * @returns {number} - Decimal odds
  */
 export const displayToDecimal = (d, isTiedMatch = false) => {
-  
-  if (isTiedMatch && Number.isInteger(d)) {
-    // For tied match, only treat whole numbers (integers) as decimal format
+  if(isTiedMatch){
+    
     return d <= 1 ? d : 1 + d / 100;
   }
   return d > 1 && d <= 5 ? d : 1 + d / 100;
+
 };
 
 export const handleCashoutLogic = async (params) => {
@@ -243,6 +243,7 @@ export const handleCashoutLogic = async (params) => {
       }
     };
     setStakeValueInput();
+     
 
     return true;
   } catch (error) {
