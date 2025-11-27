@@ -40,6 +40,15 @@ const FancySession = ({
     const ar_sectionData = mainValue?.section;
     const maxValue = useMemo(() => ar_sectionData?.['normal']?.['maxb'], [ar_sectionData]);
     
+    // Count valid items to determine if we need the second header (before early return)
+    const validItemsCount = useMemo(() => {
+        if (!ar_sectionData || !Array.isArray(ar_sectionData)) return 0;
+        return ar_sectionData.filter(oddsArr => {
+            const teamName = oddsArr?.nat?.trim();
+            return !fancyHideStatus[oddsArr?.sid] && teamName && teamName.trim() !== '';
+        }).length;
+    }, [ar_sectionData, fancyHideStatus]);
+    
     useEffect(() => {
         if (setMaxValue !== null) {
             setMaxValue((prevState) => {
@@ -73,7 +82,7 @@ const FancySession = ({
                 </a>
             </div>
             <div className="row row10">
-                <div className="col-md-6">
+                <div className={validItemsCount >= 2 ? "col-md-6" : "col-md-12"}>
                     <div className="market-header">
                         <div className="market-nation-detail"></div>
                         <div className="market-odd-box lay">
@@ -85,31 +94,33 @@ const FancySession = ({
                         <div className="fancy-min-max-box"></div>
                     </div>
                 </div>
-                <div className="col-md-6 d-none d-xl-block">
-                    <div className="market-header">
-                        <div className="market-nation-detail"></div>
-                        <div className="market-odd-box lay">
-                            <b>No</b>
+                {validItemsCount >= 2 && (
+                    <div className="col-md-6 d-none d-xl-block">
+                        <div className="market-header">
+                            <div className="market-nation-detail"></div>
+                            <div className="market-odd-box lay">
+                                <b>No</b>
+                            </div>
+                            <div className="market-odd-box back">
+                                <b>Yes</b>
+                            </div>
+                            <div className="fancy-min-max-box"></div>
                         </div>
-                        <div className="market-odd-box back">
-                            <b>Yes</b>
-                        </div>
-                        <div className="fancy-min-max-box"></div>
                     </div>
-                </div>
+                )}
             </div>
             <div className="market-body" data-title="OPEN">
                 <div className="row row10">
-                    {chunkArray(ar_sectionData, 2).map((arr, valkey) => (
-                        <React.Fragment key={valkey}>
-                            {arr.map((oddsArr, key) => {
-                                    const teamName = oddsArr.nat.trim();
+                    
+                    {ar_sectionData && Array.isArray(ar_sectionData) && chunkArray(ar_sectionData, ar_sectionData.length >= 2 ? 2 : 1).map((arr, valkey) => {
+                            const validItems = arr.map((oddsArr, key) => {
+                                    const teamName = oddsArr?.nat?.trim();
 
-                                    teamNames.current['FANCY_SESSION'].push(teamName);
-
-                                    if (fancyHideStatus[oddsArr.sid] || !teamName || teamName.trim() === '') {
+                                    if (fancyHideStatus[oddsArr?.sid] || !teamName || teamName.trim() === '') {
                                         return null;
                                     }
+
+                                    teamNames.current['FANCY_SESSION'].push(teamName);
 
                                     const runnerRow = 0;
                                     let isSuspendedClass = '';
@@ -178,7 +189,7 @@ const FancySession = ({
                                     ) : null;
 
                                     return (
-                                        <div key={key} className="col-md-6">
+                                        <div key={key} className={validItemsCount >= 2 ? "col-md-6" : "col-md-12"}>
                                             <div className={`fancy-market ${totalOdds === 0 ? 'suspended-row' : ''}`} data-title={totalOdds === 0 ? (totalOdds === 0 ? 'SUSPENDED' : gstatus) : ""}>
                                                 <div className="market-row">
                                                     <div className="market-nation-detail">
@@ -219,9 +230,18 @@ const FancySession = ({
                                             </div>
                                         </div>
                                     );
-                            })}
-                        </React.Fragment>
-                    ))}
+                            }).filter(Boolean);
+                            
+                            if (validItems.length === 0) {
+                                return null;
+                            }
+                            
+                            return (
+                                <React.Fragment key={valkey}>
+                                    {validItems}
+                                </React.Fragment>
+                            );
+                    })}
                 </div>
             </div>
             {fancyData !== null && (

@@ -139,6 +139,12 @@ const OddEven = ({
 
         const sectionData = mainValue.section || [];
 
+        // Count valid items to determine chunk size and column classes
+        const validItemsCount = sectionData.filter(oddsArr => {
+          const teamName = oddsArr?.nat?.trim();
+          return !fancyHideStatus[oddsArr?.sid] && teamName && teamName.trim() !== "";
+        }).length;
+
         return (
           <div className="game-market market-6" key={mainKey}>
             <div className="market-title">
@@ -154,12 +160,11 @@ const OddEven = ({
             </div>
             <div className="market-body" data-title="OPEN">
               <div className="row row10">
-                {chunkArray(sectionData, 2).map((arr, valkey) => (
-                  <React.Fragment key={valkey}>
-                    {arr.map((oddsArr, key) => {
-                      const teamName = oddsArr.nat.trim();
+                {chunkArray(sectionData, validItemsCount >= 2 ? 2 : 1).map((arr, valkey) => {
+                  const validItems = arr.map((oddsArr, key) => {
+                      const teamName = oddsArr?.nat?.trim();
                       if (
-                        fancyHideStatus[oddsArr.sid] ||
+                        fancyHideStatus[oddsArr?.sid] ||
                         !teamName ||
                         teamName.trim() === ""
                       ) {
@@ -317,7 +322,7 @@ const OddEven = ({
                       if (oddsArr.rem) remark = oddsArr.rem;
 
                       return (
-                        <div className="col-md-6" key={key}>
+                        <div className={validItemsCount >= 2 ? "col-md-6" : "col-md-12"} key={key}>
                           <div
                             className={`fancy-market ${
                               isSuspendedClass ? "suspended-row" : ""
@@ -387,9 +392,18 @@ const OddEven = ({
                           </div>
                         </div>
                       );
-                    })}
-                  </React.Fragment>
-                ))}
+                    }).filter(Boolean);
+                  
+                  if (validItems.length === 0) {
+                    return null;
+                  }
+                  
+                  return (
+                    <React.Fragment key={valkey}>
+                      {validItems}
+                    </React.Fragment>
+                  );
+                })}
               </div>
             </div>
           </div>

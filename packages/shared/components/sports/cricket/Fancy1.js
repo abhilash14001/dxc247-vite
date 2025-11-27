@@ -52,13 +52,22 @@ const Fancy1 = ({
 
     teamNames.current['fancy1'] = [];
 
+    // Count valid items to determine if we need the second header
+    const validItemsCount = useMemo(() => {
+        if (!ar_sectionData || !Array.isArray(ar_sectionData)) return 0;
+        return ar_sectionData.filter(oddsArr => {
+            const teamName = oddsArr?.nat?.trim();
+            return !fancyHideStatus[oddsArr?.sid] && teamName && teamName.trim() !== '';
+        }).length;
+    }, [ar_sectionData, fancyHideStatus]);
+
     return (
         <div className="game-market market-6">
             <div className="market-title">
                 <span>fancy1</span>
             </div>
             <div className="row row10">
-                <div className="col-md-6">
+                <div className={validItemsCount >= 2 ? "col-md-6" : "col-md-12"}>
                     <div className="market-header">
                         <div className="market-nation-detail"></div>
                         <div className="market-odd-box back"><b>Back</b></div>
@@ -66,24 +75,27 @@ const Fancy1 = ({
                         <div className="fancy-min-max-box"></div>
                     </div>
                 </div>
-                <div className="col-md-6 d-none d-xl-block">
-                    <div className="market-header">
-                        <div className="market-nation-detail"></div>
-                        <div className="market-odd-box back"><b>Back</b></div>
-                        <div className="market-odd-box lay"><b>Lay</b></div>
-                        <div className="fancy-min-max-box"></div>
+                {validItemsCount >= 2 && (
+                    <div className="col-md-6 d-none d-xl-block">
+                        <div className="market-header">
+                            <div className="market-nation-detail"></div>
+                            <div className="market-odd-box back"><b>Back</b></div>
+                            <div className="market-odd-box lay"><b>Lay</b></div>
+                            <div className="fancy-min-max-box"></div>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             <div className="market-body" data-title="OPEN">
                 <div className="row row10">
-                    {ar_sectionData.map((oddsArr, key) => {
+                    {ar_sectionData && Array.isArray(ar_sectionData) && ar_sectionData.map((oddsArr, key) => {
                         const teamName = oddsArr?.nat?.trim();
-                        teamNames.current['fancy1'].push(teamName);
 
-                        if (fancyHideStatus[oddsArr.sid] || !teamName || teamName.trim() === '') {
+                        if (fancyHideStatus[oddsArr?.sid] || !teamName || teamName.trim() === '') {
                             return null;
                         }
+
+                        teamNames.current['fancy1'].push(teamName);
 
                         let isSuspendedClass = '';
                         let back = 0, lay = 0, backk = '0', layk = '0';
@@ -138,7 +150,7 @@ const Fancy1 = ({
                         ) : null;
 
                         return (
-                            <div key={key} className="col-md-6">
+                            <div key={key} className={validItemsCount >= 2 ? "col-md-6" : "col-md-12"}>
                                 <div className={`fancy-market ${isSuspendedClass}`} data-title={gstatus}>
                                     <div className="market-row">
                                         <div className="market-nation-detail">
