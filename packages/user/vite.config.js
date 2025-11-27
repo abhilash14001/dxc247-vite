@@ -11,6 +11,8 @@ export default defineConfig({
       jsxRuntime: 'automatic',
     })
   ],
+  publicDir: path.resolve(__dirname, '../../public'),
+
   server: {
     host: '0.0.0.0',
     port: 3001,

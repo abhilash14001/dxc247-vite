@@ -9,6 +9,7 @@ export default defineConfig({
       include: '**/*.{jsx,js}',
     })
   ],
+  publicDir: path.resolve(__dirname, '../../public'),
   server: {
     host: '0.0.0.0',
     port: 3001,
