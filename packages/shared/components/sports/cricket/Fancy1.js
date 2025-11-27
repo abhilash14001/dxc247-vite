@@ -30,6 +30,15 @@ const Fancy1 = ({
     const ar_sectionData = mainValue?.section || [];
     const maxValue = useMemo(() => mainValue?.max || sportList.fancy_max_limit, [mainValue, sportList.fancy_max_limit]);
     
+    // Count valid items to determine if we need the second header (before early return)
+    const validItemsCount = useMemo(() => {
+        if (!ar_sectionData || !Array.isArray(ar_sectionData)) return 0;
+        return ar_sectionData.filter(oddsArr => {
+            const teamName = oddsArr?.nat?.trim();
+            return !fancyHideStatus[oddsArr?.sid] && teamName && teamName.trim() !== '';
+        }).length;
+    }, [ar_sectionData, fancyHideStatus]);
+    
     useEffect(() => {
         if (setMaxValue !== null) {
             setMaxValue((prevState) => {
@@ -51,15 +60,6 @@ const Fancy1 = ({
     if(typeof mainValue?.section === undefined || mainValue?.section === null) return null;
 
     teamNames.current['fancy1'] = [];
-
-    // Count valid items to determine if we need the second header
-    const validItemsCount = useMemo(() => {
-        if (!ar_sectionData || !Array.isArray(ar_sectionData)) return 0;
-        return ar_sectionData.filter(oddsArr => {
-            const teamName = oddsArr?.nat?.trim();
-            return !fancyHideStatus[oddsArr?.sid] && teamName && teamName.trim() !== '';
-        }).length;
-    }, [ar_sectionData, fancyHideStatus]);
 
     return (
         <div className="game-market market-6">
