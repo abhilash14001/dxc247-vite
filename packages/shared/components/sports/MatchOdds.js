@@ -108,6 +108,18 @@ setBetOddValue(0);
         if (!sections || sections.length === 0) return false;
         return sections.some((s) => s?.gstatus && s.gstatus !== 'SUSPENDED');
     }, [sections]);
+    
+    // Check if all sections have only 1 back and 1 lay odd (tennis style)
+    const isSimpleOddsLayout = useMemo(() => {
+        if (!sections || sections.length === 0) return false;
+        return sections.every((section) => {
+            // Check the original odds array structure
+            if (!section.odds || section.odds.length === 0) return false;
+            const backOdds = section.odds.filter(odd => odd.otype === 'back');
+            const layOdds = section.odds.filter(odd => odd.otype === 'lay');
+            return backOdds.length === 1 && layOdds.length === 1;
+        });
+    }, [sections]);
 
     useEffect(() => {
         if (setMaxValue !== null) {
@@ -167,12 +179,12 @@ setBetOddValue(0);
 
     return (
 
-        <div className="game-market market-4">
+        <div className={`game-market ${isSimpleOddsLayout ? 'market-2' : 'market-4'}`}>
             <div className="market-title">
                 <span>MATCH_ODDS</span>
                 {!isAdmin && !hasThreeTeams && (
                     <button 
-                        className="float-right mb-0 btn btn-success" 
+                        className={`float-right mb-0 btn ${isSimpleOddsLayout ? 'btn-success btn-sm' : 'btn-success'}`}
                         onClick={handleCashout}
                         disabled={!hasActiveBets}
                     > 
@@ -184,12 +196,20 @@ setBetOddValue(0);
                 <div className="market-nation-detail">
                     <span className="market-nation-name">Max: {getSize(maxValue, true)}</span>
                 </div>
-                <div className="market-odd-box no-border d-none d-md-block"></div>
-                <div className="market-odd-box no-border d-none d-md-block"></div>
+                {!isSimpleOddsLayout && (
+                    <>
+                        <div className="market-odd-box no-border d-none d-md-block"></div>
+                        <div className="market-odd-box no-border d-none d-md-block"></div>
+                    </>
+                )}
                 <div className="market-odd-box back"><b>Back</b></div>
                 <div className="market-odd-box lay"><b>Lay</b></div>
-                <div className="market-odd-box"></div>
-                <div className="market-odd-box no-border"></div>
+                {!isSimpleOddsLayout && (
+                    <>
+                        <div className="market-odd-box"></div>
+                        <div className="market-odd-box no-border"></div>
+                    </>
+                )}
             </div>
 
             <div

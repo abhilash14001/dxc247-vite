@@ -87,7 +87,7 @@ const MobileMatchedBetTable = ({mybetModel, type}) => {
                             {(type === 'superover' || type === 'cricketv3' || type === 'trap' || type === 'poker' || type === 'card32eu' || type === 'queen' || type === 'card32') && (
                                 <th>Bet Type</th>
                             )}
-                            <th>Odd1</th>
+                            <th>Odd</th>
                             <th>Stack</th>
                         </tr>
                         </thead>

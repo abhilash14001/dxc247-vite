@@ -351,30 +351,30 @@ a {
 
 @font-face {
     font-family: Card Characters;
-    src: url(../fonts/card.ttf);
+    src: url("../../fonts/card.ttf");
 }
 
 @font-face {
     font-family: Casino;
-    src: url(../fonts/casino.ttf);
+    src: url("../../fonts/casino.ttf");
 }
 
 @font-face {
     font-family: Numeric;
-    src: url(../fonts/numeric.ttf);
+    src: url("../../fonts/numeric.ttf");
 }
 
 @font-face {
     font-family: "CasinoNumFont";
-    src: url("../fonts/casino3dmarquee-webfont.woff2") format("woff2"), url("../fonts/casino3dmarquee-webfont.woff") format("woff");
+    src: url("../../fonts/casino3dmarquee-webfont.woff2") format("woff2"), url("../../fonts/casino3dmarquee-webfont.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "dfont";
-    src: url("../fonts/dfont.eot");
-    src: url("../fonts/dfont.eot") format("embedded-opentype"), url("../fonts/dfont.ttf") format("truetype"), url("../fonts/dfont.woff") format("woff"), url("../fonts/dfont.svg") format("svg");
+    src: url("../../fonts/dfont.eot");
+    src: url("../../fonts/dfont.eot") format("embedded-opentype"), url("../../fonts/dfont.ttf") format("truetype"), url("../../fonts/dfont.woff") format("woff"), url("../../fonts/dfont.svg") format("svg");
     font-weight: normal;
     font-style: normal;
     font-display: block;
