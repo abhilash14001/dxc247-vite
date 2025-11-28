@@ -644,7 +644,7 @@ function AdminUsers() {
                               </td>
                               <td>{user?.partnership ? parseFloat(user.partnership).toLocaleString() : '0'}%</td>
                               <td>{user.type}</td>
-                              <td className="actions text-center">
+                              <td className="actions text-center text-nowrap">
                                 <a
                                   href="#"
                                   onClick={(e) => {
