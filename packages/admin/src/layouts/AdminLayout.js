@@ -189,7 +189,7 @@ const AdminLayout = ({ children }) => {
               <div className="bar2"></div>
               <div className="bar3"></div>
             </div>
-            <nav className="navbar navbar-expand-md btco-hover-menu">
+            <nav className="navbar navbar-expand btco-hover-menu">
         <div className="collapse navbar-collapse">
           <ul className="list-unstyled navbar-nav">
             {(!isAdminRole || mainMenuItems.some(item => hasPermission(adminUser, item.permission))) && (
