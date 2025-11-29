@@ -35,6 +35,7 @@ import { Lottcard } from "./LastResults/Lottcard";
 import { Roulette } from "./LastResults/Roulette";
 import { Sicbo } from "./LastResults/Sicbo";
 import { Mogambo } from "./LastResults/Mogambo";
+import { Teen62 } from "./LastResults/Teen62";
 
 export const CasinoLastResult = ({ lastResults, sportList }) => {
   const { match_id } = useParams();
@@ -235,6 +236,7 @@ export const CasinoLastResult = ({ lastResults, sportList }) => {
       case "goal":
       case "joker120":
       case "teenunique":
+      case "dolidana":
         return <BallbyBall lastResults={lastResults} openPopup={openPopup} />;
 
       case "superover3":
@@ -284,6 +286,8 @@ export const CasinoLastResult = ({ lastResults, sportList }) => {
         return <Sicbo lastResults={lastResults} openPopup={openPopup} />;
       case "mogambo":
         return <Mogambo lastResults={lastResults} openPopup={openPopup} />;
+      case "teen62":
+        return <Teen62 lastResults={lastResults} openPopup={openPopup} />;
       default:
         return <Teen32 lastResults={lastResults} openPopup={openPopup} />;
     }

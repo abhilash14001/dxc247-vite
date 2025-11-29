@@ -591,10 +591,13 @@ function AdminCasinoMarket() {
                                   <td>{casino.match_name}</td>
                                   <td>{casino.casino_video}</td>
                                   <td>
+                                    <div className="btn-group">
                                     {getStatusBadge(casino.status)}
                                     {getStatusToggleLink(casino)}
+                                    </div>
                                   </td>
                                   <td>
+                                    <div className="btn-group">
                                     <a 
                                       href="#" 
                                       onClick={(e) => e.preventDefault()}
@@ -641,6 +644,7 @@ function AdminCasinoMarket() {
                                       <FontAwesomeIcon icon={faTrash} /> 
                                       {updatingStatus[casino.id] ? 'Deleting...' : 'Delete'}
                                     </button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))

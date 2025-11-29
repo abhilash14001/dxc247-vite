@@ -863,6 +863,37 @@ const CasinoGameResultsFinal = ({
       );
     }
 
+    // Special handling for teen62
+    if (matchId === "teen62") {
+      // Get winner name
+      const winner = normalizedResult?.win == 1 
+        ? "Player A" 
+        : normalizedResult?.win == 2 
+        ? "Player B" 
+        : winner_data?.winner || normalizedResult?.rdesc || "";
+
+      return (
+        <div className="row mt-2 justify-content-center">
+          <div className="col-md-6">
+            <div className="casino-result-desc">
+              <div className="casino-result-desc-item">
+                <div>Winner:</div>
+                <div>{winner}</div>
+              </div>
+              <div className="casino-result-desc-item">
+                <div>Odd/Even:</div>
+                <div>{winner_data?.odd_even || ""}</div>
+              </div>
+              <div className="casino-result-desc-item">
+                <div>Consecutive:</div>
+                <div>{winner_data?.consecutive || ""}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     // Special handling for baccarat games
     if (["baccarat", "baccarat2"].includes(matchId)) {
       return (
@@ -1360,6 +1391,7 @@ const CasinoGameResultsFinal = ({
       case "teensin":
       case "teen20b":
       case "teen2024":
+      case "teen62":
       case "patti2":
         const teenCards = normalizedResult?.card
           ? normalizedResult.card.split(",")

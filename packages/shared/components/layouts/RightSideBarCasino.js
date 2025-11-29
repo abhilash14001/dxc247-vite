@@ -486,6 +486,66 @@ const RightSideBarCasino = ({
           </div>
         </div>
         
+        {match_id === "dolidana" && (
+          <div className="sidebar-box my-bet-container doli-dana-rules">
+            <div className="sidebar-title">
+              <h4>Rules</h4>
+            </div>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Win</th>
+                    <th>Loss</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <img src="/img/dice/dice3.png" alt="" />
+                      <img src="/img/dice/dice3.png" alt="" />
+                    </td>
+                    <td>
+                      <img src="/img/dice/dice1.png" alt="" />
+                      <img src="/img/dice/dice1.png" alt="" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <img src="/img/dice/dice5.png" alt="" />
+                      <img src="/img/dice/dice5.png" alt="" />
+                    </td>
+                    <td>
+                      <img src="/img/dice/dice2.png" alt="" />
+                      <img src="/img/dice/dice2.png" alt="" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <img src="/img/dice/dice6.png" alt="" />
+                      <img src="/img/dice/dice6.png" alt="" />
+                    </td>
+                    <td>
+                      <img src="/img/dice/dice4.png" alt="" />
+                      <img src="/img/dice/dice4.png" alt="" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <img src="/img/dice/dice5.png" alt="" />
+                      <img src="/img/dice/dice6.png" alt="" />
+                    </td>
+                    <td>
+                      <img src="/img/dice/dice1.png" alt="" />
+                      <img src="/img/dice/dice2.png" alt="" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        
         {match_id === "ourroullete" && (
           <div className="sidebar-box my-bet-container roulette-rules">
             <div className="sidebar-title">

@@ -68,9 +68,11 @@ import Superover3 from "../../casino-games/Superover3";
 import Teen33 from "../../casino-games/Teen33";
 import Lucky5 from "../../casino-games/Lucky5";
 import Mogambo from "../../casino-games/Mogambo";
+import Dolidana from "../../casino-games/Dolidana";
 import Lucky15 from "../../casino-games/Lucky15";
 import Superover2 from "../../casino-games/Superover2";
 import Teen42 from "../../casino-games/Teen42";
+import Teen62 from "../../casino-games/Teen62";
 import Poison from "../../casino-games/Poison";
 import Joker20 from "../../casino-games/Joker20";
 import TeenJoker from "../../casino-games/TeenJoker";
@@ -250,8 +252,12 @@ const CasinoMain = ({ isAdmin = false }) => {
         return <Teen41 />;
       case "mogambo":
         return <Mogambo />;
+      case "dolidana":
+        return <Dolidana />;
       case "teen42":
         return <Teen42 />;
+      case "teen62":
+        return <Teen62 />;
       case "lottcard":
         return <Lottcard />;
       case "sicbo":
