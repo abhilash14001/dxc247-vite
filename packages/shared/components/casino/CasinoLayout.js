@@ -247,7 +247,7 @@ const CasinoLayout = ({
                   )}
                 </span>
 
-                <span className="casino-rid d-none d-xl-inline-block">
+                <span className={`casino-rid ${isAdmin ? 'd-xl-inline-block' : 'd-none d-xl-inline-block'}`}>
                   <small>
                     Round ID: <span className="roundID">{roundId}</span>
                   </small>
@@ -264,6 +264,7 @@ const CasinoLayout = ({
                 
               </div>
 
+{!isAdmin && (
               <div className="casino-title-header-mobile d-xl-none">
                 <ul className="nav nav-tabs menu-tabs">
                   <li className="nav-item">
@@ -291,6 +292,7 @@ const CasinoLayout = ({
                   </span>
                 </div>
               </div>
+              )}
 
               {(match_id === "cricketv3" ||
                 match_id === "superover" ||

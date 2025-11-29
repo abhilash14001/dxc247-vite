@@ -138,7 +138,8 @@ const SportsResultContent = ({
     'BOOKMAKER' : 'Bookmaker',
     'TOSS' : 'Toss',
     'ODDS' : 'MATCH_ODDS',
-    'MATCH_ODDS' : 'Match Odds'
+    'MATCH_ODDS' : 'Match Odds',
+    'cup' : "CPL_CUP_BOOKMAKER"
   }
   return (
     <>

@@ -22,12 +22,12 @@ const CommonLayout = ({
 
     // Load responsive.css
     if (!document.getElementById("admin-sports-responsive")) {
-      const responsiveLink = document.createElement("link");
-      responsiveLink.rel = "stylesheet";
-      responsiveLink.href = "/assets/css/responsive.css";
-      responsiveLink.id = "admin-sports-responsive";
-      responsiveLink.onerror = () => console.error('Failed to load admin-sports-responsive CSS');
-      document.head.appendChild(responsiveLink);
+      // const responsiveLink = document.createElement("link");
+      // responsiveLink.rel = "stylesheet";
+      // responsiveLink.href = "/assets/css/responsive.css";
+      // responsiveLink.id = "admin-sports-responsive";
+      // responsiveLink.onerror = () => console.error('Failed to load admin-sports-responsive CSS');
+      // document.head.appendChild(responsiveLink);
     }
   }, []);
 

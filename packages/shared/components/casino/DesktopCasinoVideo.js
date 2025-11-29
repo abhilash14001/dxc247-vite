@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import TimerComponent from "./CountdownTimerComponent";
 import { useParams } from "react-router-dom";
+import { useIsAdmin } from "../../hooks/useIsAdmin";
 
 
 const DesktopCasinoVideo = ({ gamename, data, showCasinoReconnectModal, virtualVideoCards = false, ...props }) => {
@@ -20,7 +21,7 @@ const DesktopCasinoVideo = ({ gamename, data, showCasinoReconnectModal, virtualV
         'vteen20',
     ]
 
-    
+    const  isAdmin = useIsAdmin();
     const { match_id } = useParams()
     useEffect(() => {
         // Function to check if the view is mobile
@@ -76,7 +77,7 @@ const DesktopCasinoVideo = ({ gamename, data, showCasinoReconnectModal, virtualV
 
                         
                             <div className={props?.videoBox || 'video-box-container'}>
-                                <div className="casino-video-box">
+                                <div className={`casino-video-box ${isAdmin ? 'embed-responsive embed-responsive-16by9' : ''}`}>
 
                                     <iframe
                                         className="embed-responsive-item"
