@@ -4,10 +4,10 @@ import { CasinoLastResult } from "../components/casino/CasinoLastResult";
 import {
   getExBySingleTeamNameCasino,
   getExByTeamNameForCasino,
-  getExByTeamNamesAndBetTypesBulk,
   resetBetFields,
   placeCasinoBet,
   exposureCheck,
+  getExByColor,
 } from "../utils/Constants";
 import { useParams } from "react-router-dom";
 import { SportsContext } from "../contexts/SportsContext";
@@ -401,78 +401,56 @@ const Teen62 = () => {
     let promises = [];
 
     if (!individual) {
-      // Use bulk call for all bet types matching backend structure
-      // bet_types should be an object: { "ODDS": [...], "CONSECUTIVE": [...], ... }
-      const betTypes = {
-        "ODDS": ["Player A Main", "Player B Main"],
-        "CONSECUTIVE": ["Player A Consecutive", "Player B Consecutive"],
-        "CARD1_ODDEVEN": ["Odd", "Even"],
-        "CARD2_ODDEVEN": ["Odd", "Even"],
-        "CARD3_ODDEVEN": ["Odd", "Even"],
-        "CARD4_ODDEVEN": ["Odd", "Even"],
-        "CARD5_ODDEVEN": ["Odd", "Even"],
-        "CARD6_ODDEVEN": ["Odd", "Even"]
-      };
-      
-      const bulkResult = await getExByTeamNamesAndBetTypesBulk(
-        sportList.id,
-        betTypes
-      );
+      // Use getExByTeamNameForCasino with arrays for ODDS and CONSECUTIVE
+      // Note: Odd/Even bets are NOT included - they use individual calls
+      const [oddsResult, consecutiveResult] = await Promise.all([
+        getExByTeamNameForCasino(
+          sportList.id,
+          roundId,
+          ["Player A Main", "Player B Main"],
+          match_id.toUpperCase(),
+          "ODDS"
+        ),
+        getExByTeamNameForCasino(
+          sportList.id,
+          roundId,
+          ["Player A Consecutive", "Player B Consecutive"],
+          match_id.toUpperCase(),
+          "CONSECUTIVE"
+        )
+      ]);
       
       // Process results and update totalPlayers
       setTotalPlayers((prevState) => {
         const updatedState = JSON.parse(JSON.stringify(prevState));
         
-        if (bulkResult?.data) {
-          // Process ODDS (Main bets)
-          if (bulkResult.data["ODDS"]) {
-            bulkResult.data["ODDS"].forEach((item) => {
-              const teamName = item.nat?.trim();
-              if (teamName === "Player A Main") {
-                if (updatedState["Player A"]?.[0]?.["Player A"]) {
-                  updatedState["Player A"][0]["Player A"].amounts = item.result || "";
-                }
-              } else if (teamName === "Player B Main") {
-                if (updatedState["Player B"]?.[0]?.["Player B"]) {
-                  updatedState["Player B"][0]["Player B"].amounts = item.result || "";
-                }
-              }
-            });
+        // Process ODDS (Main bets)
+        if (oddsResult?.data) {
+          const oddsData = oddsResult.data;
+          if (oddsData["Player A Main"] !== undefined && updatedState["Player A"]?.[0]?.["Player A"]) {
+            const result = oddsData["Player A Main"];
+            updatedState["Player A"][0]["Player A"].amounts = (result === null || result === undefined || result === 0) ? "" : result;
           }
-          
-          // Process CONSECUTIVE
-          if (bulkResult.data["CONSECUTIVE"]) {
-            bulkResult.data["CONSECUTIVE"].forEach((item) => {
-              const teamName = item.nat?.trim();
-              if (teamName === "Player A Consecutive") {
-                if (updatedState["Player A"]?.[1]?.["Consecutive"]) {
-                  updatedState["Player A"][1]["Consecutive"].amounts = item.result || "";
-                }
-              } else if (teamName === "Player B Consecutive") {
-                if (updatedState["Player B"]?.[1]?.["Consecutive"]) {
-                  updatedState["Player B"][1]["Consecutive"].amounts = item.result || "";
-                }
-              }
-            });
+          if (oddsData["Player B Main"] !== undefined && updatedState["Player B"]?.[0]?.["Player B"]) {
+            const result = oddsData["Player B Main"];
+            updatedState["Player B"][0]["Player B"].amounts = (result === null || result === undefined || result === 0) ? "" : result;
           }
-          
-          // Process Card Odd/Even bets (CARD1_ODDEVEN through CARD6_ODDEVEN)
-          ["CARD1_ODDEVEN", "CARD2_ODDEVEN", "CARD3_ODDEVEN", "CARD4_ODDEVEN", "CARD5_ODDEVEN", "CARD6_ODDEVEN"].forEach((betType) => {
-            if (bulkResult.data[betType]) {
-              bulkResult.data[betType].forEach((item) => {
-                const teamName = item.nat?.trim();
-                const cardNumber = betType.replace("_ODDEVEN", ""); // "CARD1", "CARD2", etc.
-                const cardKey = cardNumber.replace("CARD", "Card "); // "Card 1", "Card 2", etc.
-                
-                if (teamName === "Odd" && updatedState[cardKey]?.Odd) {
-                  updatedState[cardKey].Odd.amounts = item.result || "";
-                } else if (teamName === "Even" && updatedState[cardKey]?.Even) {
-                  updatedState[cardKey].Even.amounts = item.result || "";
-                }
-              });
-            }
-          });
         }
+        
+        // Process CONSECUTIVE
+        if (consecutiveResult?.data) {
+          const consecutiveData = consecutiveResult.data;
+          if (consecutiveData["Player A Consecutive"] !== undefined && updatedState["Player A"]?.[1]?.["Consecutive"]) {
+            const result = consecutiveData["Player A Consecutive"];
+            updatedState["Player A"][1]["Consecutive"].amounts = (result === null || result === undefined || result === 0) ? "" : result;
+          }
+          if (consecutiveData["Player B Consecutive"] !== undefined && updatedState["Player B"]?.[1]?.["Consecutive"]) {
+            const result = consecutiveData["Player B Consecutive"];
+            updatedState["Player B"][1]["Consecutive"].amounts = (result === null || result === undefined || result === 0) ? "" : result;
+          }
+        }
+        
+        // Note: Card Odd/Even bets are NOT processed here - they use individual calls only
         
         return updatedState;
       });
@@ -493,13 +471,10 @@ const Teen62 = () => {
             backendTeamName = baseName + " Consecutive";
           }
         }
-        // For Card Odd/Even bets, extract "Odd" or "Even"
+        // For Card Odd/Even bets, use the full teamname format (e.g., "Card 1 - Odd", "Card 2 - Even")
         else if (individual && individual.includes("_ODDEVEN")) {
-          if (teamname.current.includes(" - Odd")) {
-            backendTeamName = "Odd";
-          } else if (teamname.current.includes(" - Even")) {
-            backendTeamName = "Even";
-          }
+          // Keep the full teamname as backend expects it (e.g., "Card 1 - Odd")
+          backendTeamName = teamname.current;
         }
 
         promises.push(
@@ -525,28 +500,30 @@ const Teen62 = () => {
           basePlayerName = teamname.current;
         }
         
-        updateTotalPlayersAmounts(basePlayerName, individual, promises1[0].data);
+        // Ensure amounts is set correctly - convert to number or empty string if 0
+        const amountValue = promises1[0].data === 0 ? "" : promises1[0].data;
+        updateTotalPlayersAmounts(basePlayerName, individual, amountValue);
       } else {
-        // Use bulk call for ODDS (Main bets) - following Teen6 pattern but with bulk
-        const betTypes = {
-          "ODDS": ["Player A Main", "Player B Main"]
-        };
-        
-        const bulkResult = await getExByTeamNamesAndBetTypesBulk(
+        // Use getExByTeamNameForCasino with array for ODDS (Main bets)
+        const oddsResult = await getExByTeamNameForCasino(
           sportList.id,
-          betTypes
+          roundId,
+          ["Player A Main", "Player B Main"],
+          match_id.toUpperCase(),
+          "ODDS"
         );
         
-        // Process results - following Teen6's pattern
-        if (bulkResult?.data?.["ODDS"]) {
-          bulkResult.data["ODDS"].forEach((item) => {
-            const teamName = item.nat?.trim();
-            if (teamName === "Player A Main") {
-              updateTotalPlayersAmounts("Player A", "ODDS", item.result || "");
-            } else if (teamName === "Player B Main") {
-              updateTotalPlayersAmounts("Player B", "ODDS", item.result || "");
-            }
-          });
+        // Process results
+        if (oddsResult?.data) {
+          const oddsData = oddsResult.data;
+          if (oddsData["Player A Main"] !== undefined) {
+            const result = oddsData["Player A Main"];
+            updateTotalPlayersAmounts("Player A", "ODDS", (result === null || result === undefined || result === 0) ? "" : result);
+          }
+          if (oddsData["Player B Main"] !== undefined) {
+            const result = oddsData["Player B Main"];
+            updateTotalPlayersAmounts("Player B", "ODDS", (result === null || result === undefined || result === 0) ? "" : result);
+          }
         }
       }
     }
@@ -587,7 +564,12 @@ const Teen62 = () => {
 
   useEffect(() => {
     if (data?.sub && sportList?.id) {
-      updateAmounts();
+      // Add a small delay to prevent race condition with individual update after bet placement
+      const timeoutId = setTimeout(() => {
+        updateAmounts();
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [exposure, sportLength, roundId, mybetModel.length]);
 
@@ -759,6 +741,11 @@ const Teen62 = () => {
                 <div className={`casino-table-row ${totalPlayers["Player A"]?.[0]?.["Player A"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Main</div>
+                    <div className="casino-nation-book text-center">
+                      <b className={parseFloat(totalPlayers["Player A"]?.[0]?.["Player A"]?.amounts || 0) >= 0 ? 'text-success' : 'text-danger'}>
+                        {getExByColor(totalPlayers["Player A"]?.[0]?.["Player A"]?.amounts)}
+                      </b>
+                    </div>
                   </div>
                   <div 
                     className="casino-odds-box back"
@@ -774,6 +761,7 @@ const Teen62 = () => {
                     <span className="casino-odds">
                       {totalPlayers["Player A"]?.[0]?.["Player A"]?.status ? "0" : (totalPlayers["Player A"]?.[0]?.["Player A"]?.odds?.back || "0")}
                     </span>
+                    
                   </div>
                   <div 
                     className="casino-odds-box lay"
@@ -794,6 +782,11 @@ const Teen62 = () => {
                 <div className={`casino-table-row ${totalPlayers["Player A"]?.[1]?.["Consecutive"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Consecutive</div>
+                    <div className="casino-nation-book text-center">
+                      <b className={parseFloat(totalPlayers["Player A"]?.[1]?.["Consecutive"]?.amounts || 0) >= 0 ? 'text-success' : 'text-danger'}>
+                        {getExByColor(totalPlayers["Player A"]?.[1]?.["Consecutive"]?.amounts)}
+                      </b>
+                    </div>
                   </div>
                   <div 
                     className="casino-odds-box back"
@@ -839,6 +832,11 @@ const Teen62 = () => {
                 <div className={`casino-table-row ${totalPlayers["Player B"]?.[0]?.["Player B"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Main</div>
+                    <div className="casino-nation-book text-center">
+                      <b className={parseFloat(totalPlayers["Player B"]?.[0]?.["Player B"]?.amounts || 0) >= 0 ? 'text-success' : 'text-danger'}>
+                        {getExByColor(totalPlayers["Player B"]?.[0]?.["Player B"]?.amounts)}
+                      </b>
+                    </div>
                   </div>
                   <div 
                     className="casino-odds-box back"
@@ -874,6 +872,11 @@ const Teen62 = () => {
                 <div className={`casino-table-row ${totalPlayers["Player B"]?.[1]?.["Consecutive"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Consecutive</div>
+                    <div className="casino-nation-book text-center">
+                      <b className={parseFloat(totalPlayers["Player B"]?.[1]?.["Consecutive"]?.amounts || 0) >= 0 ? 'text-success' : 'text-danger'}>
+                        {getExByColor(totalPlayers["Player B"]?.[1]?.["Consecutive"]?.amounts)}
+                      </b>
+                    </div>
                   </div>
                   <div 
                     className="casino-odds-box back"
@@ -943,6 +946,11 @@ const Teen62 = () => {
                     <span className="casino-odds">
                       {totalPlayers[cardNum]?.Odd?.status ? "0" : (totalPlayers[cardNum]?.Odd?.odds?.back || "0")}
                     </span>
+                    <div className="casino-nation-book text-center">
+                      <b className={parseFloat(totalPlayers[cardNum]?.Odd?.amounts || 0) >= 0 ? 'text-success' : 'text-danger'}>
+                        {getExByColor(totalPlayers[cardNum]?.Odd?.amounts)}
+                      </b>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -967,6 +975,11 @@ const Teen62 = () => {
                     <span className="casino-odds">
                       {totalPlayers[cardNum]?.Even?.status ? "0" : (totalPlayers[cardNum]?.Even?.odds?.back || "0")}
                     </span>
+                    <div className="casino-nation-book text-center">
+                      <b className={parseFloat(totalPlayers[cardNum]?.Even?.amounts || 0) >= 0 ? 'text-success' : 'text-danger'}>
+                        {getExByColor(totalPlayers[cardNum]?.Even?.amounts)}
+                      </b>
+                    </div>
                   </div>
                 ))}
               </div>
