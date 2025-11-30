@@ -1048,8 +1048,8 @@ const activeGetExRequests = new Map();
  * @param {Array} teamNames - Array of team names
  * @returns {Promise<Object>} - Object with bet types as keys, containing team names and exposure values
  */
-export async function getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNames) {
-  
+export async function getExByTeamNamesAndBetTypesBulk(id, betTypes) {
+  // betTypes should be an object: { "ODDS": ["Player A Main", "Player B Main"], "CONSECUTIVE": [...], ... }
   
   const request = (async () => {
     try {
@@ -1061,8 +1061,7 @@ export async function getExByTeamNamesAndBetTypesBulk(id, betTypes, teamNames) {
         null,
         { 
           id: id, 
-          bet_types: betTypes,  // Array of bet types
-          
+          bet_types: betTypes  // Object with bet types as keys and arrays of team names as values
         }
       );
       
@@ -1935,13 +1934,14 @@ export const placeCasinoBet = async (betData, callbacks = {}) => {
     }
 
     
+    
     else if (
       (playerStatuses && typeof playerStatuses === "string" && playerStatuses.toLowerCase() === "suspended") ||
       (playerStatuses && typeof playerStatuses === "string" && playerStatuses.toLowerCase() === "suspended-box" )
     ) {
       isSuspended = true;
     }
-
+    console.log('isSuspended', playerStatuses, teamname.current);
     if (isSuspended) {
       if (callbacks && typeof callbacks.onError === "function") {
         callbacks.onError();
@@ -2028,7 +2028,8 @@ export const placeCasinoBet = async (betData, callbacks = {}) => {
           null,
           "danger"
         );
-        return false;
+        //todo : remove this after testing
+        // return false;
       }
     }
     if (

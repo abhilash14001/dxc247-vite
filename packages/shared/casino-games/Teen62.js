@@ -1,10 +1,10 @@
 import CasinoLayout from "../components/casino/CasinoLayout";
 import { useContext, useEffect, useRef, useState } from "react";
 import { CasinoLastResult } from "../components/casino/CasinoLastResult";
-import axiosFetch, {
-  getExByColor,
+import {
   getExBySingleTeamNameCasino,
   getExByTeamNameForCasino,
+  getExByTeamNamesAndBetTypesBulk,
   resetBetFields,
   placeCasinoBet,
   exposureCheck,
@@ -40,7 +40,7 @@ const Teen62 = () => {
           ...defaultValuesWithBackAndLay,
           canonical_name: "Consecutive",
           team_name: "Player A",
-          bet_type: "CONSECUTIVE_A",
+          bet_type: "CONSECUTIVE",
         },
       },
     ],
@@ -58,7 +58,7 @@ const Teen62 = () => {
           ...defaultValuesWithBackAndLay,
           canonical_name: "Consecutive",
           team_name: "Player B",
-          bet_type: "CONSECUTIVE_B",
+          bet_type: "CONSECUTIVE",
         },
       },
     ],
@@ -115,65 +115,87 @@ const Teen62 = () => {
         margin-left: -5px;
         margin-right: -5px;
     }
+
     .rules-section .pl-2 {
         padding-left: .5rem !important;
     }
+
     .rules-section .pr-2 {
         padding-right: .5rem !important;
     }
-    .rules-section .row.row5 > [class*="col-"], .rules-section .row.row5 > [class*="col"] {
+
+    .rules-section .row.row5>[class*="col-"],
+    .rules-section .row.row5>[class*="col"] {
         padding-left: 5px;
         padding-right: 5px;
     }
+
     .rules-section {
         text-align: left;
         margin-bottom: 10px;
     }
+
     .rules-section .table {
         color: #fff;
-        border:1px solid #444;
+        border: 1px solid #444;
         background-color: #222;
         font-size: 12px;
     }
-    .rules-section .table td, .rules-section .table th {
+
+    .rules-section .table td,
+    .rules-section .table th {
         border-bottom: 1px solid #444;
     }
-    .rules-section ul li, .rules-section p {
+
+    .rules-section ul li,
+    .rules-section p {
         margin-bottom: 5px;
     }
+
     .rules-section::-webkit-scrollbar {
         width: 8px;
     }
+
     .rules-section::-webkit-scrollbar-track {
         background: #666666;
     }
+
     .rules-section::-webkit-scrollbar-thumb {
         background-color: #333333;
     }
+
     .rules-section .rules-highlight {
         color: #FDCF13;
         font-size: 16px;
     }
+
     .rules-section .rules-sub-highlight {
         color: #FDCF13;
         font-size: 14px;
     }
-    .rules-section .list-style, .rules-section .list-style li {
+
+    .rules-section .list-style,
+    .rules-section .list-style li {
         list-style: disc;
     }
+
     .rules-section .rule-card {
         height: 20px;
         margin-left: 5px;
     }
+
     .rules-section .card-character {
         font-family: Card Characters;
     }
+
     .rules-section .red-card {
         color: red;
     }
+
     .rules-section .black-card {
         color: black;
     }
+
     .rules-section .cards-box {
         background: #fff;
         padding: 6px;
@@ -181,19 +203,42 @@ const Teen62 = () => {
         color: #000;
         min-width: 150px;
     }
-    .rules-section img {
-      max-width: 100%;
-    }
+.rules-section img {
+  max-width: 100%;
+}
     </style>
 
 <div class="rules-section">
-    <ul class="pl-4 pr-4 list-style">
-        <li>Teen62 is a card game played between Player A and Player B.</li>
-        <li>You can bet on Main (Back/Lay) for each player.</li>
-        <li>Consecutive betting option is available for both players.</li>
-        <li>Card positions 1-6 have Odd/Even betting options.</li>
-    </ul>
-</div></div>`;
+                                            <ul class="pl-4 pr-4 list-style">
+                                                <li>Teenpatti is an indian origin three cards game.</li>
+                                                <li>This game is played with a regular 52 cards deck between Player A and Player B .</li>
+                                                <li>The objective of the game is to make the best three cards hand as per the hand rankings and win.</li>
+                                                <li>You have a betting option of Back and Lay for the main bet.</li>
+                                                <li>Rankings of the card hands from highest to lowest :</li>
+                                                <li>1. Straight Flush (pure Sequence )</li>
+                                                <li>2. Trail  (Three of a Kind )</li>
+                                                <li>3. Straight (Sequence)</li>
+                                                <li>4. Flush (Color )</li>
+                                                <li>5. Pair (Two of a kind )</li>
+                                                <li>6. High Card </li>
+                                            </ul>
+                                            <div>
+                                                <img src="/img/casino-rules/teen6.jpg" class="img-fluid">
+                                            </div>
+                                        </div></div><div><div class="rules-section">
+                                            <div>
+                                                <h6 class="rules-highlight">Side bets  :</h6>
+                                            </div>
+                                            <ul class="pl-4 pr-4 list-style">
+                                                <li><b>CONSECUTIVE CARDS:</b> It is a bet of having two or more consecutive cards in the game.</li>
+                                                <li>eg: 2,3,5      10,3,9      Q,5,K     6,7,8    A,K,7</li>
+                                                <li>For both the players Back and Lay odds are available, you can bet on either or both the players.</li>
+                                                <li><b>Odd - Even :</b>  Here you can bet on every card whether it will be an odd card or an even card.</li>
+                                                <li><b>ODD CARDS :</b> A,3,5,7,9,J,K</li>
+                                                <li><b>EVEN CARDS:</b> 2,4,6,8,10,Q</li>
+<li><b>NOTE:</b> In case of a Tie between the player A and player B bets placed on player A and player B  (Main bets ) will be returned. (Pushed)</li>
+                                            </ul>
+                                        </div></div>`;
 
   const updatePlayers = () => {
     setTotalPlayers((prevPlayer) => {
@@ -213,7 +258,7 @@ const Teen62 = () => {
               founddata = data.sub.find(
                 (item) => item.nat === playerData.team_name && item.subtype === "teen"
               );
-            } else if (playerData.bet_type === "CONSECUTIVE_A" || playerData.bet_type === "CONSECUTIVE_B") {
+            } else if (playerData.bet_type === "CONSECUTIVE") {
               // Consecutive bet - subtype: "con"
               founddata = data.sub.find(
                 (item) => item.nat === playerData.team_name && item.subtype === "con"
@@ -311,14 +356,22 @@ const Teen62 = () => {
   const findDataInSub = (teamName, betType) => {
     if (!data || !data.sub) return null;
 
+    // Extract base player name from "Player A Main" or "Player A Consecutive"
+    let basePlayerName = teamName;
+    if (teamName.includes(" Main")) {
+      basePlayerName = teamName.replace(" Main", "");
+    } else if (teamName.includes(" Consecutive")) {
+      basePlayerName = teamName.replace(" Consecutive", "");
+    }
+
     // For Main bets (ODDS)
     if (betType === "ODDS") {
-      return data.sub.find(item => item.nat === teamName && item.subtype === "teen");
+      return data.sub.find(item => item.nat === basePlayerName && item.subtype === "teen");
     }
 
     // For Consecutive bets
-    if (betType === "CONSECUTIVE_A" || betType === "CONSECUTIVE_B") {
-      return data.sub.find(item => item.nat === teamName && item.subtype === "con");
+    if (betType === "CONSECUTIVE") {
+      return data.sub.find(item => item.nat === basePlayerName && item.subtype === "con");
     }
 
     // For Odd/Even bets
@@ -348,137 +401,153 @@ const Teen62 = () => {
     let promises = [];
 
     if (!individual) {
-      promises = Object.entries(totalPlayers).map(([index, value]) => {
-        let inside_promise = [];
-
-        if (index === "Player A" || index === "Player B") {
-          // Main bet
-          inside_promise.push(
-            getExByTeamNameForCasino(
-              sportList.id,
-              roundId,
-              index,
-              match_id,
-              "ODDS"
-            )
-          );
-        }
-
-        if (Array.isArray(value)) {
-          value.forEach((evalue) => {
-            const ev = Object.values(evalue)[0];
-            if (ev.bet_type !== "ODDS") {
-              inside_promise.push(
-                getExBySingleTeamNameCasino(
-                  sportList.id,
-                  roundId,
-                  ev?.team_name || index,
-                  match_id.toUpperCase(),
-                  ev.bet_type || "ODDS"
-                )
-              );
-            }
-          });
-        } else if (typeof value === 'object' && value.Odd && value.Even) {
-          // Card Odd/Even bets
-          inside_promise.push(
-            getExBySingleTeamNameCasino(
-              sportList.id,
-              roundId,
-              value.Odd.team_name,
-              match_id.toUpperCase(),
-              value.Odd.bet_type
-            )
-          );
-          inside_promise.push(
-            getExBySingleTeamNameCasino(
-              sportList.id,
-              roundId,
-              value.Even.team_name,
-              match_id.toUpperCase(),
-              value.Even.bet_type
-            )
-          );
-        }
-
-        return inside_promise;
-      });
-
-      promises = [].concat(...promises);
-      const promise_daa = await Promise.all(promises);
-
+      // Use bulk call for all bet types matching backend structure
+      // bet_types should be an object: { "ODDS": [...], "CONSECUTIVE": [...], ... }
+      const betTypes = {
+        "ODDS": ["Player A Main", "Player B Main"],
+        "CONSECUTIVE": ["Player A Consecutive", "Player B Consecutive"],
+        "CARD1_ODDEVEN": ["Odd", "Even"],
+        "CARD2_ODDEVEN": ["Odd", "Even"],
+        "CARD3_ODDEVEN": ["Odd", "Even"],
+        "CARD4_ODDEVEN": ["Odd", "Even"],
+        "CARD5_ODDEVEN": ["Odd", "Even"],
+        "CARD6_ODDEVEN": ["Odd", "Even"]
+      };
+      
+      const bulkResult = await getExByTeamNamesAndBetTypesBulk(
+        sportList.id,
+        betTypes
+      );
+      
+      // Process results and update totalPlayers
       setTotalPlayers((prevState) => {
         const updatedState = JSON.parse(JSON.stringify(prevState));
-
-        Object.entries(prevState).forEach(([index, value]) => {
-          if (Array.isArray(value)) {
-            value.forEach((arrayvalue) => {
-              promise_daa.forEach((cvalue) => {
-                const json = JSON.parse(cvalue.config.data);
-                const avalue = Object.values(arrayvalue)[0];
-                const okeys = Object.keys(arrayvalue)[0];
-
-                if (json.player === avalue.team_name && json.bet_type === avalue.bet_type) {
-                  updatedState[index].find(item => Object.keys(item)[0] === okeys)[okeys].amounts = cvalue.data || "";
-                } else if (json.player === index && avalue.bet_type === "ODDS") {
-                  updatedState[index][0][index].amounts = cvalue.data || "";
+        
+        if (bulkResult?.data) {
+          // Process ODDS (Main bets)
+          if (bulkResult.data["ODDS"]) {
+            bulkResult.data["ODDS"].forEach((item) => {
+              const teamName = item.nat?.trim();
+              if (teamName === "Player A Main") {
+                if (updatedState["Player A"]?.[0]?.["Player A"]) {
+                  updatedState["Player A"][0]["Player A"].amounts = item.result || "";
                 }
-              });
-            });
-          } else if (typeof value === 'object' && value.Odd && value.Even) {
-            promise_daa.forEach((cvalue) => {
-              const json = JSON.parse(cvalue.config.data);
-              if (json.player === value.Odd.team_name && json.bet_type === value.Odd.bet_type) {
-                updatedState[index].Odd.amounts = cvalue.data || "";
-              }
-              if (json.player === value.Even.team_name && json.bet_type === value.Even.bet_type) {
-                updatedState[index].Even.amounts = cvalue.data || "";
+              } else if (teamName === "Player B Main") {
+                if (updatedState["Player B"]?.[0]?.["Player B"]) {
+                  updatedState["Player B"][0]["Player B"].amounts = item.result || "";
+                }
               }
             });
           }
-        });
-
+          
+          // Process CONSECUTIVE
+          if (bulkResult.data["CONSECUTIVE"]) {
+            bulkResult.data["CONSECUTIVE"].forEach((item) => {
+              const teamName = item.nat?.trim();
+              if (teamName === "Player A Consecutive") {
+                if (updatedState["Player A"]?.[1]?.["Consecutive"]) {
+                  updatedState["Player A"][1]["Consecutive"].amounts = item.result || "";
+                }
+              } else if (teamName === "Player B Consecutive") {
+                if (updatedState["Player B"]?.[1]?.["Consecutive"]) {
+                  updatedState["Player B"][1]["Consecutive"].amounts = item.result || "";
+                }
+              }
+            });
+          }
+          
+          // Process Card Odd/Even bets (CARD1_ODDEVEN through CARD6_ODDEVEN)
+          ["CARD1_ODDEVEN", "CARD2_ODDEVEN", "CARD3_ODDEVEN", "CARD4_ODDEVEN", "CARD5_ODDEVEN", "CARD6_ODDEVEN"].forEach((betType) => {
+            if (bulkResult.data[betType]) {
+              bulkResult.data[betType].forEach((item) => {
+                const teamName = item.nat?.trim();
+                const cardNumber = betType.replace("_ODDEVEN", ""); // "CARD1", "CARD2", etc.
+                const cardKey = cardNumber.replace("CARD", "Card "); // "Card 1", "Card 2", etc.
+                
+                if (teamName === "Odd" && updatedState[cardKey]?.Odd) {
+                  updatedState[cardKey].Odd.amounts = item.result || "";
+                } else if (teamName === "Even" && updatedState[cardKey]?.Even) {
+                  updatedState[cardKey].Even.amounts = item.result || "";
+                }
+              });
+            }
+          });
+        }
+        
         return updatedState;
       });
     } else {
       if (individual !== "ODDS") {
+        // Map teamname.current to backend team name format based on bet type
+        let backendTeamName = teamname.current;
+        
+        // For CONSECUTIVE bets, map to backend format
+        if (individual === "CONSECUTIVE") {
+          if (teamname.current === "Player A Consecutive") {
+            backendTeamName = "Player A Consecutive";
+          } else if (teamname.current === "Player B Consecutive") {
+            backendTeamName = "Player B Consecutive";
+          } else {
+            // Fallback: extract from teamname
+            const baseName = teamname.current.replace(" Consecutive", "");
+            backendTeamName = baseName + " Consecutive";
+          }
+        }
+        // For Card Odd/Even bets, extract "Odd" or "Even"
+        else if (individual && individual.includes("_ODDEVEN")) {
+          if (teamname.current.includes(" - Odd")) {
+            backendTeamName = "Odd";
+          } else if (teamname.current.includes(" - Even")) {
+            backendTeamName = "Even";
+          }
+        }
+
         promises.push(
           getExBySingleTeamNameCasino(
             sportList.id,
             roundId,
-            teamname.current,
+            backendTeamName,
             match_id.toUpperCase(),
             individual
           )
         );
 
         const promises1 = await Promise.all(promises);
-        updateTotalPlayersAmounts(teamname.current, individual, promises1[0].data);
+        
+        // Extract base player name for updateTotalPlayersAmounts
+        let basePlayerName = teamname.current;
+        if (teamname.current.includes(" Main")) {
+          basePlayerName = teamname.current.replace(" Main", "");
+        } else if (teamname.current.includes(" Consecutive")) {
+          basePlayerName = teamname.current.replace(" Consecutive", "");
+        } else if (teamname.current.includes(" - ")) {
+          // For card bets, keep the full team_name
+          basePlayerName = teamname.current;
+        }
+        
+        updateTotalPlayersAmounts(basePlayerName, individual, promises1[0].data);
       } else {
-        promises.push(
-          getExByTeamNameForCasino(
-            sportList.id,
-            roundId,
-            "Player A",
-            match_id.toUpperCase(),
-            individual
-          )
+        // Use bulk call for ODDS (Main bets) - following Teen6 pattern but with bulk
+        const betTypes = {
+          "ODDS": ["Player A Main", "Player B Main"]
+        };
+        
+        const bulkResult = await getExByTeamNamesAndBetTypesBulk(
+          sportList.id,
+          betTypes
         );
-        promises.push(
-          getExByTeamNameForCasino(
-            sportList.id,
-            roundId,
-            "Player B",
-            match_id.toUpperCase(),
-            individual
-          )
-        );
-
-        const promisesResults = await Promise.all(promises);
-        promisesResults.forEach((result, index) => {
-          const playerName = index === 0 ? "Player A" : "Player B";
-          updateTotalPlayersAmounts(playerName, individual, result.data || "");
-        });
+        
+        // Process results - following Teen6's pattern
+        if (bulkResult?.data?.["ODDS"]) {
+          bulkResult.data["ODDS"].forEach((item) => {
+            const teamName = item.nat?.trim();
+            if (teamName === "Player A Main") {
+              updateTotalPlayersAmounts("Player A", "ODDS", item.result || "");
+            } else if (teamName === "Player B Main") {
+              updateTotalPlayersAmounts("Player B", "ODDS", item.result || "");
+            }
+          });
+        }
       }
     }
   };
@@ -490,12 +559,18 @@ const Teen62 = () => {
       const newPlayerStatuses = {};
       data.sub.forEach((item) => {
         const playerStatus = item.gstatus === "OPEN" ? "" : "suspended-box";
+        
         newPlayerStatuses[item.nat] = playerStatus;
       });
 
+      
       setPlayerStatuses(newPlayerStatuses);
     }
 
+    
+  }, [data?.sub]);
+
+  useEffect(() => {
     if (data.card) {
       const cardArray = data.card.split(",").map((item) => item.trim());
       let playerACards = cardArray.filter((_, index) => index % 2 === 0);
@@ -506,8 +581,7 @@ const Teen62 = () => {
       });
       remark.current = data.remark || "Welcome";
     }
-  }, [data?.sub]);
-
+  }, [data?.card]);
   const exposure = exposureCheck();
   const sportLength = Object.keys(data).length;
 
@@ -562,6 +636,14 @@ const Teen62 = () => {
   );
 
   const placeBet = async () => {
+    // Extract base player name from "Player A Main" or "Player A Consecutive"
+    let basePlayerName = teamname.current;
+    if (teamname.current.includes(" Main")) {
+      basePlayerName = teamname.current.replace(" Main", "");
+    } else if (teamname.current.includes(" Consecutive")) {
+      basePlayerName = teamname.current.replace(" Consecutive", "");
+    }
+
     const betData = {
       sportList,
       roundId,
@@ -574,7 +656,7 @@ const Teen62 = () => {
       stakeValue,
       match_id,
       roundIdSaved,
-      totalPlayers: totalPlayers[teamname.current],
+      totalPlayers: totalPlayers[basePlayerName],
       playerStatuses,
       setHideLoading,
       setPopupDisplayForDesktop,
@@ -674,16 +756,16 @@ const Teen62 = () => {
                 <div className="casino-odds-box lay">Lay</div>
               </div>
               <div className="casino-table-body">
-                <div className={`casino-table-row ${totalPlayers["Player A"]?.[0]?.["Player A"]?.status ? 'suspended-row' : ''}`}>
+                <div className={`casino-table-row ${totalPlayers["Player A"]?.[0]?.["Player A"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Main</div>
                   </div>
                   <div 
-                    className={`casino-odds-box back ${totalPlayers["Player A"]?.[0]?.["Player A"]?.status || ''}`}
+                    className="casino-odds-box back"
                     onClick={() =>
                       openPopup(
                         "back",
-                        "Player A",
+                        "Player A Main",
                         totalPlayers["Player A"]?.[0]?.["Player A"]?.odds?.back || 0,
                         totalPlayers["Player A"]?.[0]?.["Player A"]?.bet_type
                       )
@@ -694,11 +776,11 @@ const Teen62 = () => {
                     </span>
                   </div>
                   <div 
-                    className={`casino-odds-box lay ${totalPlayers["Player A"]?.[0]?.["Player A"]?.status || ''}`}
+                    className="casino-odds-box lay"
                     onClick={() =>
                       openPopup(
                         "lay",
-                        "Player A",
+                        "Player A Main",
                         totalPlayers["Player A"]?.[0]?.["Player A"]?.odds?.lay || 0,
                         totalPlayers["Player A"]?.[0]?.["Player A"]?.bet_type
                       )
@@ -709,16 +791,16 @@ const Teen62 = () => {
                     </span>
                   </div>
                 </div>
-                <div className={`casino-table-row ${totalPlayers["Player A"]?.[1]?.["Consecutive"]?.status ? 'suspended-row' : ''}`}>
+                <div className={`casino-table-row ${totalPlayers["Player A"]?.[1]?.["Consecutive"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Consecutive</div>
                   </div>
                   <div 
-                    className={`casino-odds-box back ${totalPlayers["Player A"]?.[1]?.["Consecutive"]?.status || ''}`}
+                    className="casino-odds-box back"
                     onClick={() =>
                       openPopup(
                         "back",
-                        "Player A",
+                        "Player A Consecutive",
                         totalPlayers["Player A"]?.[1]?.["Consecutive"]?.odds?.back || 0,
                         totalPlayers["Player A"]?.[1]?.["Consecutive"]?.bet_type
                       )
@@ -729,11 +811,11 @@ const Teen62 = () => {
                     </span>
                   </div>
                   <div 
-                    className={`casino-odds-box lay ${totalPlayers["Player A"]?.[1]?.["Consecutive"]?.status || ''}`}
+                    className="casino-odds-box lay"
                     onClick={() =>
                       openPopup(
                         "lay",
-                        "Player A",
+                        "Player A Consecutive",
                         totalPlayers["Player A"]?.[1]?.["Consecutive"]?.odds?.lay || 0,
                         totalPlayers["Player A"]?.[1]?.["Consecutive"]?.bet_type
                       )
@@ -754,16 +836,16 @@ const Teen62 = () => {
                 <div className="casino-odds-box lay">Lay</div>
               </div>
               <div className="casino-table-body">
-                <div className={`casino-table-row ${totalPlayers["Player B"]?.[0]?.["Player B"]?.status ? 'suspended-row' : ''}`}>
+                <div className={`casino-table-row ${totalPlayers["Player B"]?.[0]?.["Player B"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Main</div>
                   </div>
                   <div 
-                    className={`casino-odds-box back ${totalPlayers["Player B"]?.[0]?.["Player B"]?.status || ''}`}
+                    className="casino-odds-box back"
                     onClick={() =>
                       openPopup(
                         "back",
-                        "Player B",
+                        "Player B Main",
                         totalPlayers["Player B"]?.[0]?.["Player B"]?.odds?.back || 0,
                         totalPlayers["Player B"]?.[0]?.["Player B"]?.bet_type
                       )
@@ -774,11 +856,11 @@ const Teen62 = () => {
                     </span>
                   </div>
                   <div 
-                    className={`casino-odds-box lay ${totalPlayers["Player B"]?.[0]?.["Player B"]?.status || ''}`}
+                    className="casino-odds-box lay"
                     onClick={() =>
                       openPopup(
                         "lay",
-                        "Player B",
+                        "Player B Main",
                         totalPlayers["Player B"]?.[0]?.["Player B"]?.odds?.lay || 0,
                         totalPlayers["Player B"]?.[0]?.["Player B"]?.bet_type
                       )
@@ -789,16 +871,16 @@ const Teen62 = () => {
                     </span>
                   </div>
                 </div>
-                <div className={`casino-table-row ${totalPlayers["Player B"]?.[1]?.["Consecutive"]?.status ? 'suspended-row' : ''}`}>
+                <div className={`casino-table-row ${totalPlayers["Player B"]?.[1]?.["Consecutive"]?.status === 'suspended-box' ? 'suspended-row' : ''}`}>
                   <div className="casino-nation-detail">
                     <div className="casino-nation-name">Consecutive</div>
                   </div>
                   <div 
-                    className={`casino-odds-box back ${totalPlayers["Player B"]?.[1]?.["Consecutive"]?.status || ''}`}
+                    className="casino-odds-box back"
                     onClick={() =>
                       openPopup(
                         "back",
-                        "Player B",
+                        "Player B Consecutive",
                         totalPlayers["Player B"]?.[1]?.["Consecutive"]?.odds?.back || 0,
                         totalPlayers["Player B"]?.[1]?.["Consecutive"]?.bet_type
                       )
@@ -809,11 +891,11 @@ const Teen62 = () => {
                     </span>
                   </div>
                   <div 
-                    className={`casino-odds-box lay ${totalPlayers["Player B"]?.[1]?.["Consecutive"]?.status || ''}`}
+                    className="casino-odds-box lay"
                     onClick={() =>
                       openPopup(
                         "lay",
-                        "Player B",
+                        "Player B Consecutive",
                         totalPlayers["Player B"]?.[1]?.["Consecutive"]?.odds?.lay || 0,
                         totalPlayers["Player B"]?.[1]?.["Consecutive"]?.bet_type
                       )

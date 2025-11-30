@@ -4776,7 +4776,7 @@ tr {
 }
 
 .casino-table .suspended-row::before {
-    background-image: url("../img/icons/lock.svg");
+    background-image: url("../../img/lock.svg");
     background-size: 17px 17px;
     filter: invert(1);
     -webkit-filter: invert(1);
